@@ -1,0 +1,43 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
+    - packages/nereus_api_client/**
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.gr.dart"
+    - lib/l10n/**
+  errors:
+    invalid_annotation_target: ignore
+    inference_failure_on_collection_literal: ignore
+    inference_failure_on_function_invocation: ignore
+    unused_import: ignore
+    unnecessary_import: ignore
+    strict_raw_type: ignore
+    deprecated_member_use: ignore
+
+linter:
+  rules:
+    public_member_api_docs: false
+    lines_longer_than_80_chars: false
+    flutter_style_todos: false
+    always_put_required_named_parameters_first: false
+    prefer_initializing_formals: false
+    unnecessary_underscores: false
+    directives_ordering: false
+    sort_constructors_first: false
+    cascade_invocations: false
+    specify_nonobvious_property_types: false
+    avoid_positional_boolean_parameters: false
+    sort_pub_dependencies: false
+    avoid_redundant_argument_values: false
+    prefer_const_declarations: false
+    use_setters_to_change_properties: false
+    deprecated_member_use_from_same_package: false
