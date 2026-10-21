@@ -1,0 +1,9 @@
+analyzer:
+  exclude:
+    - test/**
+    - doc/**
+  errors:
+    unused_element: ignore
+    unused_field: ignore
+    unused_import: ignore
+    depend_on_referenced_packages: ignore
