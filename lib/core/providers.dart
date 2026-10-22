@@ -13,7 +13,6 @@ import 'package:nereus_app/features/alerts/data/alerts_repository.dart';
 import 'package:nereus_app/features/auth/data/auth_repository.dart';
 import 'package:nereus_app/features/telemetry/data/telemetry_repository.dart';
 import 'package:nereus_app/features/tickets/data/tickets_repository.dart';
-import 'package:nereus_api_client/nereus_api_client.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -69,14 +68,6 @@ Dio dio(Ref ref) {
 }
 
 @Riverpod(keepAlive: true)
-NereusApiClient apiClient(Ref ref) {
-  return NereusApiClient(
-    dio: ref.watch(dioProvider),
-    interceptors: <Interceptor>[],
-  );
-}
-
-@Riverpod(keepAlive: true)
 AuthRepository authRepository(Ref ref) {
   return AuthRepository(
     dio: ref.watch(dioProvider),
@@ -89,7 +80,6 @@ AuthRepository authRepository(Ref ref) {
 @Riverpod(keepAlive: true)
 TelemetryRepository telemetryRepository(Ref ref) {
   return TelemetryRepository(
-    api: ref.watch(apiClientProvider).getIotTelemetryApi(),
     dio: ref.watch(dioProvider),
     cache: ref.watch(readCacheProvider),
   );
@@ -98,7 +88,6 @@ TelemetryRepository telemetryRepository(Ref ref) {
 @Riverpod(keepAlive: true)
 AlertsRepository alertsRepository(Ref ref) {
   return AlertsRepository(
-    api: ref.watch(apiClientProvider).getAlertsApi(),
     dio: ref.watch(dioProvider),
     cache: ref.watch(readCacheProvider),
   );
@@ -106,10 +95,8 @@ AlertsRepository alertsRepository(Ref ref) {
 
 @Riverpod(keepAlive: true)
 TicketsRepository ticketsRepository(Ref ref) {
-  final client = ref.watch(apiClientProvider);
   return TicketsRepository(
-    api: client.getSupportApi(),
-    customersApi: client.getCustomersApi(),
+    dio: ref.watch(dioProvider),
     cache: ref.watch(readCacheProvider),
   );
 }

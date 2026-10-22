@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:nereus_app/core/debug/nereus_log.dart';
 import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/features/auth/domain/session_models.dart';
@@ -58,7 +60,7 @@ class AuthSession {
 @Riverpod(keepAlive: true)
 class Session extends _$Session {
   @override
-  Future<AuthSession> build() async {
+  FutureOr<AuthSession> build() async {
     final repo = ref.watch(authRepositoryProvider);
     ref.watch(sessionControllerProvider).onUnauthorized = logout;
     try {

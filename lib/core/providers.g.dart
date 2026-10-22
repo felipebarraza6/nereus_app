@@ -307,48 +307,6 @@ final class DioProvider extends $FunctionalProvider<Dio, Dio, Dio>
 
 String _$dioHash() => r'caa143f409534bc2a98f15c4de704d3ddc2dbaf8';
 
-@ProviderFor(apiClient)
-const apiClientProvider = ApiClientProvider._();
-
-final class ApiClientProvider
-    extends
-        $FunctionalProvider<NereusApiClient, NereusApiClient, NereusApiClient>
-    with $Provider<NereusApiClient> {
-  const ApiClientProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'apiClientProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$apiClientHash();
-
-  @$internal
-  @override
-  $ProviderElement<NereusApiClient> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  NereusApiClient create(Ref ref) {
-    return apiClient(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(NereusApiClient value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<NereusApiClient>(value),
-    );
-  }
-}
-
-String _$apiClientHash() => r'008c1ecf912b2c9cc99f1378af574b0734b4f724';
-
 @ProviderFor(authRepository)
 const authRepositoryProvider = AuthRepositoryProvider._();
 
@@ -436,7 +394,7 @@ final class TelemetryRepositoryProvider
 }
 
 String _$telemetryRepositoryHash() =>
-    r'9030b7270a46938ea8768a21a7df2a4b3ce7b1c9';
+    r'ccab83a171e0a4a4c15ef7cb00dca626c4d68e69';
 
 @ProviderFor(alertsRepository)
 const alertsRepositoryProvider = AlertsRepositoryProvider._();
@@ -482,7 +440,7 @@ final class AlertsRepositoryProvider
   }
 }
 
-String _$alertsRepositoryHash() => r'946a84db3fa463857f7e3e1991b3b30c5a015080';
+String _$alertsRepositoryHash() => r'7444982d0f4eb947f6d5687ba9472b3ecdc0a5a2';
 
 @ProviderFor(ticketsRepository)
 const ticketsRepositoryProvider = TicketsRepositoryProvider._();
@@ -529,7 +487,7 @@ final class TicketsRepositoryProvider
   }
 }
 
-String _$ticketsRepositoryHash() => r'19cf2df81d28d11d293835131dde8bea52cdcc39';
+String _$ticketsRepositoryHash() => r'1c6dba18083c4582a67cfb8e507f9d333d81a3e8';
 
 @ProviderFor(isOffline)
 const isOfflineProvider = IsOfflineProvider._();

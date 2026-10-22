@@ -5,6 +5,7 @@ import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
+import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
 import 'package:nereus_app/features/home/providers/dashboard_provider.dart';
 
@@ -16,67 +17,111 @@ class HomeScreen extends ConsumerWidget {
     final session = ref.watch(sessionProvider).value;
     final overview = ref.watch(dashboardProvider);
     final isClient = session?.isClient ?? true;
+    final name = session?.currentBranch?.branchName ??
+        session?.user?.fullName ??
+        'Nereus';
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Column(
-      children: [
-        GlassAppBar(
-          title: Text(isClient ? 'Mi monitoreo' : 'Operación'),
+      body: overview.when(
+        skipLoadingOnReload: true,
+        skipLoadingOnRefresh: true,
+        loading: () => const ShimmerList(),
+        error: (error, _) => AsyncBody(
+          isLoading: false,
+          hasError: true,
+          isEmpty: true,
+          onRetry: () => ref.invalidate(dashboardProvider),
+          errorMessage: userFacingErrorMessage(error),
+          isNetworkError: isNetworkFailure(error),
+          child: const SizedBox.shrink(),
         ),
-        Expanded(
-          child: overview.when(
-            skipLoadingOnReload: true,
-            skipLoadingOnRefresh: true,
-            loading: () => const ShimmerList(),
-            error: (error, _) => AsyncBody(
-              isLoading: false,
-              hasError: true,
-              isEmpty: true,
-              onRetry: () => ref.invalidate(dashboardProvider),
-              errorMessage: userFacingErrorMessage(error),
-              isNetworkError: isNetworkFailure(error),
-              child: const SizedBox.shrink(),
-            ),
-            data: (data) {
-              return RefreshIndicator(
-                onRefresh: () async => ref.invalidate(dashboardProvider),
-                child: GridView.count(
-                  padding: const EdgeInsets.all(NereusTokens.spaceMd),
-                  crossAxisCount: MediaQuery.sizeOf(context).width > 700 ? 4 : 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.25,
-                  children: [
-                    _Kpi(
-                      label: 'En línea',
-                      value: '${data.online}',
-                      icon: Icons.wifi,
-                      onTap: () => context.go('/devices'),
-                    ),
-                    _Kpi(
-                      label: 'Silenciosos',
-                      value: '${data.offline}',
-                      icon: Icons.wifi_off,
-                      onTap: () => context.go('/devices'),
-                    ),
-                    _Kpi(
-                      label: 'Alertas activas',
-                      value: '${data.openAlerts}',
-                      icon: Icons.notification_important_outlined,
-                      onTap: () => context.go('/alerts'),
-                    ),
-                    _Kpi(
-                      label: 'Lecturas hoy',
-                      value: '${data.readingsToday}',
-                      icon: Icons.speed,
-                    ),
-                  ],
+        data: (data) {
+          return RefreshIndicator(
+            onRefresh: () async => ref.invalidate(dashboardProvider),
+            child: ListView(
+              padding: const EdgeInsets.only(bottom: NereusTokens.spaceLg),
+              children: [
+                PageHeader(
+                  title: isClient ? 'Mi monitoreo' : 'Operación',
+                  subtitle: name,
                 ),
-              );
-            },
-          ),
-        ),
-      ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: NereusTokens.spaceMd,
+                  ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final wide = constraints.maxWidth > 700;
+                      return GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: wide ? 4 : 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: wide ? 1.45 : 1.35,
+                        children: [
+                          _Kpi(
+                            label: 'En línea',
+                            value: '${data.online}',
+                            icon: Icons.wifi,
+                            onTap: () => context.go('/devices'),
+                          ),
+                          _Kpi(
+                            label: 'Silenciosos',
+                            value: '${data.offline}',
+                            icon: Icons.wifi_off,
+                            onTap: () => context.go('/devices'),
+                          ),
+                          _Kpi(
+                            label: 'Alertas activas',
+                            value: '${data.openAlerts}',
+                            icon: Icons.notification_important_outlined,
+                            onTap: () => context.go('/alerts'),
+                          ),
+                          _Kpi(
+                            label: 'Lecturas hoy',
+                            value: '${data.readingsToday}',
+                            icon: Icons.speed,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                if (data.projects.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: NereusTokens.spaceMd,
+                    ),
+                    child: Text(
+                      'Proyectos',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: NereusTokens.spaceMd,
+                    ),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final project in data.projects)
+                          StatusChip(
+                            label:
+                                '${project.name} · ${project.deviceCount}',
+                            tone: NereusTokens.teal,
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -111,7 +156,8 @@ class _Kpi extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ),
-          Text(label),
+          const SizedBox(height: 4),
+          Text(label, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );

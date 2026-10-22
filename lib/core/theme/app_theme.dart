@@ -3,7 +3,8 @@ import 'package:nereus_app/core/theme/tokens.dart';
 
 abstract final class AppTheme {
   static ThemeData light() {
-    const scheme = ColorScheme(
+    final scheme = ColorScheme.fromSeed(
+      seedColor: NereusTokens.teal,
       brightness: Brightness.light,
       primary: NereusTokens.teal,
       onPrimary: Colors.white,
@@ -15,8 +16,6 @@ abstract final class AppTheme {
       onError: Colors.white,
       surface: NereusTokens.foam,
       onSurface: NereusTokens.ink,
-      surfaceContainerHighest: Color(0xFFD7EEEA),
-      outline: Color(0x6648A39A),
     );
     return _theme(scheme, dark: false);
   }
@@ -45,19 +44,21 @@ abstract final class AppTheme {
       displaySmall: TextStyle(
         fontSize: 32,
         fontWeight: FontWeight.w700,
-        letterSpacing: -0.6,
+        letterSpacing: -0.8,
         color: scheme.onSurface,
-        height: 1.15,
+        height: 1.1,
       ),
       headlineMedium: TextStyle(
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: FontWeight.w600,
-        letterSpacing: -0.3,
+        letterSpacing: -0.4,
         color: scheme.onSurface,
+        height: 1.15,
       ),
       titleLarge: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
+        letterSpacing: -0.2,
         color: scheme.onSurface,
       ),
       titleMedium: TextStyle(
@@ -67,18 +68,18 @@ abstract final class AppTheme {
       ),
       bodyLarge: TextStyle(
         fontSize: 16,
-        height: 1.4,
+        height: 1.45,
         color: scheme.onSurface,
       ),
       bodyMedium: TextStyle(
         fontSize: 14,
-        height: 1.4,
+        height: 1.45,
         color: dark ? const Color(0xFFB7D4D1) : NereusTokens.inkMuted,
       ),
       labelLarge: const TextStyle(
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: FontWeight.w600,
-        letterSpacing: 0.2,
+        letterSpacing: 0.15,
       ),
     );
 
@@ -86,6 +87,7 @@ abstract final class AppTheme {
       useMaterial3: true,
       colorScheme: scheme,
       textTheme: text,
+      fontFamily: 'Roboto',
       scaffoldBackgroundColor: Colors.transparent,
       visualDensity: VisualDensity.standard,
       splashFactory: InkSparkle.splashFactory,
@@ -137,6 +139,25 @@ abstract final class AppTheme {
         backgroundColor: Colors.transparent,
         indicatorColor: scheme.primary.withValues(alpha: 0.16),
         selectedIconTheme: IconThemeData(color: scheme.primary),
+      ),
+      chipTheme: ChipThemeData(
+        selectedColor: scheme.primary.withValues(alpha: 0.14),
+        checkmarkColor: scheme.primary,
+        labelStyle: TextStyle(
+          color: scheme.onSurface,
+          fontWeight: FontWeight.w600,
+          fontSize: 13,
+        ),
+        secondaryLabelStyle: TextStyle(
+          color: scheme.primary,
+          fontWeight: FontWeight.w600,
+          fontSize: 13,
+        ),
+        side: BorderSide(color: scheme.outline),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(NereusTokens.radiusPill),
+        ),
+        showCheckmark: false,
       ),
     );
   }

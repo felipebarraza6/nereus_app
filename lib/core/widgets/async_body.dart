@@ -158,6 +158,51 @@ class OfflineBanner extends StatelessWidget {
   }
 }
 
+class FilterPill extends StatelessWidget {
+  const FilterPill({
+    super.key,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: selected
+          ? scheme.primary.withValues(alpha: 0.14)
+          : Colors.white.withValues(alpha: 0.72),
+      borderRadius: BorderRadius.circular(NereusTokens.radiusPill),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(NereusTokens.radiusPill),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(NereusTokens.radiusPill),
+            border: Border.all(
+              color: selected
+                  ? scheme.primary.withValues(alpha: 0.45)
+                  : scheme.outline,
+            ),
+          ),
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: selected ? scheme.primary : scheme.onSurface,
+                ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class StatusChip extends StatelessWidget {
   const StatusChip({
     super.key,

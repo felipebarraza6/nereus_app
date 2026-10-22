@@ -849,9 +849,272 @@ $DeviceItemCopyWith<$Res> get device {
 }
 
 /// @nodoc
+mixin _$ProjectSummary {
+
+ String get id; String get name; int get deviceCount;
+/// Create a copy of ProjectSummary
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ProjectSummaryCopyWith<ProjectSummary> get copyWith => _$ProjectSummaryCopyWithImpl<ProjectSummary>(this as ProjectSummary, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProjectSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.deviceCount, deviceCount) || other.deviceCount == deviceCount));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,name,deviceCount);
+
+@override
+String toString() {
+  return 'ProjectSummary(id: $id, name: $name, deviceCount: $deviceCount)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ProjectSummaryCopyWith<$Res>  {
+  factory $ProjectSummaryCopyWith(ProjectSummary value, $Res Function(ProjectSummary) _then) = _$ProjectSummaryCopyWithImpl;
+@useResult
+$Res call({
+ String id, String name, int deviceCount
+});
+
+
+
+
+}
+/// @nodoc
+class _$ProjectSummaryCopyWithImpl<$Res>
+    implements $ProjectSummaryCopyWith<$Res> {
+  _$ProjectSummaryCopyWithImpl(this._self, this._then);
+
+  final ProjectSummary _self;
+  final $Res Function(ProjectSummary) _then;
+
+/// Create a copy of ProjectSummary
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? deviceCount = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,deviceCount: null == deviceCount ? _self.deviceCount : deviceCount // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ProjectSummary].
+extension ProjectSummaryPatterns on ProjectSummary {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ProjectSummary value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ProjectSummary() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ProjectSummary value)  $default,){
+final _that = this;
+switch (_that) {
+case _ProjectSummary():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ProjectSummary value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ProjectSummary() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  int deviceCount)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ProjectSummary() when $default != null:
+return $default(_that.id,_that.name,_that.deviceCount);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  int deviceCount)  $default,) {final _that = this;
+switch (_that) {
+case _ProjectSummary():
+return $default(_that.id,_that.name,_that.deviceCount);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  int deviceCount)?  $default,) {final _that = this;
+switch (_that) {
+case _ProjectSummary() when $default != null:
+return $default(_that.id,_that.name,_that.deviceCount);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _ProjectSummary implements ProjectSummary {
+  const _ProjectSummary({required this.id, required this.name, this.deviceCount = 0});
+  
+
+@override final  String id;
+@override final  String name;
+@override@JsonKey() final  int deviceCount;
+
+/// Create a copy of ProjectSummary
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ProjectSummaryCopyWith<_ProjectSummary> get copyWith => __$ProjectSummaryCopyWithImpl<_ProjectSummary>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProjectSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.deviceCount, deviceCount) || other.deviceCount == deviceCount));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,name,deviceCount);
+
+@override
+String toString() {
+  return 'ProjectSummary(id: $id, name: $name, deviceCount: $deviceCount)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ProjectSummaryCopyWith<$Res> implements $ProjectSummaryCopyWith<$Res> {
+  factory _$ProjectSummaryCopyWith(_ProjectSummary value, $Res Function(_ProjectSummary) _then) = __$ProjectSummaryCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String name, int deviceCount
+});
+
+
+
+
+}
+/// @nodoc
+class __$ProjectSummaryCopyWithImpl<$Res>
+    implements _$ProjectSummaryCopyWith<$Res> {
+  __$ProjectSummaryCopyWithImpl(this._self, this._then);
+
+  final _ProjectSummary _self;
+  final $Res Function(_ProjectSummary) _then;
+
+/// Create a copy of ProjectSummary
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? deviceCount = null,}) {
+  return _then(_ProjectSummary(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,deviceCount: null == deviceCount ? _self.deviceCount : deviceCount // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$DeviceOverview {
 
- int get total; int get online; int get offline; int get openAlerts; int get readingsToday; int get readingErrors;
+ int get total; int get online; int get offline; int get openAlerts; int get readingsToday; int get readingErrors; List<ProjectSummary> get projects;
 /// Create a copy of DeviceOverview
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -862,16 +1125,16 @@ $DeviceOverviewCopyWith<DeviceOverview> get copyWith => _$DeviceOverviewCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceOverview&&(identical(other.total, total) || other.total == total)&&(identical(other.online, online) || other.online == online)&&(identical(other.offline, offline) || other.offline == offline)&&(identical(other.openAlerts, openAlerts) || other.openAlerts == openAlerts)&&(identical(other.readingsToday, readingsToday) || other.readingsToday == readingsToday)&&(identical(other.readingErrors, readingErrors) || other.readingErrors == readingErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceOverview&&(identical(other.total, total) || other.total == total)&&(identical(other.online, online) || other.online == online)&&(identical(other.offline, offline) || other.offline == offline)&&(identical(other.openAlerts, openAlerts) || other.openAlerts == openAlerts)&&(identical(other.readingsToday, readingsToday) || other.readingsToday == readingsToday)&&(identical(other.readingErrors, readingErrors) || other.readingErrors == readingErrors)&&const DeepCollectionEquality().equals(other.projects, projects));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,total,online,offline,openAlerts,readingsToday,readingErrors);
+int get hashCode => Object.hash(runtimeType,total,online,offline,openAlerts,readingsToday,readingErrors,const DeepCollectionEquality().hash(projects));
 
 @override
 String toString() {
-  return 'DeviceOverview(total: $total, online: $online, offline: $offline, openAlerts: $openAlerts, readingsToday: $readingsToday, readingErrors: $readingErrors)';
+  return 'DeviceOverview(total: $total, online: $online, offline: $offline, openAlerts: $openAlerts, readingsToday: $readingsToday, readingErrors: $readingErrors, projects: $projects)';
 }
 
 
@@ -882,7 +1145,7 @@ abstract mixin class $DeviceOverviewCopyWith<$Res>  {
   factory $DeviceOverviewCopyWith(DeviceOverview value, $Res Function(DeviceOverview) _then) = _$DeviceOverviewCopyWithImpl;
 @useResult
 $Res call({
- int total, int online, int offline, int openAlerts, int readingsToday, int readingErrors
+ int total, int online, int offline, int openAlerts, int readingsToday, int readingErrors, List<ProjectSummary> projects
 });
 
 
@@ -899,7 +1162,7 @@ class _$DeviceOverviewCopyWithImpl<$Res>
 
 /// Create a copy of DeviceOverview
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? total = null,Object? online = null,Object? offline = null,Object? openAlerts = null,Object? readingsToday = null,Object? readingErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? total = null,Object? online = null,Object? offline = null,Object? openAlerts = null,Object? readingsToday = null,Object? readingErrors = null,Object? projects = null,}) {
   return _then(_self.copyWith(
 total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
 as int,online: null == online ? _self.online : online // ignore: cast_nullable_to_non_nullable
@@ -907,7 +1170,8 @@ as int,offline: null == offline ? _self.offline : offline // ignore: cast_nullab
 as int,openAlerts: null == openAlerts ? _self.openAlerts : openAlerts // ignore: cast_nullable_to_non_nullable
 as int,readingsToday: null == readingsToday ? _self.readingsToday : readingsToday // ignore: cast_nullable_to_non_nullable
 as int,readingErrors: null == readingErrors ? _self.readingErrors : readingErrors // ignore: cast_nullable_to_non_nullable
-as int,
+as int,projects: null == projects ? _self.projects : projects // ignore: cast_nullable_to_non_nullable
+as List<ProjectSummary>,
   ));
 }
 
@@ -992,10 +1256,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int total,  int online,  int offline,  int openAlerts,  int readingsToday,  int readingErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int total,  int online,  int offline,  int openAlerts,  int readingsToday,  int readingErrors,  List<ProjectSummary> projects)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DeviceOverview() when $default != null:
-return $default(_that.total,_that.online,_that.offline,_that.openAlerts,_that.readingsToday,_that.readingErrors);case _:
+return $default(_that.total,_that.online,_that.offline,_that.openAlerts,_that.readingsToday,_that.readingErrors,_that.projects);case _:
   return orElse();
 
 }
@@ -1013,10 +1277,10 @@ return $default(_that.total,_that.online,_that.offline,_that.openAlerts,_that.re
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int total,  int online,  int offline,  int openAlerts,  int readingsToday,  int readingErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int total,  int online,  int offline,  int openAlerts,  int readingsToday,  int readingErrors,  List<ProjectSummary> projects)  $default,) {final _that = this;
 switch (_that) {
 case _DeviceOverview():
-return $default(_that.total,_that.online,_that.offline,_that.openAlerts,_that.readingsToday,_that.readingErrors);case _:
+return $default(_that.total,_that.online,_that.offline,_that.openAlerts,_that.readingsToday,_that.readingErrors,_that.projects);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1033,10 +1297,10 @@ return $default(_that.total,_that.online,_that.offline,_that.openAlerts,_that.re
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int total,  int online,  int offline,  int openAlerts,  int readingsToday,  int readingErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int total,  int online,  int offline,  int openAlerts,  int readingsToday,  int readingErrors,  List<ProjectSummary> projects)?  $default,) {final _that = this;
 switch (_that) {
 case _DeviceOverview() when $default != null:
-return $default(_that.total,_that.online,_that.offline,_that.openAlerts,_that.readingsToday,_that.readingErrors);case _:
+return $default(_that.total,_that.online,_that.offline,_that.openAlerts,_that.readingsToday,_that.readingErrors,_that.projects);case _:
   return null;
 
 }
@@ -1048,7 +1312,7 @@ return $default(_that.total,_that.online,_that.offline,_that.openAlerts,_that.re
 
 
 class _DeviceOverview implements DeviceOverview {
-  const _DeviceOverview({this.total = 0, this.online = 0, this.offline = 0, this.openAlerts = 0, this.readingsToday = 0, this.readingErrors = 0});
+  const _DeviceOverview({this.total = 0, this.online = 0, this.offline = 0, this.openAlerts = 0, this.readingsToday = 0, this.readingErrors = 0, this.projects = const []});
   
 
 @override@JsonKey() final  int total;
@@ -1057,6 +1321,7 @@ class _DeviceOverview implements DeviceOverview {
 @override@JsonKey() final  int openAlerts;
 @override@JsonKey() final  int readingsToday;
 @override@JsonKey() final  int readingErrors;
+@override@JsonKey() final  List<ProjectSummary> projects;
 
 /// Create a copy of DeviceOverview
 /// with the given fields replaced by the non-null parameter values.
@@ -1068,16 +1333,16 @@ _$DeviceOverviewCopyWith<_DeviceOverview> get copyWith => __$DeviceOverviewCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceOverview&&(identical(other.total, total) || other.total == total)&&(identical(other.online, online) || other.online == online)&&(identical(other.offline, offline) || other.offline == offline)&&(identical(other.openAlerts, openAlerts) || other.openAlerts == openAlerts)&&(identical(other.readingsToday, readingsToday) || other.readingsToday == readingsToday)&&(identical(other.readingErrors, readingErrors) || other.readingErrors == readingErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceOverview&&(identical(other.total, total) || other.total == total)&&(identical(other.online, online) || other.online == online)&&(identical(other.offline, offline) || other.offline == offline)&&(identical(other.openAlerts, openAlerts) || other.openAlerts == openAlerts)&&(identical(other.readingsToday, readingsToday) || other.readingsToday == readingsToday)&&(identical(other.readingErrors, readingErrors) || other.readingErrors == readingErrors)&&const DeepCollectionEquality().equals(other.projects, projects));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,total,online,offline,openAlerts,readingsToday,readingErrors);
+int get hashCode => Object.hash(runtimeType,total,online,offline,openAlerts,readingsToday,readingErrors,const DeepCollectionEquality().hash(projects));
 
 @override
 String toString() {
-  return 'DeviceOverview(total: $total, online: $online, offline: $offline, openAlerts: $openAlerts, readingsToday: $readingsToday, readingErrors: $readingErrors)';
+  return 'DeviceOverview(total: $total, online: $online, offline: $offline, openAlerts: $openAlerts, readingsToday: $readingsToday, readingErrors: $readingErrors, projects: $projects)';
 }
 
 
@@ -1088,7 +1353,7 @@ abstract mixin class _$DeviceOverviewCopyWith<$Res> implements $DeviceOverviewCo
   factory _$DeviceOverviewCopyWith(_DeviceOverview value, $Res Function(_DeviceOverview) _then) = __$DeviceOverviewCopyWithImpl;
 @override @useResult
 $Res call({
- int total, int online, int offline, int openAlerts, int readingsToday, int readingErrors
+ int total, int online, int offline, int openAlerts, int readingsToday, int readingErrors, List<ProjectSummary> projects
 });
 
 
@@ -1105,7 +1370,7 @@ class __$DeviceOverviewCopyWithImpl<$Res>
 
 /// Create a copy of DeviceOverview
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? total = null,Object? online = null,Object? offline = null,Object? openAlerts = null,Object? readingsToday = null,Object? readingErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? total = null,Object? online = null,Object? offline = null,Object? openAlerts = null,Object? readingsToday = null,Object? readingErrors = null,Object? projects = null,}) {
   return _then(_DeviceOverview(
 total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
 as int,online: null == online ? _self.online : online // ignore: cast_nullable_to_non_nullable
@@ -1113,7 +1378,280 @@ as int,offline: null == offline ? _self.offline : offline // ignore: cast_nullab
 as int,openAlerts: null == openAlerts ? _self.openAlerts : openAlerts // ignore: cast_nullable_to_non_nullable
 as int,readingsToday: null == readingsToday ? _self.readingsToday : readingsToday // ignore: cast_nullable_to_non_nullable
 as int,readingErrors: null == readingErrors ? _self.readingErrors : readingErrors // ignore: cast_nullable_to_non_nullable
-as int,
+as int,projects: null == projects ? _self.projects : projects // ignore: cast_nullable_to_non_nullable
+as List<ProjectSummary>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$DeviceEvent {
+
+ String get id; String get title; String get eventType; String get eventTypeDisplay; String? get severity; DateTime? get created;
+/// Create a copy of DeviceEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DeviceEventCopyWith<DeviceEvent> get copyWith => _$DeviceEventCopyWithImpl<DeviceEvent>(this as DeviceEvent, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceEvent&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.eventType, eventType) || other.eventType == eventType)&&(identical(other.eventTypeDisplay, eventTypeDisplay) || other.eventTypeDisplay == eventTypeDisplay)&&(identical(other.severity, severity) || other.severity == severity)&&(identical(other.created, created) || other.created == created));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,title,eventType,eventTypeDisplay,severity,created);
+
+@override
+String toString() {
+  return 'DeviceEvent(id: $id, title: $title, eventType: $eventType, eventTypeDisplay: $eventTypeDisplay, severity: $severity, created: $created)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DeviceEventCopyWith<$Res>  {
+  factory $DeviceEventCopyWith(DeviceEvent value, $Res Function(DeviceEvent) _then) = _$DeviceEventCopyWithImpl;
+@useResult
+$Res call({
+ String id, String title, String eventType, String eventTypeDisplay, String? severity, DateTime? created
+});
+
+
+
+
+}
+/// @nodoc
+class _$DeviceEventCopyWithImpl<$Res>
+    implements $DeviceEventCopyWith<$Res> {
+  _$DeviceEventCopyWithImpl(this._self, this._then);
+
+  final DeviceEvent _self;
+  final $Res Function(DeviceEvent) _then;
+
+/// Create a copy of DeviceEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? eventType = null,Object? eventTypeDisplay = null,Object? severity = freezed,Object? created = freezed,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,eventType: null == eventType ? _self.eventType : eventType // ignore: cast_nullable_to_non_nullable
+as String,eventTypeDisplay: null == eventTypeDisplay ? _self.eventTypeDisplay : eventTypeDisplay // ignore: cast_nullable_to_non_nullable
+as String,severity: freezed == severity ? _self.severity : severity // ignore: cast_nullable_to_non_nullable
+as String?,created: freezed == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
+as DateTime?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [DeviceEvent].
+extension DeviceEventPatterns on DeviceEvent {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _DeviceEvent value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _DeviceEvent() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _DeviceEvent value)  $default,){
+final _that = this;
+switch (_that) {
+case _DeviceEvent():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _DeviceEvent value)?  $default,){
+final _that = this;
+switch (_that) {
+case _DeviceEvent() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String eventType,  String eventTypeDisplay,  String? severity,  DateTime? created)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _DeviceEvent() when $default != null:
+return $default(_that.id,_that.title,_that.eventType,_that.eventTypeDisplay,_that.severity,_that.created);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String eventType,  String eventTypeDisplay,  String? severity,  DateTime? created)  $default,) {final _that = this;
+switch (_that) {
+case _DeviceEvent():
+return $default(_that.id,_that.title,_that.eventType,_that.eventTypeDisplay,_that.severity,_that.created);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String eventType,  String eventTypeDisplay,  String? severity,  DateTime? created)?  $default,) {final _that = this;
+switch (_that) {
+case _DeviceEvent() when $default != null:
+return $default(_that.id,_that.title,_that.eventType,_that.eventTypeDisplay,_that.severity,_that.created);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _DeviceEvent implements DeviceEvent {
+  const _DeviceEvent({required this.id, this.title = '', this.eventType = '', this.eventTypeDisplay = '', this.severity, this.created});
+  
+
+@override final  String id;
+@override@JsonKey() final  String title;
+@override@JsonKey() final  String eventType;
+@override@JsonKey() final  String eventTypeDisplay;
+@override final  String? severity;
+@override final  DateTime? created;
+
+/// Create a copy of DeviceEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DeviceEventCopyWith<_DeviceEvent> get copyWith => __$DeviceEventCopyWithImpl<_DeviceEvent>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceEvent&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.eventType, eventType) || other.eventType == eventType)&&(identical(other.eventTypeDisplay, eventTypeDisplay) || other.eventTypeDisplay == eventTypeDisplay)&&(identical(other.severity, severity) || other.severity == severity)&&(identical(other.created, created) || other.created == created));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,title,eventType,eventTypeDisplay,severity,created);
+
+@override
+String toString() {
+  return 'DeviceEvent(id: $id, title: $title, eventType: $eventType, eventTypeDisplay: $eventTypeDisplay, severity: $severity, created: $created)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DeviceEventCopyWith<$Res> implements $DeviceEventCopyWith<$Res> {
+  factory _$DeviceEventCopyWith(_DeviceEvent value, $Res Function(_DeviceEvent) _then) = __$DeviceEventCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String title, String eventType, String eventTypeDisplay, String? severity, DateTime? created
+});
+
+
+
+
+}
+/// @nodoc
+class __$DeviceEventCopyWithImpl<$Res>
+    implements _$DeviceEventCopyWith<$Res> {
+  __$DeviceEventCopyWithImpl(this._self, this._then);
+
+  final _DeviceEvent _self;
+  final $Res Function(_DeviceEvent) _then;
+
+/// Create a copy of DeviceEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? eventType = null,Object? eventTypeDisplay = null,Object? severity = freezed,Object? created = freezed,}) {
+  return _then(_DeviceEvent(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,eventType: null == eventType ? _self.eventType : eventType // ignore: cast_nullable_to_non_nullable
+as String,eventTypeDisplay: null == eventTypeDisplay ? _self.eventTypeDisplay : eventTypeDisplay // ignore: cast_nullable_to_non_nullable
+as String,severity: freezed == severity ? _self.severity : severity // ignore: cast_nullable_to_non_nullable
+as String?,created: freezed == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

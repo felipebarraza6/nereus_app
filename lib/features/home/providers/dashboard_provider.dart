@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:nereus_app/core/polling/foreground_poll.dart';
 import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
@@ -13,7 +15,7 @@ class Dashboard extends _$Dashboard {
   Future<DeviceOverview>? _inFlight;
 
   @override
-  Future<DeviceOverview> build() async {
+  FutureOr<DeviceOverview> build() async {
     ref.watch(foregroundPollProvider(pollInterval));
     final branchId = ref.watch(sessionProvider).value?.branchId;
     if (branchId == null || branchId.isEmpty) {

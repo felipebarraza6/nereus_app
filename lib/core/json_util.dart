@@ -7,6 +7,12 @@ int asInt(dynamic value, {int fallback = 0}) {
 String? asStringOrNull(dynamic value) {
   if (value == null) return null;
   if (value is String) return value.isEmpty ? null : value;
+  if (value is Map) {
+    return asStringOrNull(
+      value['name'] ?? value['title'] ?? value['label'] ?? value['id'],
+    );
+  }
+  if (value is List) return null;
   return '$value';
 }
 
@@ -46,4 +52,13 @@ List<Map<String, dynamic>> asMapList(dynamic value) {
     for (final item in value)
       if (item is Map) Map<String, dynamic>.from(item),
   ];
+}
+
+/// Paginated `{results: [...]}` or a bare JSON array.
+List<Map<String, dynamic>> asResults(dynamic data) {
+  if (data is List) return asMapList(data);
+  final map = asMap(data);
+  if (map.containsKey('results')) return asMapList(map['results']);
+  if (map['data'] is List) return asMapList(map['data']);
+  return const [];
 }

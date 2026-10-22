@@ -22,16 +22,17 @@ abstract class DeviceItem with _$DeviceItem {
   factory DeviceItem.fromJson(Map<String, dynamic> json) {
     return DeviceItem(
       id: asInt(json['id']),
-      name: '${json['name'] ?? ''}',
-      deviceType: '${json['device_type'] ?? 'CUSTOM'}',
-      projectName: json['project_name']?.toString(),
+      name: asString(json['name'], fallback: 'Dispositivo'),
+      deviceType: asString(json['device_type'], fallback: 'CUSTOM'),
+      projectName: asStringOrNull(json['project_name']) ??
+          (json['project'] is Map ? asStringOrNull(json['project']) : null),
       isOnline: json['is_online'] == true,
       lastReadingAt: asDateTime(json['last_reading_at']),
       minutesOffline: asIntOrNull(json['minutes_offline']),
       variablesCount: asIntOrNull(json['variables_count']),
       lat: asDoubleOrNull(json['lat']),
       lon: asDoubleOrNull(json['lon']),
-      address: json['address']?.toString(),
+      address: asStringOrNull(json['address']),
     );
   }
 }
@@ -49,10 +50,10 @@ abstract class DeviceVariable with _$DeviceVariable {
   factory DeviceVariable.fromJson(Map<String, dynamic> json) {
     return DeviceVariable(
       id: asInt(json['id']),
-      name: '${json['name'] ?? ''}',
-      variableType: '${json['variable_type'] ?? 'CUSTOM'}',
-      unit: '${json['unit'] ?? ''}',
-      chartColor: json['chart_color']?.toString(),
+      name: asString(json['name']),
+      variableType: asString(json['variable_type'], fallback: 'CUSTOM'),
+      unit: asString(json['unit']),
+      chartColor: asStringOrNull(json['chart_color']),
     );
   }
 }
@@ -76,6 +77,23 @@ abstract class DeviceDetail with _$DeviceDetail {
 }
 
 @Freezed(makeCollectionsUnmodifiable: false)
+abstract class ProjectSummary with _$ProjectSummary {
+  const factory ProjectSummary({
+    required String id,
+    required String name,
+    @Default(0) int deviceCount,
+  }) = _ProjectSummary;
+
+  factory ProjectSummary.fromJson(Map<String, dynamic> json) {
+    return ProjectSummary(
+      id: asString(json['id']),
+      name: asString(json['name']),
+      deviceCount: asInt(json['device_count']),
+    );
+  }
+}
+
+@Freezed(makeCollectionsUnmodifiable: false)
 abstract class DeviceOverview with _$DeviceOverview {
   const factory DeviceOverview({
     @Default(0) int total,
@@ -84,19 +102,47 @@ abstract class DeviceOverview with _$DeviceOverview {
     @Default(0) int openAlerts,
     @Default(0) int readingsToday,
     @Default(0) int readingErrors,
+    @Default([]) List<ProjectSummary> projects,
   }) = _DeviceOverview;
 
   factory DeviceOverview.fromJson(Map<String, dynamic> json) {
-    final devices = json['devices'] as Map? ?? {};
-    final alerts = json['alerts'] as Map? ?? {};
-    final readings = json['readings_today'] as Map? ?? {};
+    final devices = asMap(json['devices']);
+    final alerts = asMap(json['alerts']);
+    final readings = asMap(json['readings_today']);
     return DeviceOverview(
-      total: (devices['total'] as num?)?.toInt() ?? 0,
-      online: (devices['online'] as num?)?.toInt() ?? 0,
-      offline: (devices['offline'] as num?)?.toInt() ?? 0,
-      openAlerts: (alerts['open_unacknowledged'] as num?)?.toInt() ?? 0,
-      readingsToday: (readings['count'] as num?)?.toInt() ?? 0,
-      readingErrors: (readings['errors'] as num?)?.toInt() ?? 0,
+      total: asInt(devices['total']),
+      online: asInt(devices['online']),
+      offline: asInt(devices['offline']),
+      openAlerts: asInt(alerts['open_unacknowledged']),
+      readingsToday: asInt(readings['count']),
+      readingErrors: asInt(readings['errors']),
+      projects: asMapList(json['projects']).map(ProjectSummary.fromJson).toList(),
+    );
+  }
+}
+
+@Freezed(makeCollectionsUnmodifiable: false)
+abstract class DeviceEvent with _$DeviceEvent {
+  const factory DeviceEvent({
+    required String id,
+    @Default('') String title,
+    @Default('') String eventType,
+    @Default('') String eventTypeDisplay,
+    String? severity,
+    DateTime? created,
+  }) = _DeviceEvent;
+
+  factory DeviceEvent.fromJson(Map<String, dynamic> json) {
+    return DeviceEvent(
+      id: asString(json['id']),
+      title: asString(json['title']),
+      eventType: asString(json['event_type']),
+      eventTypeDisplay: asString(
+        json['event_type_display'],
+        fallback: asString(json['event_type']),
+      ),
+      severity: asStringOrNull(json['severity']),
+      created: asDateTime(json['created']),
     );
   }
 }
@@ -200,15 +246,17 @@ abstract class AlertSummary with _$AlertSummary {
   }) = _AlertSummary;
 
   factory AlertSummary.fromJson(Map<String, dynamic> json) {
-    final raw = json['by_severity_open'] as Map? ?? {};
+    final raw = json['by_severity_open'] is Map
+        ? Map<dynamic, dynamic>.from(json['by_severity_open'] as Map)
+        : <dynamic, dynamic>{};
     return AlertSummary(
-      total: (json['total'] as num?)?.toInt() ?? 0,
-      openUnacknowledged:
-          (json['open_unacknowledged'] as num?)?.toInt() ?? 0,
-      acknowledged: (json['acknowledged'] as num?)?.toInt() ?? 0,
-      bySeverityOpen: raw.map(
-        (key, value) => MapEntry(key.toString(), (value as num?)?.toInt() ?? 0),
-      ),
+      total: asInt(json['total']),
+      openUnacknowledged: asInt(json['open_unacknowledged']),
+      acknowledged: asInt(json['acknowledged']),
+      bySeverityOpen: {
+        for (final entry in raw.entries)
+          entry.key.toString(): asInt(entry.value),
+      },
     );
   }
 }

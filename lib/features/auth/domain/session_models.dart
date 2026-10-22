@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nereus_app/core/json_util.dart';
 
 part 'session_models.freezed.dart';
-part 'session_models.g.dart';
 
 @Freezed(makeCollectionsUnmodifiable: false)
 abstract class BranchAssignment with _$BranchAssignment {
@@ -15,8 +15,17 @@ abstract class BranchAssignment with _$BranchAssignment {
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
   }) = _BranchAssignment;
 
-  factory BranchAssignment.fromJson(Map<String, dynamic> json) =>
-      _$BranchAssignmentFromJson(json);
+  factory BranchAssignment.fromJson(Map<String, dynamic> json) {
+    return BranchAssignment(
+      id: asIntOrNull(json['id']),
+      branchId: asInt(json['branch_id'] ?? json['id']),
+      branchName: asStringOrNull(json['branch_name'] ?? json['business_name']),
+      businessName: asStringOrNull(json['business_name'] ?? json['branch_name']),
+      roleCode: asString(json['role_code'], fallback: 'CL'),
+      roleName: asStringOrNull(json['role_name']),
+      isActive: json['is_active'] != false,
+    );
+  }
 }
 
 @Freezed(makeCollectionsUnmodifiable: false)
@@ -33,8 +42,19 @@ abstract class SessionUser with _$SessionUser {
     @JsonKey(name: 'is_multi_branch') @Default(false) bool isMultiBranch,
   }) = _SessionUser;
 
-  factory SessionUser.fromJson(Map<String, dynamic> json) =>
-      _$SessionUserFromJson(json);
+  factory SessionUser.fromJson(Map<String, dynamic> json) {
+    return SessionUser(
+      id: asInt(json['id']),
+      email: asString(json['email']),
+      username: asStringOrNull(json['username']),
+      firstName: asStringOrNull(json['first_name']),
+      lastName: asStringOrNull(json['last_name']),
+      fullName: asStringOrNull(json['full_name']),
+      typeUser: asStringOrNull(json['type_user']),
+      isSuperuser: json['is_superuser'] == true,
+      isMultiBranch: json['is_multi_branch'] == true,
+    );
+  }
 }
 
 @Freezed(makeCollectionsUnmodifiable: false)
@@ -47,17 +67,18 @@ abstract class LoginComplete with _$LoginComplete {
   }) = _LoginComplete;
 
   factory LoginComplete.fromJson(Map<String, dynamic> json) {
-    final userJson = Map<String, dynamic>.from(json['user'] as Map? ?? {});
+    final userJson = asMap(json['user']);
     final branchesRaw = json['branches'] ?? userJson['branch_assignments'] ?? [];
     final permissions = json['permissions'] as Map? ?? {};
     final apps = permissions['enabled_apps'] as List? ?? [];
     return LoginComplete(
-      token: json['token'] as String,
+      token: asString(json['token']),
       user: SessionUser.fromJson(userJson),
-      branches: (branchesRaw as List)
-          .whereType<Map<dynamic, dynamic>>()
-          .map((e) => BranchAssignment.fromJson(Map<String, dynamic>.from(e)))
-          .toList(),
+      branches: [
+        for (final item in branchesRaw is List ? branchesRaw : const [])
+          if (item is Map)
+            BranchAssignment.fromJson(Map<String, dynamic>.from(item)),
+      ],
       enabledApps: apps.map((e) => e.toString()).toList(),
     );
   }

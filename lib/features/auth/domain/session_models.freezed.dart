@@ -11,7 +11,6 @@ part of 'session_models.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-
 /// @nodoc
 mixin _$BranchAssignment {
 
@@ -22,8 +21,6 @@ mixin _$BranchAssignment {
 @pragma('vm:prefer-inline')
 $BranchAssignmentCopyWith<BranchAssignment> get copyWith => _$BranchAssignmentCopyWithImpl<BranchAssignment>(this as BranchAssignment, _$identity);
 
-  /// Serializes this BranchAssignment to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -31,7 +28,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is BranchAssignment&&(identical(other.id, id) || other.id == id)&&(identical(other.branchId, branchId) || other.branchId == branchId)&&(identical(other.branchName, branchName) || other.branchName == branchName)&&(identical(other.businessName, businessName) || other.businessName == businessName)&&(identical(other.roleCode, roleCode) || other.roleCode == roleCode)&&(identical(other.roleName, roleName) || other.roleName == roleName)&&(identical(other.isActive, isActive) || other.isActive == isActive));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,id,branchId,branchName,businessName,roleCode,roleName,isActive);
 
@@ -212,11 +209,11 @@ return $default(_that.id,_that.branchId,_that.branchName,_that.businessName,_tha
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _BranchAssignment implements BranchAssignment {
   const _BranchAssignment({this.id, @JsonKey(name: 'branch_id') required this.branchId, @JsonKey(name: 'branch_name') this.branchName, @JsonKey(name: 'business_name') this.businessName, @JsonKey(name: 'role_code') this.roleCode = 'CL', @JsonKey(name: 'role_name') this.roleName, @JsonKey(name: 'is_active') this.isActive = true});
-  factory _BranchAssignment.fromJson(Map<String, dynamic> json) => _$BranchAssignmentFromJson(json);
+  
 
 @override final  int? id;
 @override@JsonKey(name: 'branch_id') final  int branchId;
@@ -232,17 +229,14 @@ class _BranchAssignment implements BranchAssignment {
 @pragma('vm:prefer-inline')
 _$BranchAssignmentCopyWith<_BranchAssignment> get copyWith => __$BranchAssignmentCopyWithImpl<_BranchAssignment>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$BranchAssignmentToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _BranchAssignment&&(identical(other.id, id) || other.id == id)&&(identical(other.branchId, branchId) || other.branchId == branchId)&&(identical(other.branchName, branchName) || other.branchName == branchName)&&(identical(other.businessName, businessName) || other.businessName == businessName)&&(identical(other.roleCode, roleCode) || other.roleCode == roleCode)&&(identical(other.roleName, roleName) || other.roleName == roleName)&&(identical(other.isActive, isActive) || other.isActive == isActive));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,id,branchId,branchName,businessName,roleCode,roleName,isActive);
 
@@ -292,7 +286,6 @@ as bool,
 
 }
 
-
 /// @nodoc
 mixin _$SessionUser {
 
@@ -303,8 +296,6 @@ mixin _$SessionUser {
 @pragma('vm:prefer-inline')
 $SessionUserCopyWith<SessionUser> get copyWith => _$SessionUserCopyWithImpl<SessionUser>(this as SessionUser, _$identity);
 
-  /// Serializes this SessionUser to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -312,7 +303,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionUser&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.username, username) || other.username == username)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.typeUser, typeUser) || other.typeUser == typeUser)&&(identical(other.isSuperuser, isSuperuser) || other.isSuperuser == isSuperuser)&&(identical(other.isMultiBranch, isMultiBranch) || other.isMultiBranch == isMultiBranch));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,id,email,username,firstName,lastName,fullName,typeUser,isSuperuser,isMultiBranch);
 
@@ -495,11 +486,11 @@ return $default(_that.id,_that.email,_that.username,_that.firstName,_that.lastNa
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _SessionUser implements SessionUser {
   const _SessionUser({required this.id, required this.email, this.username, @JsonKey(name: 'first_name') this.firstName, @JsonKey(name: 'last_name') this.lastName, @JsonKey(name: 'full_name') this.fullName, @JsonKey(name: 'type_user') this.typeUser, @JsonKey(name: 'is_superuser') this.isSuperuser = false, @JsonKey(name: 'is_multi_branch') this.isMultiBranch = false});
-  factory _SessionUser.fromJson(Map<String, dynamic> json) => _$SessionUserFromJson(json);
+  
 
 @override final  int id;
 @override final  String email;
@@ -517,17 +508,14 @@ class _SessionUser implements SessionUser {
 @pragma('vm:prefer-inline')
 _$SessionUserCopyWith<_SessionUser> get copyWith => __$SessionUserCopyWithImpl<_SessionUser>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$SessionUserToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionUser&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.username, username) || other.username == username)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.typeUser, typeUser) || other.typeUser == typeUser)&&(identical(other.isSuperuser, isSuperuser) || other.isSuperuser == isSuperuser)&&(identical(other.isMultiBranch, isMultiBranch) || other.isMultiBranch == isMultiBranch));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,id,email,username,firstName,lastName,fullName,typeUser,isSuperuser,isMultiBranch);
 

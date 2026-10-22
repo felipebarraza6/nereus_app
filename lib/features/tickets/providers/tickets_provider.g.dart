@@ -15,11 +15,11 @@ const ticketsProvider = TicketsProvider._();
 final class TicketsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<TicketList>>,
-          List<TicketList>,
-          FutureOr<List<TicketList>>
+          AsyncValue<List<TicketItem>>,
+          List<TicketItem>,
+          FutureOr<List<TicketItem>>
         >
-    with $FutureModifier<List<TicketList>>, $FutureProvider<List<TicketList>> {
+    with $FutureModifier<List<TicketItem>>, $FutureProvider<List<TicketItem>> {
   const TicketsProvider._()
     : super(
         from: null,
@@ -36,17 +36,17 @@ final class TicketsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<TicketList>> $createElement(
+  $FutureProviderElement<List<TicketItem>> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<TicketList>> create(Ref ref) {
+  FutureOr<List<TicketItem>> create(Ref ref) {
     return tickets(ref);
   }
 }
 
-String _$ticketsHash() => r'07e0ea8cb94c8d977383a6567145d31508de8c23';
+String _$ticketsHash() => r'bdb6ee71f4480721372c6c3f5d40776e4ad0f587';
 
 @ProviderFor(ticketDetail)
 const ticketDetailProvider = TicketDetailFamily._();
@@ -54,11 +54,11 @@ const ticketDetailProvider = TicketDetailFamily._();
 final class TicketDetailProvider
     extends
         $FunctionalProvider<
-          AsyncValue<TicketDetail>,
-          TicketDetail,
-          FutureOr<TicketDetail>
+          AsyncValue<TicketItem>,
+          TicketItem,
+          FutureOr<TicketItem>
         >
-    with $FutureModifier<TicketDetail>, $FutureProvider<TicketDetail> {
+    with $FutureModifier<TicketItem>, $FutureProvider<TicketItem> {
   const TicketDetailProvider._({
     required TicketDetailFamily super.from,
     required String super.argument,
@@ -82,12 +82,11 @@ final class TicketDetailProvider
 
   @$internal
   @override
-  $FutureProviderElement<TicketDetail> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  $FutureProviderElement<TicketItem> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
 
   @override
-  FutureOr<TicketDetail> create(Ref ref) {
+  FutureOr<TicketItem> create(Ref ref) {
     final argument = this.argument as String;
     return ticketDetail(ref, argument);
   }
@@ -103,10 +102,10 @@ final class TicketDetailProvider
   }
 }
 
-String _$ticketDetailHash() => r'6d8b82a72eab9b0b0ef772f65eae95f978912efa';
+String _$ticketDetailHash() => r'f3f09c4ffcadd9881f8c00c18178ae1590fe9b09';
 
 final class TicketDetailFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<TicketDetail>, String> {
+    with $FunctionalFamilyOverride<FutureOr<TicketItem>, String> {
   const TicketDetailFamily._()
     : super(
         retry: null,

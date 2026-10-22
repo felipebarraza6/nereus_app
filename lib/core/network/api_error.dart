@@ -26,25 +26,29 @@ class ApiError implements Exception {
   }
 
   factory ApiError.fromDio(DioException error) {
+    final status = error.response?.statusCode;
     final data = error.response?.data;
-    if (data is Map) {
+    final isClientError = status != null && status >= 400 && status < 500;
+    if (isClientError && data is Map) {
       final nonField = data['non_field_errors'] ?? data['detail'] ?? data['error'];
-      if (nonField is List && nonField.isNotEmpty) {
+      if (nonField is List && nonField.isNotEmpty && nonField.first is! Map) {
         return ApiError(
           message: nonField.first.toString(),
-          statusCode: error.response?.statusCode,
+          statusCode: status,
         );
       }
       if (nonField is String && nonField.isNotEmpty) {
         return ApiError(
           message: nonField,
-          statusCode: error.response?.statusCode,
+          statusCode: status,
         );
       }
       final fields = <String, List<String>>{};
       for (final entry in data.entries) {
         final value = entry.value;
-        if (value is List) {
+        if (value is List &&
+            value.isNotEmpty &&
+            value.first is String) {
           fields[entry.key.toString()] =
               value.map((e) => e.toString()).toList();
         } else if (value is String) {
@@ -54,15 +58,19 @@ class ApiError implements Exception {
       if (fields.isNotEmpty) {
         return ApiError(
           message: fields.values.first.first,
-          statusCode: error.response?.statusCode,
+          statusCode: status,
           fields: fields,
         );
       }
     }
     if (error.response != null) {
+      if (status != null && status >= 200 && status < 300) {
+        nereusLog('ApiError.fromDio.parse', error);
+        return const ApiError(message: genericMessage);
+      }
       return ApiError(
         message: 'El servidor rechazó la solicitud.',
-        statusCode: error.response?.statusCode,
+        statusCode: status,
       );
     }
     switch (error.type) {

@@ -410,13 +410,13 @@ const deviceEventsProvider = DeviceEventsFamily._();
 final class DeviceEventsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<TelemetryEventList>>,
-          List<TelemetryEventList>,
-          FutureOr<List<TelemetryEventList>>
+          AsyncValue<List<DeviceEvent>>,
+          List<DeviceEvent>,
+          FutureOr<List<DeviceEvent>>
         >
     with
-        $FutureModifier<List<TelemetryEventList>>,
-        $FutureProvider<List<TelemetryEventList>> {
+        $FutureModifier<List<DeviceEvent>>,
+        $FutureProvider<List<DeviceEvent>> {
   const DeviceEventsProvider._({
     required DeviceEventsFamily super.from,
     required int super.argument,
@@ -440,12 +440,12 @@ final class DeviceEventsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<TelemetryEventList>> $createElement(
+  $FutureProviderElement<List<DeviceEvent>> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<TelemetryEventList>> create(Ref ref) {
+  FutureOr<List<DeviceEvent>> create(Ref ref) {
     final argument = this.argument as int;
     return deviceEvents(ref, argument);
   }
@@ -461,10 +461,10 @@ final class DeviceEventsProvider
   }
 }
 
-String _$deviceEventsHash() => r'c41416d58bc09d413979b80bf6a02178282d56cc';
+String _$deviceEventsHash() => r'33377df10d5505ee0f67f0ee0e800d4c8e62145e';
 
 final class DeviceEventsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<TelemetryEventList>>, int> {
+    with $FunctionalFamilyOverride<FutureOr<List<DeviceEvent>>, int> {
   const DeviceEventsFamily._()
     : super(
         retry: nereusNoRetry,
@@ -480,3 +480,42 @@ final class DeviceEventsFamily extends $Family
   @override
   String toString() => r'deviceEventsProvider';
 }
+
+@ProviderFor(clients)
+const clientsProvider = ClientsProvider._();
+
+final class ClientsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ClientItem>>,
+          List<ClientItem>,
+          FutureOr<List<ClientItem>>
+        >
+    with $FutureModifier<List<ClientItem>>, $FutureProvider<List<ClientItem>> {
+  const ClientsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: nereusNoRetry,
+        name: r'clientsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$clientsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<ClientItem>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<ClientItem>> create(Ref ref) {
+    return clients(ref);
+  }
+}
+
+String _$clientsHash() => r'b5de5a6c250bb221c90ecd525e49a1034596971d';

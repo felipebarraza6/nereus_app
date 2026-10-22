@@ -5,6 +5,7 @@ import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
+import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/alerts/providers/alerts_provider.dart';
 
 class AlertsScreen extends ConsumerStatefulWidget {
@@ -26,41 +27,43 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
       backgroundColor: Colors.transparent,
       body: Column(
       children: [
-        GlassAppBar(
-          title: const Text('Alertas'),
+        PageHeader(
+          title: 'Alertas',
+          subtitle: 'Eventos que requieren atención',
           actions: [
             if (summary != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: StatusChip(
-                  label: '${summary.openUnacknowledged} abiertas',
-                  tone: NereusTokens.coral,
-                ),
+              StatusChip(
+                label: '${summary.openUnacknowledged} abiertas',
+                tone: NereusTokens.coral,
               ),
           ],
         ),
-        Wrap(
-          spacing: 8,
-          children: [
-            ChoiceChip(
-              label: const Text('Abiertas'),
-              selected: filter == false,
-              onSelected: (_) =>
-                  ref.read(alertsFilterProvider.notifier).setAcknowledged(false),
-            ),
-            ChoiceChip(
-              label: const Text('Reconocidas'),
-              selected: filter ?? false,
-              onSelected: (_) =>
-                  ref.read(alertsFilterProvider.notifier).setAcknowledged(true),
-            ),
-            ChoiceChip(
-              label: const Text('Todas'),
-              selected: filter == null,
-              onSelected: (_) =>
-                  ref.read(alertsFilterProvider.notifier).setAcknowledged(null),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: NereusTokens.spaceMd),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              FilterPill(
+                label: 'Abiertas',
+                selected: filter == false,
+                onTap: () =>
+                    ref.read(alertsFilterProvider.notifier).setAcknowledged(false),
+              ),
+              FilterPill(
+                label: 'Reconocidas',
+                selected: filter ?? false,
+                onTap: () =>
+                    ref.read(alertsFilterProvider.notifier).setAcknowledged(true),
+              ),
+              FilterPill(
+                label: 'Todas',
+                selected: filter == null,
+                onTap: () =>
+                    ref.read(alertsFilterProvider.notifier).setAcknowledged(null),
+              ),
+            ],
+          ),
         ),
         if (_selected.isNotEmpty)
           Padding(

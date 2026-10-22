@@ -3,7 +3,6 @@ import 'package:nereus_app/core/cache/read_cache.dart';
 import 'package:nereus_app/core/json_util.dart';
 import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
-import 'package:nereus_api_client/nereus_api_client.dart';
 
 Never _rethrowAsApiError(Object error, StackTrace stack) {
   throw ApiError.fromAny(error, stack);
@@ -11,14 +10,11 @@ Never _rethrowAsApiError(Object error, StackTrace stack) {
 
 class TelemetryRepository {
   TelemetryRepository({
-    required IotTelemetryApi api,
     required Dio dio,
     required ReadCache cache,
-  })  : _api = api,
-        _dio = dio,
+  })  : _dio = dio,
         _cache = cache;
 
-  final IotTelemetryApi _api;
   final Dio _dio;
   final ReadCache _cache;
   Future<DeviceOverview>? _overviewInFlight;
@@ -31,8 +27,10 @@ class TelemetryRepository {
   Future<DeviceOverview> _loadOverview({required bool allowStale}) async {
     const key = 'telemetry.overview';
     try {
-      final response = await _api.iotTelemetryDevicesOverviewRetrieve();
-      final json = Map<String, dynamic>.from(response.data ?? {});
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/api/iot-telemetry/devices/overview/',
+      );
+      final json = response.data ?? {};
       await _cache.putJson(key, json);
       return DeviceOverview.fromJson(json);
     } on Object catch (error, stack) {
@@ -52,7 +50,7 @@ class TelemetryRepository {
   }) async {
     const key = 'telemetry.devices';
     try {
-      final response = await _dio.get<Map<String, dynamic>>(
+      final response = await _dio.get<dynamic>(
         '/api/iot-telemetry/devices/',
         queryParameters: {
           'page': page,
@@ -61,13 +59,18 @@ class TelemetryRepository {
           if (isOnline != null) 'is_online': isOnline,
         },
       );
-      final json = response.data ?? {};
-      await _cache.putJson(key, json);
-      return asMapList(json['results']).map(DeviceItem.fromJson).toList();
+      final json = asMap(response.data);
+      await _cache.putJson(
+        key,
+        json.isEmpty && response.data is List
+            ? {'results': response.data}
+            : json,
+      );
+      return asResults(response.data).map(DeviceItem.fromJson).toList();
     } on Object catch (error, stack) {
       final cached = await _cache.getJson(key);
       if (cached != null) {
-        return asMapList(cached['results']).map(DeviceItem.fromJson).toList();
+        return asResults(cached).map(DeviceItem.fromJson).toList();
       }
       _rethrowAsApiError(error, stack);
     }
@@ -108,13 +111,11 @@ class TelemetryRepository {
 
   Future<DeviceCalendar> calendar(int id, {int days = 14}) async {
     try {
-      final response = await _api.iotTelemetryDevicesCalendarRetrieve(
-        id: id,
-        days: days,
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/api/iot-telemetry/devices/$id/calendar/',
+        queryParameters: {'days': days},
       );
-      return DeviceCalendar.fromJson(
-        Map<String, dynamic>.from(response.data ?? {}),
-      );
+      return DeviceCalendar.fromJson(response.data ?? {});
     } on Object catch (error, stack) {
       _rethrowAsApiError(error, stack);
     }
@@ -122,25 +123,15 @@ class TelemetryRepository {
 
   Future<Map<String, LatestValue>> latestBatch(List<int> ids) async {
     try {
-      final response = await _api.iotTelemetryReadingsLatestBatchCreate(
-        iotTelemetryReadingsLatestBatchCreateRequest:
-            IotTelemetryReadingsLatestBatchCreateRequest(
-          deviceIds: ids,
-          hours: 24,
-        ),
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/api/iot-telemetry/readings/latest-batch/',
+        data: {'device_ids': ids, 'hours': 24},
       );
-      final root = response.data ?? {};
-      final data = root['data'] as Map? ?? {};
-      return data.map((key, value) {
-        final map = Map<String, dynamic>.from(value as Map? ?? {});
-        final latest = map['latest'] as Map?;
-        return MapEntry(
-          key.toString(),
-          LatestValue.fromJson(
-            Map<String, dynamic>.from(latest ?? const {}),
-          ),
-        );
-      });
+      final data = asMap(response.data?['data']);
+      return {
+        for (final entry in data.entries)
+          entry.key: LatestValue.fromJson(asMap(asMap(entry.value)['latest'])),
+      };
     } on Object catch (error, stack) {
       _rethrowAsApiError(error, stack);
     }
@@ -152,10 +143,13 @@ class TelemetryRepository {
     String? endDate,
   }) async {
     try {
-      final response = await _api.iotTelemetryReadingsDailyRetrieve(
-        device: '$deviceId',
-        startDate: startDate,
-        endDate: endDate,
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/api/iot-telemetry/readings/daily/',
+        queryParameters: {
+          'device': '$deviceId',
+          if (startDate != null) 'start_date': startDate,
+          if (endDate != null) 'end_date': endDate,
+        },
       );
       final days = (response.data?['days'] as List?) ?? [];
       return [
@@ -187,35 +181,19 @@ class TelemetryRepository {
     };
   }
 
-  Future<PaginatedTelemetryReadingList> readings({
-    required int deviceId,
-    int? variableId,
-    int pageSize = 200,
-  }) async {
-    try {
-      final response = await _api.iotTelemetryReadingsList(
-        device: deviceId,
-        variable: variableId,
-        pageSize: pageSize,
-      );
-      return response.data ??
-          PaginatedTelemetryReadingList(count: 0, results: []);
-    } on Object catch (error, stack) {
-      _rethrowAsApiError(error, stack);
-    }
-  }
-
-  Future<PaginatedTelemetryEventListList> events({
+  Future<List<DeviceEvent>> events({
     int? deviceId,
     int pageSize = 50,
   }) async {
     try {
-      final response = await _api.iotTelemetryEventsList(
-        device: deviceId,
-        pageSize: pageSize,
+      final response = await _dio.get<dynamic>(
+        '/api/iot-telemetry/events/',
+        queryParameters: {
+          'page_size': pageSize,
+          if (deviceId != null) 'device': deviceId,
+        },
       );
-      return response.data ??
-          PaginatedTelemetryEventListList(count: 0, results: []);
+      return asResults(response.data).map(DeviceEvent.fromJson).toList();
     } on Object catch (error, stack) {
       _rethrowAsApiError(error, stack);
     }

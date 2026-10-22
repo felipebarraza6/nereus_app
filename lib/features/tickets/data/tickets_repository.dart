@@ -1,99 +1,92 @@
 import 'package:dio/dio.dart';
 import 'package:nereus_app/core/cache/read_cache.dart';
+import 'package:nereus_app/core/json_util.dart';
 import 'package:nereus_app/core/network/api_error.dart';
-import 'package:nereus_api_client/nereus_api_client.dart';
+import 'package:nereus_app/features/tickets/domain/ticket_models.dart';
 
 class TicketsRepository {
   TicketsRepository({
-    required SupportApi api,
-    required CustomersApi customersApi,
+    required Dio dio,
     required ReadCache cache,
-  })  : _api = api,
-        _customersApi = customersApi,
+  })  : _dio = dio,
         _cache = cache;
 
-  final SupportApi _api;
-  final CustomersApi _customersApi;
+  final Dio _dio;
   final ReadCache _cache;
 
-  Future<List<TicketList>> myTickets({String? status}) async {
+  Never _rethrow(Object error, StackTrace stack) {
+    throw ApiError.fromAny(error, stack);
+  }
+
+  Future<List<TicketItem>> myTickets({String? status}) async {
     const key = 'tickets.mine';
     try {
-      final response = await _api.supportTicketsList(
-        pageSize: 50,
-        status: status,
+      final response = await _dio.get<dynamic>(
+        '/api/support/tickets/',
+        queryParameters: {
+          'page_size': 50,
+          if (status != null) 'status': status,
+        },
       );
-      final results = response.data?.results ?? const <TicketList>[];
-      await _cache.putJson(key, {
-        'results': results.map((e) => e.toJson()).toList(),
-      });
-      return results;
-    } on DioException catch (error) {
+      final json = asMap(response.data);
+      await _cache.putJson(key, json.isEmpty && response.data is List
+          ? {'results': response.data}
+          : json);
+      return asResults(response.data).map(TicketItem.fromJson).toList();
+    } on Object catch (error, stack) {
       final cached = await _cache.getJson(key);
       if (cached != null) {
-        final raw = cached['results'] as List? ?? [];
-        return [
-          for (final item in raw)
-            if (item is Map)
-              TicketList.fromJson(Map<String, dynamic>.from(item)),
-        ];
+        return asResults(cached).map(TicketItem.fromJson).toList();
       }
-      throw ApiError.fromDio(error);
+      _rethrow(error, stack);
     }
   }
 
-  Future<TicketDetail> detail(String id) async {
+  Future<TicketItem> detail(String id) async {
     try {
-      final response = await _api.supportTicketsRetrieve(id: id);
-      final data = response.data;
-      if (data == null) {
-        throw const ApiError(message: 'Ticket no encontrado');
-      }
-      return data;
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/api/support/tickets/$id/',
+      );
+      return TicketItem.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
     }
   }
 
-  Future<TicketList> submit({
+  Future<TicketItem> submit({
     required String subject,
     required String description,
     String categoryCode = 'incidencia',
     String priority = 'MEDIUM',
   }) async {
     try {
-      final response = await _api.supportTicketsSubmitCreate(
-        ticketSubmitRequest: TicketSubmitRequest(
-          subject: subject,
-          description: description,
-          categoryCode: categoryCode,
-          priority: switch (priority) {
-            'LOW' => TicketSubmitRequestPriorityEnum.LOW,
-            'HIGH' => TicketSubmitRequestPriorityEnum.HIGH,
-            'CRITICAL' => TicketSubmitRequestPriorityEnum.CRITICAL,
-            _ => TicketSubmitRequestPriorityEnum.MEDIUM,
-          },
-        ),
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/api/support/tickets/submit/',
+        data: {
+          'subject': subject,
+          'description': description,
+          'category_code': categoryCode,
+          'priority': priority,
+        },
       );
-      final data = response.data;
-      if (data == null) {
-        throw const ApiError(message: 'No se pudo crear el ticket');
-      }
-      return data;
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+      return TicketItem.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
     }
   }
 
-  Future<List<ClientDepth>> clients({String? name}) async {
+  Future<List<ClientItem>> clients({String? name}) async {
     try {
-      final response = await _customersApi.customersClientsList(
-        nameIcontains: name,
-        pageSize: 50,
+      final response = await _dio.get<dynamic>(
+        '/api/customers/clients/',
+        queryParameters: {
+          'page_size': 50,
+          if (name != null && name.isNotEmpty) 'name__icontains': name,
+        },
       );
-      return response.data?.results ?? const <ClientDepth>[];
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+      return asResults(response.data).map(ClientItem.fromJson).toList();
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
     }
   }
 }

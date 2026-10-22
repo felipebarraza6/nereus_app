@@ -72,7 +72,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: Theme.of(context).textTheme.displaySmall,
                       ),
                       const SizedBox(height: 4),
-                      const Text('Telemetría hídrica SmartHydro'),
+                      Text(
+                        'Monitoreo de agua en tiempo real',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                       const SizedBox(height: 24),
                       TextFormField(
                         controller: _email,

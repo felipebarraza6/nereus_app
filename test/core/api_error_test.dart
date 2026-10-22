@@ -13,6 +13,26 @@ void main() {
     expect(error.message, contains('conexión'));
   });
 
+  test('list of maps on HTTP 200 is not a user-facing field error', () {
+    final error = ApiError.fromDio(
+      DioException(
+        requestOptions: RequestOptions(path: '/overview'),
+        type: DioExceptionType.unknown,
+        response: Response<Map<String, dynamic>>(
+          requestOptions: RequestOptions(path: '/overview'),
+          statusCode: 200,
+          data: const {
+            'projects': [
+              {'id': 41, 'name': 'Agricola Nahuen · Agricola Nahuen'},
+            ],
+          },
+        ),
+      ),
+    );
+    expect(error.message, ApiError.genericMessage);
+    expect(userFacingErrorMessage(error), isNot(contains('id: 41')));
+  });
+
   test('parse errors are generic and not network', () {
     final error = ApiError.fromAny(TypeError(), StackTrace.current);
     expect(error.message, ApiError.genericMessage);

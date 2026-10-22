@@ -6,6 +6,7 @@ import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
+import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/devices/providers/devices_provider.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
 
@@ -24,8 +25,12 @@ class DeviceDetailScreen extends ConsumerWidget {
     return detail.when(
       skipLoadingOnReload: true,
       skipLoadingOnRefresh: true,
-      loading: () => const Scaffold(body: ShimmerList()),
+      loading: () => const Scaffold(
+        backgroundColor: Colors.transparent,
+        body: ShimmerList(),
+      ),
       error: (error, _) => Scaffold(
+        backgroundColor: Colors.transparent,
         appBar: const GlassAppBar(title: Text('Dispositivo')),
         body: AsyncBody(
           isLoading: false,
@@ -39,24 +44,50 @@ class DeviceDetailScreen extends ConsumerWidget {
       ),
       data: (data) {
         return Scaffold(
-          appBar: GlassAppBar(title: Text(data.device.name)),
+          backgroundColor: Colors.transparent,
           floatingActionButton: FloatingActionButton.extended(
-            onPressed: () =>
-                context.go('/tickets/new?device=$deviceId'),
+            onPressed: () => context.go('/tickets/new?device=$deviceId'),
             label: const Text('Crear ticket'),
             icon: const Icon(Icons.support_agent),
           ),
           body: ListView(
-            padding: const EdgeInsets.all(NereusTokens.spaceMd),
+            padding: const EdgeInsets.only(bottom: 96),
             children: [
-              Hero(
-                tag: 'device-$deviceId',
+              PageHeader(
+                title: data.device.name,
+                subtitle: data.device.projectName ?? data.device.address,
+                actions: [
+                  IconButton(
+                    tooltip: 'Volver',
+                    onPressed: () => context.go('/devices'),
+                    icon: const Icon(Icons.arrow_back_rounded),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: NereusTokens.spaceMd,
+                ),
                 child: GlassCard(
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          data.device.address ?? data.device.projectName ?? '',
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              data.device.address ??
+                                  data.device.deviceType,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            if (data.device.lastReadingAt != null) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                'Última lectura ${_formatWhen(data.device.lastReadingAt!)}',
+                                style: Theme.of(context).textTheme.labelLarge,
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                       StatusChip(
@@ -69,84 +100,200 @@ class DeviceDetailScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  for (final variable in data.variables)
-                    SizedBox(
-                      width: 160,
-                      child: GlassCard(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(variable.variableType),
-                            Text(
-                              _latestFor(data.latestReadings, variable),
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            Text(variable.name),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
               const SizedBox(height: 16),
-              GlassCard(
-                child: SizedBox(
-                  height: 220,
-                  child: daily.when(
-                    skipLoadingOnReload: true,
-                    skipLoadingOnRefresh: true,
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    error: (error, _) =>
-                        Text(userFacingErrorMessage(error)),
-                    data: (points) => _Chart(points: points),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: NereusTokens.spaceMd,
+                ),
+                child: Text(
+                  'Últimos valores',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: NereusTokens.spaceMd,
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final columns = constraints.maxWidth > 700 ? 4 : 2;
+                    final width =
+                        (constraints.maxWidth - (12 * (columns - 1))) / columns;
+                    if (data.variables.isEmpty) {
+                      return const GlassCard(
+                        child: Text('Este dispositivo no tiene variables.'),
+                      );
+                    }
+                    return Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: [
+                        for (final variable in data.variables)
+                          SizedBox(
+                            width: width,
+                            child: GlassCard(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    variable.name,
+                                    style:
+                                        Theme.of(context).textTheme.labelLarge,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    _latestFor(data.latestReadings, variable),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(fontSize: 24),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    variable.variableType,
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: NereusTokens.spaceMd,
+                ),
+                child: Text(
+                  'Tendencia',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: NereusTokens.spaceMd,
+                ),
+                child: GlassCard(
+                  child: SizedBox(
+                    height: 220,
+                    child: daily.when(
+                      skipLoadingOnReload: true,
+                      skipLoadingOnRefresh: true,
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (error, _) => Center(
+                        child: Text(userFacingErrorMessage(error)),
+                      ),
+                      data: (points) => _Chart(points: points),
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              Text('Calendario', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              calendar.when(
-                skipLoadingOnReload: true,
-                skipLoadingOnRefresh: true,
-                loading: () => const SizedBox(height: 48),
-                error: (error, _) => Text(userFacingErrorMessage(error)),
-                data: (cal) => Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    for (final day in cal.calendar)
-                      StatusChip(
-                        label: day.date.substring(5),
-                        tone: day.hasData
-                            ? NereusTokens.teal
-                            : NereusTokens.inkMuted,
-                      ),
-                  ],
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: NereusTokens.spaceMd,
+                ),
+                child: Text(
+                  'Calendario',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-              const SizedBox(height: 16),
-              Text('Eventos', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: NereusTokens.spaceMd,
+                ),
+                child: calendar.when(
+                  skipLoadingOnReload: true,
+                  skipLoadingOnRefresh: true,
+                  loading: () => const SizedBox(height: 48),
+                  error: (error, _) => Text(userFacingErrorMessage(error)),
+                  data: (cal) => Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final day in cal.calendar)
+                        StatusChip(
+                          label: day.date.length >= 10
+                              ? day.date.substring(5)
+                              : day.date,
+                          tone: day.hasData
+                              ? NereusTokens.teal
+                              : NereusTokens.inkMuted,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: NereusTokens.spaceMd,
+                ),
+                child: Text(
+                  'Historial',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              const SizedBox(height: 8),
               events.when(
                 skipLoadingOnReload: true,
                 skipLoadingOnRefresh: true,
                 loading: () => const SizedBox.shrink(),
-                error: (error, _) => Text(userFacingErrorMessage(error)),
-                data: (items) => Column(
-                  children: [
-                    for (final event in items.take(8))
-                      ListTile(
-                        title: Text(event.title),
-                        subtitle: Text(event.eventTypeDisplay),
-                        dense: true,
-                      ),
-                  ],
+                error: (error, _) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: NereusTokens.spaceMd,
+                  ),
+                  child: Text(userFacingErrorMessage(error)),
                 ),
+                data: (items) {
+                  if (items.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: NereusTokens.spaceMd,
+                      ),
+                      child: GlassCard(
+                        child: Text('Sin eventos recientes.'),
+                      ),
+                    );
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: NereusTokens.spaceMd,
+                    ),
+                    child: Column(
+                      children: [
+                        for (final event in items.take(8)) ...[
+                          GlassCard(
+                            child: ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                event.title.isEmpty
+                                    ? event.eventTypeDisplay
+                                    : event.title,
+                              ),
+                              subtitle: Text(event.eventTypeDisplay),
+                              trailing: event.severity == null
+                                  ? null
+                                  : StatusChip(
+                                      label: event.severity!,
+                                      tone: NereusTokens.lagoon,
+                                    ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -168,6 +315,16 @@ class DeviceDetailScreen extends ConsumerWidget {
   }
 }
 
+String _formatWhen(DateTime value) {
+  final local = value.toLocal();
+  final y = local.year.toString().padLeft(4, '0');
+  final m = local.month.toString().padLeft(2, '0');
+  final d = local.day.toString().padLeft(2, '0');
+  final h = local.hour.toString().padLeft(2, '0');
+  final min = local.minute.toString().padLeft(2, '0');
+  return '$y-$m-$d $h:$min';
+}
+
 class _Chart extends StatelessWidget {
   const _Chart({required this.points});
 
@@ -187,11 +344,16 @@ class _Chart extends StatelessWidget {
           LineChartBarData(
             isCurved: true,
             color: NereusTokens.teal,
+            barWidth: 3,
             spots: [
               for (var i = 0; i < points.length; i++)
                 FlSpot(i.toDouble(), points[i].avgValue ?? 0),
             ],
             dotData: const FlDotData(show: false),
+            belowBarData: BarAreaData(
+              show: true,
+              color: NereusTokens.teal.withValues(alpha: 0.12),
+            ),
           ),
         ],
       ),

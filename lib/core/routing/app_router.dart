@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nereus_app/features/alerts/presentation/alerts_screen.dart';
 import 'package:nereus_app/features/auth/presentation/branch_picker_screen.dart';
+import 'package:nereus_app/features/customers/presentation/clients_screen.dart';
 import 'package:nereus_app/features/auth/presentation/forgot_password_screen.dart';
 import 'package:nereus_app/features/auth/presentation/login_screen.dart';
 import 'package:nereus_app/features/auth/presentation/reset_password_screen.dart';
@@ -84,6 +85,11 @@ GoRouter appRouter(Ref ref) {
                   ),
                 ],
               ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: '/clients', builder: (_, __) => const ClientsScreen()),
             ],
           ),
           StatefulShellBranch(

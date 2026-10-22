@@ -46,11 +46,11 @@ class TicketDetailScreen extends ConsumerWidget {
                       spacing: 8,
                       children: [
                         StatusChip(
-                          label: data.status?.value ?? 'OPEN',
+                          label: data.status.isEmpty ? 'OPEN' : data.status,
                           tone: NereusTokens.teal,
                         ),
                         StatusChip(
-                          label: data.priority?.value ?? 'MEDIUM',
+                          label: data.priority.isEmpty ? 'MEDIUM' : data.priority,
                           tone: NereusTokens.amber,
                         ),
                       ],

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
+import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -17,7 +18,10 @@ class ProfileScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       body: Column(
       children: [
-        const GlassAppBar(title: Text('Perfil')),
+        const PageHeader(
+          title: 'Perfil',
+          subtitle: 'Cuenta y sucursal activa',
+        ),
         Expanded(
           child: ListView(
             padding: const EdgeInsets.all(NereusTokens.spaceMd),

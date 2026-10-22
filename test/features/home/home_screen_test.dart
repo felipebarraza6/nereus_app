@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,7 +39,7 @@ void main() {
 
 class _SessionOverride extends Session {
   @override
-  Future<AuthSession> build() async => const AuthSession(
+  FutureOr<AuthSession> build() => const AuthSession(
         token: 't',
         branchId: '1',
       );
@@ -45,7 +47,7 @@ class _SessionOverride extends Session {
 
 class _DashboardOverride extends Dashboard {
   @override
-  Future<DeviceOverview> build() async {
+  FutureOr<DeviceOverview> build() {
     return const DeviceOverview(
       total: 4,
       online: 3,

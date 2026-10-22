@@ -5,6 +5,7 @@ import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
+import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/tickets/providers/tickets_provider.dart';
 
 class TicketsScreen extends ConsumerWidget {
@@ -17,13 +18,14 @@ class TicketsScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       body: Column(
       children: [
-        GlassAppBar(
-          title: const Text('Tickets'),
+        PageHeader(
+          title: 'Tickets',
+          subtitle: 'Soporte de la sucursal',
           actions: [
             IconButton(
               tooltip: 'Crear ticket',
               onPressed: () => context.go('/tickets/new'),
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add_circle_outline),
             ),
           ],
         ),
@@ -61,10 +63,10 @@ class TicketsScreen extends ConsumerWidget {
                     child: ListTile(
                       title: Text(ticket.subject),
                       subtitle: Text(
-                        '${ticket.ticketNumber} · ${ticket.status ?? ''}',
+                        '${ticket.ticketNumber} · ${ticket.status}',
                       ),
                       trailing: StatusChip(
-                        label: ticket.priority?.value ?? '',
+                        label: ticket.priority,
                         tone: NereusTokens.lagoon,
                       ),
                     ),

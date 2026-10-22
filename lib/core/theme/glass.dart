@@ -164,6 +164,7 @@ class GlassNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 420;
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       child: GlassSurface(
@@ -172,7 +173,10 @@ class GlassNavBar extends StatelessWidget {
           selectedIndex: selectedIndex,
           destinations: destinations,
           onDestinationSelected: onSelect,
-          height: 68,
+          height: compact ? 60 : 68,
+          labelBehavior: compact
+              ? NavigationDestinationLabelBehavior.onlyShowSelected
+              : NavigationDestinationLabelBehavior.alwaysShow,
         ),
       ),
     );
@@ -207,7 +211,7 @@ class _AnimatedWaterBackdropState extends State<AnimatedWaterBackdrop>
     final reduce = MediaQuery.of(context).disableAnimations;
     final colors = dark
         ? const [Color(0xFF071416), Color(0xFF0C2C2E), Color(0xFF12363A)]
-        : const [Color(0xFFF7FCFB), Color(0xFFD9F3EE), Color(0xFFCDEBFA)];
+        : const [Color(0xFFF4FBFA), Color(0xFFE3F4F0), Color(0xFFD7EAF7)];
 
     return AnimatedBuilder(
       animation: _controller,

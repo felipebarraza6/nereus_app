@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nereus_app/core/polling/foreground_poll.dart';
 import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
-import 'package:nereus_api_client/nereus_api_client.dart';
+import 'package:nereus_app/features/tickets/domain/ticket_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'devices_provider.g.dart';
@@ -69,7 +69,11 @@ Future<List<LatestValue>> latestReadings(Ref ref, List<int> ids) async {
 }
 
 @Riverpod(retry: nereusNoRetry)
-Future<List<TelemetryEventList>> deviceEvents(Ref ref, int id) async {
-  final page = await ref.watch(telemetryRepositoryProvider).events(deviceId: id);
-  return page.results;
+Future<List<DeviceEvent>> deviceEvents(Ref ref, int id) {
+  return ref.watch(telemetryRepositoryProvider).events(deviceId: id);
+}
+
+@Riverpod(retry: nereusNoRetry)
+Future<List<ClientItem>> clients(Ref ref) {
+  return ref.watch(ticketsRepositoryProvider).clients();
 }

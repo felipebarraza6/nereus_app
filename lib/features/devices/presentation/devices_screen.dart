@@ -7,6 +7,7 @@ import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
+import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/devices/providers/devices_provider.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
 
@@ -28,7 +29,10 @@ class _DevicesScreenState extends ConsumerState<DevicesScreen> {
       backgroundColor: Colors.transparent,
       body: Column(
       children: [
-        const GlassAppBar(title: Text('Dispositivos')),
+        const PageHeader(
+          title: 'Dispositivos',
+          subtitle: 'Busca, filtra y revisa el estado de cada punto',
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
           child: GlassSurface(
@@ -49,29 +53,30 @@ class _DevicesScreenState extends ConsumerState<DevicesScreen> {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
           child: Wrap(
             spacing: 8,
+            runSpacing: 8,
             children: [
-              ChoiceChip(
-                label: const Text('Todos'),
+              FilterPill(
+                label: 'Todos',
                 selected: query.onlineOnly == null,
-                onSelected: (_) =>
+                onTap: () =>
                     ref.read(deviceQueryControllerProvider.notifier).setOnline(null),
               ),
-              ChoiceChip(
-                label: const Text('En línea'),
+              FilterPill(
+                label: 'En línea',
                 selected: query.onlineOnly ?? false,
-                onSelected: (_) =>
+                onTap: () =>
                     ref.read(deviceQueryControllerProvider.notifier).setOnline(true),
               ),
-              ChoiceChip(
-                label: const Text('Silenciosos'),
+              FilterPill(
+                label: 'Silenciosos',
                 selected: query.onlineOnly == false,
-                onSelected: (_) =>
+                onTap: () =>
                     ref.read(deviceQueryControllerProvider.notifier).setOnline(false),
               ),
-              FilterChip(
-                label: Text(_map ? 'Lista' : 'Mapa'),
+              FilterPill(
+                label: _map ? 'Lista' : 'Mapa',
                 selected: _map,
-                onSelected: (value) => setState(() => _map = value),
+                onTap: () => setState(() => _map = !_map),
               ),
             ],
           ),
