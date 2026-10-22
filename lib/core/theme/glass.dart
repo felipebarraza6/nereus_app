@@ -11,6 +11,9 @@ bool shouldUseGlass(BuildContext context) {
   return true;
 }
 
+bool _isDark(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark;
+
 class GlassSurface extends StatelessWidget {
   const GlassSurface({
     super.key,
@@ -32,22 +35,29 @@ class GlassSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final dark = _isDark(context);
     final glass = shouldUseGlass(context);
-    final tint = scheme.brightness == Brightness.dark
-        ? Colors.white.withValues(alpha: opacity ?? NereusTokens.glassOpacityDark)
-        : Colors.white.withValues(alpha: opacity ?? NereusTokens.glassOpacity);
+    final tint = dark
+        ? NereusTokens.darkPanel.withValues(
+            alpha: opacity ?? NereusTokens.glassOpacityDark,
+          )
+        : NereusTokens.cloud.withValues(
+            alpha: opacity ?? NereusTokens.glassOpacity,
+          );
 
     final panel = DecoratedBox(
       decoration: BoxDecoration(
-        color: glass ? tint : scheme.surface.withValues(alpha: 0.92),
+        color: glass
+            ? tint
+            : scheme.surface.withValues(alpha: dark ? 0.95 : 0.92),
         borderRadius: borderRadius,
         border: Border.all(
           width: NereusTokens.borderWidth,
-          color: Colors.white.withValues(
-            alpha: scheme.brightness == Brightness.dark ? 0.18 : 0.62,
-          ),
+          color: dark
+              ? NereusTokens.darkMuted.withValues(alpha: 0.16)
+              : NereusTokens.mint.withValues(alpha: 0.45),
         ),
-        boxShadow: NereusTokens.elevation1,
+        boxShadow: dark ? NereusTokens.elevation2 : NereusTokens.elevation1,
       ),
       child: padding == null ? child : Padding(padding: padding!, child: child),
     );
@@ -210,13 +220,34 @@ class _AnimatedWaterBackdropState extends State<AnimatedWaterBackdrop>
     final dark = Theme.of(context).brightness == Brightness.dark;
     final reduce = MediaQuery.of(context).disableAnimations;
     final colors = dark
-        ? const [Color(0xFF071416), Color(0xFF0C2C2E), Color(0xFF12363A)]
-        : const [Color(0xFFF4FBFA), Color(0xFFE3F4F0), Color(0xFFD7EAF7)];
+        ? const [
+            NereusTokens.darkCanvas,
+            NereusTokens.darkPanel,
+            NereusTokens.darkRaised,
+          ]
+        : const [
+            NereusTokens.foam,
+            NereusTokens.mist,
+            Color(0xFFD7EAF7),
+          ];
+
+    if (reduce) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: const Alignment(-0.3, -1),
+            end: const Alignment(0.3, 1),
+            colors: colors,
+          ),
+        ),
+        child: widget.child,
+      );
+    }
 
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        final t = reduce ? 0.35 : _controller.value;
+        final t = _controller.value;
         return DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -229,6 +260,51 @@ class _AnimatedWaterBackdropState extends State<AnimatedWaterBackdrop>
         );
       },
       child: widget.child,
+    );
+  }
+}
+
+/// A sidebar shell that adapts its tint to the current brightness.
+///
+/// The desktop rail/sidebar uses a stronger surface than cards so navigation
+/// remains readable against the animated backdrop.
+class GlassSidebar extends StatelessWidget {
+  const GlassSidebar({
+    super.key,
+    required this.child,
+    this.width = 248,
+    this.margin = const EdgeInsets.fromLTRB(10, 10, 0, 10),
+  });
+
+  final Widget child;
+  final double width;
+  final EdgeInsets margin;
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = _isDark(context);
+    return AnimatedContainer(
+      duration: NereusTokens.motionFast,
+      width: width,
+      margin: margin,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: dark
+              ? NereusTokens.darkPanel.withValues(alpha: 0.92)
+              : NereusTokens.cloud.withValues(alpha: 0.78),
+          borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
+          border: Border.all(
+            color: dark
+                ? NereusTokens.darkMuted.withValues(alpha: 0.12)
+                : NereusTokens.mint.withValues(alpha: 0.35),
+          ),
+          boxShadow: dark ? NereusTokens.elevation2 : NereusTokens.elevation1,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
+          child: child,
+        ),
+      ),
     );
   }
 }

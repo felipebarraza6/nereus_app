@@ -25,9 +25,16 @@ class FichasScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       body: Column(
         children: [
-          const PageHeader(
+          PageHeader(
             title: 'Fichas',
             subtitle: 'Tenencias de agua y datos de captación por predio',
+            actions: [
+              TextButton.icon(
+                onPressed: () => context.go('/fichas/admin'),
+                icon: const Icon(Icons.settings_outlined),
+                label: const Text('Administrar'),
+              ),
+            ],
           ),
           Expanded(
             child: AsyncBody(

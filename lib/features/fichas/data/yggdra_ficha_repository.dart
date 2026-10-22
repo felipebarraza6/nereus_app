@@ -57,6 +57,34 @@ class YggdraFichaRepository implements FichaRepository {
   }
 
   @override
+  Future<FichaSection> updateSection(String id, WaterSectionSpec spec) async {
+    try {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        '/api/customers/extra-field-groups/$id/',
+        data: {
+          'name': spec.name,
+          'key': spec.key,
+          'description': spec.description,
+          'color': spec.color,
+          'icon': spec.icon,
+        },
+      );
+      return FichaSection.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
+  @override
+  Future<void> deleteSection(String id) async {
+    try {
+      await _dio.delete<dynamic>('/api/customers/extra-field-groups/$id/');
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
+  @override
   Future<List<FichaField>> fields({String? groupId}) async {
     try {
       final response = await _dio.get<dynamic>(
@@ -98,6 +126,39 @@ class YggdraFichaRepository implements FichaRepository {
         },
       );
       return FichaField.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
+  @override
+  Future<FichaField> updateField(String id, WaterFieldSpec spec) async {
+    try {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        '/api/customers/extra-field-definitions/$id/',
+        data: {
+          'name': spec.name,
+          'key': spec.key,
+          'field_type': spec.fieldType,
+          'unit': spec.unit,
+          'options': [
+            for (final option in spec.options) {'value': option, 'label': option},
+          ],
+          'is_required': spec.required,
+          'display_in_card': true,
+          'is_active': true,
+        },
+      );
+      return FichaField.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
+  @override
+  Future<void> deleteField(String id) async {
+    try {
+      await _dio.delete<dynamic>('/api/customers/extra-field-definitions/$id/');
     } on Object catch (error, stack) {
       _rethrow(error, stack);
     }

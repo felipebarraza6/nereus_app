@@ -49,37 +49,38 @@ abstract final class AppTheme {
         height: 1.1,
       ),
       headlineMedium: TextStyle(
-        fontSize: 28,
+        fontSize: dark ? 28 : 26,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.4,
         color: scheme.onSurface,
         height: 1.15,
       ),
       titleLarge: TextStyle(
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.2,
         color: scheme.onSurface,
       ),
       titleMedium: TextStyle(
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: FontWeight.w600,
         color: scheme.onSurface,
       ),
       bodyLarge: TextStyle(
         fontSize: 16,
-        height: 1.45,
+        height: 1.5,
         color: scheme.onSurface,
       ),
       bodyMedium: TextStyle(
         fontSize: 14,
-        height: 1.45,
-        color: dark ? const Color(0xFFB7D4D1) : NereusTokens.inkMuted,
+        height: 1.5,
+        color: dark ? NereusTokens.darkMuted : NereusTokens.inkMuted,
       ),
-      labelLarge: const TextStyle(
-        fontSize: 13,
+      labelLarge: TextStyle(
+        fontSize: 12,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
+        color: scheme.onSurface,
       ),
     );
 
@@ -109,19 +110,31 @@ abstract final class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: dark
-            ? const Color(0x66FFFFFF)
-            : const Color(0x99FFFFFF),
+            ? NereusTokens.darkRaised.withValues(alpha: 0.6)
+            : NereusTokens.cloud.withValues(alpha: 0.72),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
-          borderSide: BorderSide(color: scheme.outline),
+          borderSide: BorderSide(
+            color: dark
+                ? NereusTokens.darkMuted.withValues(alpha: 0.2)
+                : scheme.outline,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
-          borderSide: BorderSide(color: scheme.outline),
+          borderSide: BorderSide(
+            color: dark
+                ? NereusTokens.darkMuted.withValues(alpha: 0.2)
+                : scheme.outline,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
-          borderSide: BorderSide(color: scheme.primary, width: 1.4),
+          borderSide: BorderSide(color: scheme.primary, width: 1.6),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
+          borderSide: BorderSide(color: scheme.error, width: 1.2),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: NereusTokens.spaceMd,

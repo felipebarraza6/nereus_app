@@ -6,12 +6,20 @@ abstract class FichaRepository {
 
   Future<FichaSection> createSection(WaterSectionSpec spec);
 
+  Future<FichaSection> updateSection(String id, WaterSectionSpec spec);
+
+  Future<void> deleteSection(String id);
+
   Future<List<FichaField>> fields({String? groupId});
 
   Future<FichaField> createField({
     required String groupId,
     required WaterFieldSpec spec,
   });
+
+  Future<FichaField> updateField(String id, WaterFieldSpec spec);
+
+  Future<void> deleteField(String id);
 
   Future<List<FichaValue>> valuesForClient(String clientId);
 

@@ -173,10 +173,13 @@ class FilterPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final dark = scheme.brightness == Brightness.dark;
     return Material(
       color: selected
           ? scheme.primary.withValues(alpha: 0.14)
-          : Colors.white.withValues(alpha: 0.72),
+          : (dark
+              ? scheme.surfaceContainerHighest.withValues(alpha: 0.6)
+              : NereusTokens.cloud.withValues(alpha: 0.72)),
       borderRadius: BorderRadius.circular(NereusTokens.radiusPill),
       child: InkWell(
         onTap: onTap,
@@ -208,27 +211,121 @@ class StatusChip extends StatelessWidget {
     super.key,
     required this.label,
     required this.tone,
+    this.dot = false,
+    this.pulse = false,
   });
 
   final String label;
   final Color tone;
+  final bool dot;
+  final bool pulse;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: tone.withValues(alpha: 0.16),
+        color: tone.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(NereusTokens.radiusPill),
-        border: Border.all(color: tone.withValues(alpha: 0.4)),
+        border: Border.all(color: tone.withValues(alpha: 0.35)),
       ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: tone,
-              fontSize: 12,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (dot) ...[
+            _StatusDot(color: tone, pulse: pulse),
+            const SizedBox(width: 6),
+          ],
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: tone,
+                  fontSize: 12,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatusDot extends StatelessWidget {
+  const _StatusDot({required this.color, this.pulse = false});
+
+  final Color color;
+  final bool pulse;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 7,
+      height: 7,
+      child: pulse
+          ? _PulsingDot(color: color)
+          : DecoratedBox(
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
-      ),
+    );
+  }
+}
+
+class _PulsingDot extends StatefulWidget {
+  const _PulsingDot({required this.color});
+
+  final Color color;
+
+  @override
+  State<_PulsingDot> createState() => _PulsingDotState();
+}
+
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 2),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final reduce = MediaQuery.of(context).disableAnimations;
+    if (reduce) {
+      return DecoratedBox(
+        decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle),
+      );
+    }
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            Opacity(
+              opacity: 0.4 * (1 - _controller.value),
+              child: Transform.scale(
+                scale: 1 + _controller.value * 0.8,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: widget.color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: widget.color,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

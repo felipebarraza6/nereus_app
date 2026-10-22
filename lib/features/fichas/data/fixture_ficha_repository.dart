@@ -34,6 +34,58 @@ class FixtureFichaRepository implements FichaRepository {
   }
 
   @override
+  Future<FichaSection> updateSection(String id, WaterSectionSpec spec) async {
+    final existing = _store.groups[id];
+    final row = {
+      'id': id,
+      'name': spec.name,
+      'key': spec.key,
+      'description': spec.description,
+      'color': spec.color,
+      'icon': spec.icon,
+      'display_order': existing?['display_order'] ?? 0,
+      'is_active': existing?['is_active'] ?? true,
+    };
+    _store.groups[id] = row;
+    return FichaSection.fromJson(row);
+  }
+
+  @override
+  Future<void> deleteSection(String id) async {
+    _store.groups.remove(id);
+    _store.fieldDefs.removeWhere((_, row) => '${row['group']}' == id);
+  }
+
+  @override
+  Future<FichaField> updateField(String id, WaterFieldSpec spec) async {
+    final group = _store.groups.values.firstWhere(
+      (row) => '${row['id']}' == id,
+      orElse: () => const {},
+    );
+    final row = {
+      'id': id,
+      'name': spec.name,
+      'key': spec.key,
+      'field_type': spec.fieldType,
+      'unit': spec.unit ?? '',
+      'options': spec.options,
+      'is_required': spec.required,
+      'group': group['id'],
+      'group_key': group['key'],
+      'group_name': group['name'],
+      'display_in_card': true,
+      'is_active': true,
+    };
+    _store.fieldDefs[id] = row;
+    return FichaField.fromJson(row);
+  }
+
+  @override
+  Future<void> deleteField(String id) async {
+    _store.fieldDefs.remove(id);
+  }
+
+  @override
   Future<List<FichaField>> fields({String? groupId}) async {
     return [
       for (final row in _store.fieldDefs.values)

@@ -41,7 +41,7 @@ final class WaterTemplatesReadyProvider
 }
 
 String _$waterTemplatesReadyHash() =>
-    r'd6035eef204e6681a968b66b21c07d61de58fe41';
+    r'de617bee3deff44ea1ce566f29a6c8d0a0051ea8';
 
 @ProviderFor(fichaSections)
 const fichaSectionsProvider = FichaSectionsProvider._();
@@ -122,6 +122,82 @@ final class FichaFieldsProvider
 }
 
 String _$fichaFieldsHash() => r'4b8c3e95d1a63b4036007a9fa44afc9c07caadc4';
+
+@ProviderFor(fichaFieldsForSection)
+const fichaFieldsForSectionProvider = FichaFieldsForSectionFamily._();
+
+final class FichaFieldsForSectionProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<FichaField>>,
+          List<FichaField>,
+          FutureOr<List<FichaField>>
+        >
+    with $FutureModifier<List<FichaField>>, $FutureProvider<List<FichaField>> {
+  const FichaFieldsForSectionProvider._({
+    required FichaFieldsForSectionFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: nereusNoRetry,
+         name: r'fichaFieldsForSectionProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$fichaFieldsForSectionHash();
+
+  @override
+  String toString() {
+    return r'fichaFieldsForSectionProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<FichaField>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<FichaField>> create(Ref ref) {
+    final argument = this.argument as String;
+    return fichaFieldsForSection(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FichaFieldsForSectionProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$fichaFieldsForSectionHash() =>
+    r'602305ff25c0297cc445258cd64e6c42d0e0491e';
+
+final class FichaFieldsForSectionFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<FichaField>>, String> {
+  const FichaFieldsForSectionFamily._()
+    : super(
+        retry: nereusNoRetry,
+        name: r'fichaFieldsForSectionProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  FichaFieldsForSectionProvider call(String sectionId) =>
+      FichaFieldsForSectionProvider._(argument: sectionId, from: this);
+
+  @override
+  String toString() => r'fichaFieldsForSectionProvider';
+}
 
 @ProviderFor(clientFichaValues)
 const clientFichaValuesProvider = ClientFichaValuesFamily._();

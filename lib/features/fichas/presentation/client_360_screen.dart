@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/providers.dart';
+import 'package:nereus_app/core/theme/breakpoints.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
@@ -13,6 +15,7 @@ import 'package:nereus_app/features/customers/domain/client_models.dart';
 import 'package:nereus_app/features/fichas/domain/ficha_models.dart';
 import 'package:nereus_app/features/fichas/presentation/ficha_ui.dart';
 import 'package:nereus_app/features/fichas/providers/fichas_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Client360Screen extends ConsumerWidget {
   const Client360Screen({super.key, required this.clientId});
@@ -33,7 +36,7 @@ class Client360Screen extends ConsumerWidget {
     final allFields = fields.value ?? const <FichaField>[];
     final allSections = sections.value ?? const <FichaSection>[];
     final allValues = values.value ?? const <FichaValue>[];
-    final wide = fichaWide(context);
+    final wide = context.screenWidth >= 960;
 
     Widget identity() {
       return GlassCard(
@@ -96,9 +99,46 @@ class Client360Screen extends ConsumerWidget {
               field,
         ];
 
+    String? valueOf(FichaField field) {
+      for (final value in allValues) {
+        if (value.fieldId == field.id || value.fieldKey == field.key) {
+          return value.displayValue;
+        }
+      }
+      return null;
+    }
+
+    Future<void> onEditField(FichaField field) async {
+      final current = valueOf(field);
+      final newValue = await showDialog<String>(
+        context: context,
+        builder: (context) => _FieldValueDialog(
+          field: field,
+          initialValue: current,
+        ),
+      );
+      if (newValue == null) return;
+      try {
+        final existing = allValues
+            .where(
+              (v) => v.fieldId == field.id || v.fieldKey == field.key,
+            )
+            .firstOrNull;
+        await ref.read(fichaRepositoryProvider).upsertValue(
+              clientId: clientId,
+              fieldId: field.id,
+              value: newValue,
+              existingId: existing?.id,
+            );
+        ref.invalidate(clientFichaValuesProvider(clientId));
+      } on Object catch (error) {
+        if (context.mounted) showFriendlyError(context, error);
+      }
+    }
+
     final sectionCards = [
       for (final section in allSections)
-        FichaSectionCard(
+        _EditableSectionCard(
           section: section,
           fields: of(section),
           values: allValues,
@@ -110,6 +150,7 @@ class Client360Screen extends ConsumerWidget {
           onAction: () => context.go(
             '/levantamientos?seccion=${section.key}',
           ),
+          onEditField: onEditField,
         ),
     ];
 
@@ -184,17 +225,9 @@ class Client360Screen extends ConsumerWidget {
                       child: Column(
                         children: [
                           for (final item in respuestas)
-                            ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: const Icon(Icons.task_alt_outlined),
-                              title: Text(
-                                'Levantamiento ${item.surveyId}',
-                              ),
-                              subtitle: Text(
-                                item.createdAt == null
-                                    ? 'Sin fecha'
-                                    : dateFormat.format(item.createdAt!),
-                              ),
+                            _HistoryTile(
+                              respuesta: item,
+                              dateFormat: dateFormat,
                             ),
                         ],
                       ),
@@ -213,15 +246,229 @@ class Client360Screen extends ConsumerWidget {
     try {
       final template =
           await ref.read(fichaRepositoryProvider).ensurePdfTemplate();
-      await ref.read(fichaRepositoryProvider).generatePdf(
+      final fileUrl = await ref.read(fichaRepositoryProvider).generatePdf(
             clientId: clientId,
             templateId: template.id,
           );
-      if (context.mounted) {
-        showFriendlyOk(context, 'La ficha PDF quedó lista.');
+      final uri = Uri.tryParse(fileUrl);
+      if (uri == null) {
+        if (context.mounted) {
+          showFriendlyError(
+            context,
+            const ApiError(message: 'El servidor no devolvió una URL válida.'),
+          );
+        }
+        return;
+      }
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched && context.mounted) {
+        showFriendlyError(
+          context,
+          const ApiError(message: 'No se pudo abrir el PDF.'),
+        );
       }
     } on Object catch (error) {
       if (context.mounted) showFriendlyError(context, error);
     }
+  }
+}
+
+class _EditableSectionCard extends StatelessWidget {
+  const _EditableSectionCard({
+    required this.section,
+    required this.fields,
+    required this.values,
+    this.actionLabel,
+    this.onAction,
+    required this.onEditField,
+  });
+
+  final FichaSection section;
+  final List<FichaField> fields;
+  final List<FichaValue> values;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+  final ValueChanged<FichaField> onEditField;
+
+  @override
+  Widget build(BuildContext context) {
+    return FichaSectionCard(
+      section: section,
+      fields: fields,
+      values: values,
+      actionLabel: actionLabel,
+      onAction: onAction,
+      secondaryLabel: 'Editar valores',
+      onSecondary: () => _editSection(context),
+    );
+  }
+
+  Future<void> _editSection(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        builder: (context, scrollController) {
+          return ListView(
+            controller: scrollController,
+            padding: const EdgeInsets.all(NereusTokens.spaceMd),
+            children: [
+              Text(
+                'Editar ${section.name}',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              for (final field in fields)
+                _EditableFieldLine(
+                  field: field,
+                  values: values,
+                  onEdit: () => onEditField(field),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _EditableFieldLine extends StatelessWidget {
+  const _EditableFieldLine({
+    required this.field,
+    required this.values,
+    required this.onEdit,
+  });
+
+  final FichaField field;
+  final List<FichaValue> values;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    String? value;
+    for (final item in values) {
+      if (item.fieldId == field.id || item.fieldKey == field.key) {
+        value = item.displayValue;
+        break;
+      }
+    }
+    return InkWell(
+      onTap: onEdit,
+      borderRadius: BorderRadius.circular(NereusTokens.radiusSm),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: FichaFieldLine(field: field, value: value),
+      ),
+    );
+  }
+}
+
+class _FieldValueDialog extends StatelessWidget {
+  const _FieldValueDialog({required this.field, this.initialValue});
+
+  final FichaField field;
+  final String? initialValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = TextEditingController(text: initialValue ?? '');
+    return AlertDialog(
+      title: Text(field.name),
+      content: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: 'Ingresa el valor',
+          suffixText: field.unit,
+        ),
+        autofocus: true,
+        maxLines: field.fieldType.toUpperCase() == 'TEXT' ? 4 : 1,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancelar'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+          child: const Text('Guardar'),
+        ),
+      ],
+    );
+  }
+}
+
+class _HistoryTile extends StatefulWidget {
+  const _HistoryTile({
+    required this.respuesta,
+    required this.dateFormat,
+  });
+
+  final LevantamientoRespuesta respuesta;
+  final DateFormat dateFormat;
+
+  @override
+  State<_HistoryTile> createState() => _HistoryTileState();
+}
+
+class _HistoryTileState extends State<_HistoryTile> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final answers = widget.respuesta.answers.entries.toList();
+    return Column(
+      children: [
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.task_alt_outlined),
+          title: Text('Levantamiento ${widget.respuesta.surveyId}'),
+          subtitle: Text(
+            widget.respuesta.createdAt == null
+                ? 'Sin fecha'
+                : widget.dateFormat.format(widget.respuesta.createdAt!),
+          ),
+          trailing: IconButton(
+            onPressed: () => setState(() => _expanded = !_expanded),
+            icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+          ),
+        ),
+        if (_expanded && answers.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(left: 40, bottom: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final entry in answers)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            entry.key,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            '${entry.value}',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+      ],
+    );
   }
 }

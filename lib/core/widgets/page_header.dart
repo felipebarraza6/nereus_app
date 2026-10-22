@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nereus_app/core/theme/breakpoints.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 
 class PageHeader extends StatelessWidget {
@@ -16,12 +17,13 @@ class PageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
+    final compact = context.isCompact;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
         NereusTokens.spaceMd,
-        NereusTokens.spaceSm,
+        compact ? NereusTokens.spaceSm : NereusTokens.spaceMd,
         NereusTokens.spaceMd,
-        NereusTokens.spaceSm,
+        compact ? NereusTokens.spaceSm : NereusTokens.spaceMd,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,15 +32,33 @@ class PageHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: text.headlineMedium),
-                if (subtitle != null) ...[
+                Text(
+                  title,
+                  style: compact ? text.titleLarge : text.headlineMedium,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (subtitle != null && subtitle!.isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  Text(subtitle!, style: text.bodyMedium),
+                  Text(
+                    subtitle!,
+                    style: text.bodyMedium,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ],
             ),
           ),
-          ...actions,
+          if (actions.isNotEmpty) ...[
+            const SizedBox(width: NereusTokens.spaceSm),
+            Wrap(
+              spacing: NereusTokens.spaceSm,
+              runSpacing: NereusTokens.spaceSm,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: actions,
+            ),
+          ],
         ],
       ),
     );

@@ -148,7 +148,22 @@ class PdfFichaTemplate {
   }
 }
 
-enum LevantamientoQuestionType { text, number, boolean, select, date, url, file }
+enum LevantamientoQuestionType {
+  text,
+  number,
+  integer,
+  decimal,
+  boolean,
+  select,
+  multiselect,
+  date,
+  datetime,
+  url,
+  email,
+  phone,
+  file,
+  image,
+}
 
 class LevantamientoQuestion {
   const LevantamientoQuestion({
@@ -178,10 +193,7 @@ class LevantamientoQuestion {
     return LevantamientoQuestion(
       id: asString(json['id']),
       label: asString(json['label']),
-      type: LevantamientoQuestionType.values.firstWhere(
-        (value) => value.name == rawType,
-        orElse: () => LevantamientoQuestionType.text,
-      ),
+      type: _parseQuestionType(rawType),
       required: json['required'] == true,
       options: [
         if (json['options'] is List)
@@ -190,6 +202,13 @@ class LevantamientoQuestion {
       ],
     );
   }
+}
+
+LevantamientoQuestionType _parseQuestionType(String rawType) {
+  return LevantamientoQuestionType.values.firstWhere(
+    (value) => value.name == rawType,
+    orElse: () => LevantamientoQuestionType.text,
+  );
 }
 
 class LevantamientoTemplate {

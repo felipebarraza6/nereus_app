@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nereus_app/core/debug/nereus_log.dart';
 import 'package:nereus_app/core/polling/foreground_poll.dart';
 import 'package:nereus_app/core/providers.dart';
@@ -32,8 +33,20 @@ Future<List<FichaField>> fichaFields(Ref ref) async {
 }
 
 @Riverpod(retry: nereusNoRetry)
+Future<List<FichaField>> fichaFieldsForSection(Ref ref, String sectionId) async {
+  await ref.watch(waterTemplatesReadyProvider.future);
+  return ref.watch(fichaRepositoryProvider).fields(groupId: sectionId);
+}
+
+@Riverpod(retry: nereusNoRetry)
 Future<List<FichaValue>> clientFichaValues(Ref ref, String clientId) {
   return ref.watch(fichaRepositoryProvider).valuesForClient(clientId);
+}
+
+/// Invalidate sections/fields after any mutation.
+void invalidateFichaCache(WidgetRef ref) {
+  ref.invalidate(fichaSectionsProvider);
+  ref.invalidate(fichaFieldsProvider);
 }
 
 @Riverpod(retry: nereusNoRetry)

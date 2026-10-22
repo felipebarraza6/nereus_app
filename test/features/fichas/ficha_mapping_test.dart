@@ -29,8 +29,39 @@ void main() {
     ]);
     expect(questions, hasLength(2));
     expect(questions.first.id, 'derechos_ls');
-    expect(questions.first.type, LevantamientoQuestionType.number);
+    expect(questions.first.type, LevantamientoQuestionType.decimal);
     expect(questions.last.type, LevantamientoQuestionType.boolean);
+  });
+
+  test('questionTypeForField maps all supported types', () {
+    expect(questionTypeForField('TEXT'), LevantamientoQuestionType.text);
+    expect(questionTypeForField('INTEGER'), LevantamientoQuestionType.integer);
+    expect(questionTypeForField('DECIMAL'), LevantamientoQuestionType.decimal);
+    expect(questionTypeForField('MULTISELECT'),
+        LevantamientoQuestionType.multiselect);
+    expect(questionTypeForField('DATETIME'), LevantamientoQuestionType.datetime);
+    expect(questionTypeForField('EMAIL'), LevantamientoQuestionType.email);
+    expect(questionTypeForField('PHONE'), LevantamientoQuestionType.phone);
+  });
+
+  test('validateAnswer checks required and format', () {
+    const requiredNumber = LevantamientoQuestion(
+      id: 'n',
+      label: 'N',
+      type: LevantamientoQuestionType.number,
+      required: true,
+    );
+    expect(validateAnswer(requiredNumber, null), 'Este campo es obligatorio');
+    expect(validateAnswer(requiredNumber, '12'), isNull);
+    expect(validateAnswer(requiredNumber, 'abc'), 'Ingresa un número válido');
+
+    const email = LevantamientoQuestion(
+      id: 'e',
+      label: 'E',
+      type: LevantamientoQuestionType.email,
+    );
+    expect(validateAnswer(email, 'hola'), 'Ingresa un correo válido');
+    expect(validateAnswer(email, 'a@b.cl'), isNull);
   });
 
   test('matchAnswer reads key, short id, then full id', () {

@@ -64,7 +64,7 @@ class SelectField<T> extends StatelessWidget {
   final String label;
   final T? value;
   final List<T> items;
-  final ValueChanged<T?> onChanged;
+  final ValueChanged<T?>? onChanged;
   final String Function(T value)? itemLabel;
 
   @override
@@ -82,7 +82,7 @@ class SelectField<T> extends StatelessWidget {
             child: Text(itemLabel?.call(item) ?? '$item'),
           ),
       ],
-      onChanged: onChanged,
+      onChanged: onChanged == null ? null : (value) => onChanged!(value),
     );
   }
 }

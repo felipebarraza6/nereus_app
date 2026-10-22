@@ -10,6 +10,7 @@ import 'package:nereus_app/features/auth/providers/session_controller.dart';
 import 'package:nereus_app/features/catalog/presentation/catalog_screen.dart';
 import 'package:nereus_app/features/customers/presentation/clients_screen.dart';
 import 'package:nereus_app/features/fichas/presentation/client_360_screen.dart';
+import 'package:nereus_app/features/fichas/presentation/ficha_admin_screen.dart';
 import 'package:nereus_app/features/fichas/presentation/fichas_screen.dart';
 import 'package:nereus_app/features/fichas/presentation/levantamiento_fill_screen.dart';
 import 'package:nereus_app/features/fichas/presentation/levantamientos_screen.dart';
@@ -111,6 +112,10 @@ GoRouter appRouter(Ref ref) {
                 ],
               ),
               GoRoute(path: '/fichas', builder: (_, __) => const FichasScreen()),
+              GoRoute(
+                path: '/fichas/admin',
+                builder: (_, __) => const FichaAdminScreen(),
+              ),
               GoRoute(
                 path: '/levantamientos',
                 builder: (_, __) => const LevantamientosScreen(),
