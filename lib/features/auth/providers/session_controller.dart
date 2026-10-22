@@ -1,3 +1,4 @@
+import 'package:nereus_app/core/debug/nereus_log.dart';
 import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/features/auth/domain/session_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -60,8 +61,13 @@ class Session extends _$Session {
   Future<AuthSession> build() async {
     final repo = ref.watch(authRepositoryProvider);
     ref.watch(sessionControllerProvider).onUnauthorized = logout;
-    final restored = await repo.restore();
-    return AuthSession(token: restored.token, branchId: restored.branchId);
+    try {
+      final restored = await repo.restore();
+      return AuthSession(token: restored.token, branchId: restored.branchId);
+    } on Object catch (error, stack) {
+      nereusLog('Session.restore', error, stack);
+      return const AuthSession();
+    }
   }
 
   Future<LoginComplete> login(String email, String password) async {
@@ -93,7 +99,11 @@ class Session extends _$Session {
   }
 
   Future<void> logout() async {
-    await ref.read(authRepositoryProvider).logout();
+    try {
+      await ref.read(authRepositoryProvider).logout();
+    } on Object catch (error, stack) {
+      nereusLog('Session.logout', error, stack);
+    }
     state = const AsyncData(AuthSession());
   }
 }

@@ -21,6 +21,22 @@ void main() {
     expect(headers, isNotNull);
   });
 
+  test('unauthenticated request still proceeds', () async {
+    var sent = false;
+    final dio = Dio()
+      ..interceptors.add(AuthInterceptor(SessionController()))
+      ..httpClientAdapter = _Adapter((options) async {
+        sent = true;
+        expect(options.headers.containsKey('Authorization'), isFalse);
+        return ResponseBody.fromString('{"message":"ok"}', 200);
+      });
+    await dio.post<void>(
+      '/api/accounts/users/forgot_password/',
+      data: const {'email': 'a@b.cl'},
+    );
+    expect(sent, isTrue);
+  });
+
   test('logs out on 401', () async {
     final session = SessionController();
     var loggedOut = false;

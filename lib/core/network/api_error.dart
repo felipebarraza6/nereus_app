@@ -45,10 +45,33 @@ class ApiError implements Exception {
         );
       }
     }
-    return ApiError(
-      message: error.message ?? 'Error de red',
-      statusCode: error.response?.statusCode,
-    );
+    if (error.response != null) {
+      return ApiError(
+        message: 'El servidor rechazó la solicitud.',
+        statusCode: error.response?.statusCode,
+      );
+    }
+    switch (error.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+      case DioExceptionType.connectionError:
+        return const ApiError(
+          message: 'No hay conexión. Revisa tu red e intenta de nuevo.',
+        );
+      case DioExceptionType.cancel:
+        return const ApiError(message: 'La solicitud se canceló.');
+      case DioExceptionType.badCertificate:
+        return const ApiError(
+          message: 'No pudimos validar la conexión segura.',
+        );
+      case DioExceptionType.badResponse:
+      case DioExceptionType.unknown:
+      case DioExceptionType.transformTimeout:
+        return ApiError(
+          message: error.message ?? 'No pudimos completar la solicitud.',
+        );
+    }
   }
 
   @override
