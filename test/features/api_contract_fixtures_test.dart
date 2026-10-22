@@ -232,7 +232,7 @@ void main() {
     });
 
     test('client with nested branch', () {
-      final client = ClientItem.fromJson({
+      final client = ClientItem.fromJson(const {
         'id': 41,
         'name': 'Agricola Nahuen',
         'email': 'contacto@nahuen.cl',

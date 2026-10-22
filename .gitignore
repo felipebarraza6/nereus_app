@@ -38,6 +38,7 @@ openapi-generator/
 .pub/
 /build/
 /coverage/
+test/goldens/failures/
 
 # Symbolication related
 app.*.symbols

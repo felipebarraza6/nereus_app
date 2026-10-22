@@ -25,6 +25,7 @@ void main() {
               GoRoute(path: '/', builder: (_, __) => const HomeScreen()),
               GoRoute(path: '/devices', builder: (_, __) => const SizedBox()),
               GoRoute(path: '/alerts', builder: (_, __) => const SizedBox()),
+              GoRoute(path: '/tour', builder: (_, __) => const SizedBox()),
             ],
           ),
         ),
