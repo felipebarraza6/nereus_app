@@ -90,6 +90,14 @@ abstract final class AppTheme {
       fontFamily: 'Roboto',
       scaffoldBackgroundColor: Colors.transparent,
       visualDensity: VisualDensity.standard,
+      dataTableTheme: DataTableThemeData(
+        headingTextStyle: text.labelLarge,
+        dataTextStyle: text.bodyMedium?.copyWith(fontSize: 13),
+        headingRowHeight: 36,
+        dataRowMinHeight: 36,
+        dataRowMaxHeight: 44,
+        dividerThickness: 0.6,
+      ),
       splashFactory: InkSparkle.splashFactory,
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,

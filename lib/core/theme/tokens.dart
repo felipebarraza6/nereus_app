@@ -29,7 +29,7 @@ abstract final class NereusTokens {
   static const double spaceXl = 32;
 
   static const double blurSigma = 22;
-  static const double glassOpacity = 0.78;
+  static const double glassOpacity = 0.88;
   static const double glassOpacityDark = 0.22;
   static const double borderWidth = 1;
 
