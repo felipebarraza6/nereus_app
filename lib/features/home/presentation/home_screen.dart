@@ -42,7 +42,7 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: NereusTokens.spaceLg),
               children: [
                 PageHeader(
-                  title: isClient ? 'Mi monitoreo' : 'Operación',
+                  title: isClient ? 'Mi monitoreo' : 'Inicio',
                   subtitle: name,
                 ),
                 Padding(
@@ -51,41 +51,70 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   child: LayoutBuilder(
                     builder: (context, constraints) {
-                      final wide = constraints.maxWidth > 700;
-                      return GridView.count(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisCount: wide ? 4 : 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: wide ? 1.45 : 1.35,
+                      final cols = constraints.maxWidth > 700 ? 4 : 2;
+                      const gap = 12.0;
+                      final itemWidth =
+                          (constraints.maxWidth - gap * (cols - 1)) / cols;
+                      Widget cell(_Kpi kpi) =>
+                          SizedBox(width: itemWidth, child: kpi);
+                      return Wrap(
+                        spacing: gap,
+                        runSpacing: gap,
                         children: [
-                          _Kpi(
-                            label: 'En línea',
-                            value: '${data.online}',
-                            icon: Icons.wifi,
-                            onTap: () => context.go('/devices'),
+                          cell(
+                            _Kpi(
+                              label: 'En línea',
+                              value: '${data.online}',
+                              icon: Icons.wifi,
+                              onTap: () => context.go('/devices'),
+                            ),
                           ),
-                          _Kpi(
-                            label: 'Silenciosos',
-                            value: '${data.offline}',
-                            icon: Icons.wifi_off,
-                            onTap: () => context.go('/devices'),
+                          cell(
+                            _Kpi(
+                              label: 'Silenciosos',
+                              value: '${data.offline}',
+                              icon: Icons.wifi_off,
+                              onTap: () => context.go('/devices'),
+                            ),
                           ),
-                          _Kpi(
-                            label: 'Alertas activas',
-                            value: '${data.openAlerts}',
-                            icon: Icons.notification_important_outlined,
-                            onTap: () => context.go('/alerts'),
+                          cell(
+                            _Kpi(
+                              label: 'Alertas activas',
+                              value: '${data.openAlerts}',
+                              icon: Icons.notification_important_outlined,
+                              onTap: () => context.go('/alerts'),
+                            ),
                           ),
-                          _Kpi(
-                            label: 'Lecturas hoy',
-                            value: '${data.readingsToday}',
-                            icon: Icons.speed,
+                          cell(
+                            _Kpi(
+                              label: 'Lecturas hoy',
+                              value: '${data.readingsToday}',
+                              icon: Icons.speed,
+                            ),
                           ),
                         ],
                       );
                     },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    NereusTokens.spaceMd,
+                    20,
+                    NereusTokens.spaceMd,
+                    0,
+                  ),
+                  child: GlassCard(
+                    onTap: () => context.go('/tour'),
+                    child: const ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.route_outlined),
+                      title: Text('Recorrido guiado'),
+                      subtitle: Text(
+                        'Producto · unidad · cliente · configuración · operación',
+                      ),
+                      trailing: Icon(Icons.chevron_right),
+                    ),
                   ),
                 ),
                 if (data.projects.isNotEmpty) ...[
@@ -147,17 +176,23 @@ class _Kpi extends StatelessWidget {
       semanticLabel: '$label $value',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Theme.of(context).colorScheme.primary),
-          const Spacer(),
-          FittedBox(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 22),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineMedium,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );

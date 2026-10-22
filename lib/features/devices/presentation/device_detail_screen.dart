@@ -2,11 +2,18 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nereus_app/core/access.dart';
 import 'package:nereus_app/core/network/api_error.dart';
+import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
+import 'package:nereus_app/core/widgets/confirm_dialog.dart';
 import 'package:nereus_app/core/widgets/page_header.dart';
+import 'package:nereus_app/features/auth/providers/session_controller.dart';
+import 'package:nereus_app/features/catalog/providers/journey_providers.dart';
+import 'package:nereus_app/features/devices/presentation/device_config_form.dart';
+import 'package:nereus_app/features/devices/presentation/device_form.dart';
 import 'package:nereus_app/features/devices/providers/devices_provider.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
 
@@ -21,6 +28,10 @@ class DeviceDetailScreen extends ConsumerWidget {
     final calendar = ref.watch(deviceCalendarProvider(deviceId));
     final daily = ref.watch(deviceDailyProvider(deviceId));
     final events = ref.watch(deviceEventsProvider(deviceId));
+    final configs = ref.watch(deviceConfigsProvider(deviceId));
+    final compliance = ref.watch(deviceComplianceProvider(deviceId));
+    final access = Access(ref.watch(sessionProvider).value);
+    final canWrite = access.canWrite(NereusModules.iotTelemetry);
 
     return detail.when(
       skipLoadingOnReload: true,
@@ -57,6 +68,16 @@ class DeviceDetailScreen extends ConsumerWidget {
                 title: data.device.name,
                 subtitle: data.device.projectName ?? data.device.address,
                 actions: [
+                  if (canWrite)
+                    IconButton(
+                      tooltip: 'Editar',
+                      onPressed: () => showEntitySheet<void>(
+                        context: context,
+                        title: 'Editar equipo',
+                        child: DeviceForm(existing: data.device),
+                      ),
+                      icon: const Icon(Icons.edit_outlined),
+                    ),
                   IconButton(
                     tooltip: 'Volver',
                     onPressed: () => context.go('/devices'),
@@ -95,6 +116,88 @@ class DeviceDetailScreen extends ConsumerWidget {
                         tone: data.device.isOnline
                             ? NereusTokens.teal
                             : NereusTokens.amber,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: NereusTokens.spaceMd,
+                ),
+                child: GlassCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Configuración de esta unidad',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Escalas, offset y máximos son por dispositivo, no por modelo de catálogo.',
+                      ),
+                      const SizedBox(height: 8),
+                      configs.when(
+                        skipLoadingOnReload: true,
+                        skipLoadingOnRefresh: true,
+                        loading: () => const SizedBox(height: 8),
+                        error: (error, _) => Text(userFacingErrorMessage(error)),
+                        data: (items) {
+                          final cfg = items.isEmpty ? null : items.first;
+                          return Text(
+                            cfg == null
+                                ? 'Sin DeviceConfig todavía.'
+                                : 'Offset ${cfg.levelOffset ?? '—'} · máx. caudal ${cfg.maxFlowLs ?? '—'} L/s',
+                          );
+                        },
+                      ),
+                      if (canWrite) ...[
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          children: [
+                            FilledButton.tonal(
+                              onPressed: () => showEntitySheet<void>(
+                                context: context,
+                                title: 'Configurar unidad',
+                                child: DeviceConfigForm(
+                                  deviceId: deviceId,
+                                  existing: configs.asData != null &&
+                                          configs.asData!.value.isNotEmpty
+                                      ? configs.asData!.value.first
+                                      : null,
+                                ),
+                              ),
+                              child: const Text('Offsets y máximos'),
+                            ),
+                            OutlinedButton(
+                              onPressed: () => showEntitySheet<void>(
+                                context: context,
+                                title: 'Variable / escala',
+                                child: VariableForm(deviceId: deviceId),
+                              ),
+                              child: const Text('Agregar variable'),
+                            ),
+                          ],
+                        ),
+                      ],
+                      const SizedBox(height: 12),
+                      compliance.when(
+                        skipLoadingOnReload: true,
+                        skipLoadingOnRefresh: true,
+                        loading: () => const SizedBox.shrink(),
+                        error: (_, __) => const SizedBox.shrink(),
+                        data: (items) {
+                          if (items.isEmpty) {
+                            return const Text('Sin configuración DGA/SMA.');
+                          }
+                          final item = items.first;
+                          return Text(
+                            'DGA ${item.sendDga ? 'activo' : 'inactivo'} · SMA ${item.sendSma ? 'activo' : 'inactivo'} · código ${item.codeDga ?? '—'} (solo lectura)',
+                          );
+                        },
                       ),
                     ],
                   ),

@@ -3,11 +3,17 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:nereus_app/core/access.dart';
 import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
+import 'package:nereus_app/core/widgets/confirm_dialog.dart';
+import 'package:nereus_app/core/widgets/nereus_table.dart';
 import 'package:nereus_app/core/widgets/page_header.dart';
+import 'package:nereus_app/features/auth/providers/session_controller.dart';
+import 'package:nereus_app/features/catalog/providers/journey_providers.dart';
+import 'package:nereus_app/features/devices/presentation/device_form.dart';
 import 'package:nereus_app/features/devices/providers/devices_provider.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
 
@@ -25,13 +31,40 @@ class _DevicesScreenState extends ConsumerState<DevicesScreen> {
   Widget build(BuildContext context) {
     final devices = ref.watch(devicesProvider);
     final query = ref.watch(deviceQueryControllerProvider);
+    final access = Access(ref.watch(sessionProvider).value);
+    final canWrite = access.canWrite(NereusModules.iotTelemetry);
+    final wide = MediaQuery.sizeOf(context).width >= 960;
     return Scaffold(
       backgroundColor: Colors.transparent,
+      floatingActionButton: canWrite && !wide
+          ? FloatingActionButton.extended(
+              onPressed: () => _openCreate(context),
+              icon: const Icon(Icons.add),
+              label: const Text('Equipo'),
+            )
+          : null,
       body: Column(
       children: [
-        const PageHeader(
-          title: 'Dispositivos',
-          subtitle: 'Busca, filtra y revisa el estado de cada punto',
+        PageHeader(
+          title: 'Operación',
+          subtitle: 'Puntos de captación IoT, lecturas y estado',
+          actions: [
+            if (canWrite)
+              TextButton(
+                onPressed: () => showEntitySheet<void>(
+                  context: context,
+                  title: 'Nuevo proyecto',
+                  child: const ProjectForm(),
+                ),
+                child: const Text('Proyecto'),
+              ),
+            if (canWrite && wide)
+              FilledButton.icon(
+                onPressed: () => _openCreate(context),
+                icon: const Icon(Icons.add, size: 18),
+                label: const Text('Equipo'),
+              ),
+          ],
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -44,6 +77,7 @@ class _DevicesScreenState extends ConsumerState<DevicesScreen> {
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
                 filled: false,
+                prefixIcon: Icon(Icons.search, size: 18),
               ),
               onChanged: ref.read(deviceQueryControllerProvider.notifier).setSearch,
             ),
@@ -107,6 +141,42 @@ class _DevicesScreenState extends ConsumerState<DevicesScreen> {
                 );
               }
               if (_map) return _DeviceMap(items: items);
+              if (wide) {
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  child: GlassSurface(
+                    borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
+                    child: NereusTable<DeviceItem>(
+                  rows: items,
+                  onRowTap: (device) => context.go('/devices/${device.id}'),
+                  columns: [
+                    NereusColumn(id: 'name', label: 'Equipo', cell: (d) => d.name),
+                    NereusColumn(
+                      id: 'project',
+                      label: 'Proyecto',
+                      cell: (d) => d.projectName ?? '—',
+                    ),
+                    NereusColumn(
+                      id: 'type',
+                      label: 'Tipo',
+                      cell: (d) => d.deviceType,
+                    ),
+                    NereusColumn(
+                      id: 'status',
+                      label: 'Estado',
+                      cell: (d) => d.isOnline ? 'En línea' : 'Silencioso',
+                    ),
+                    NereusColumn(
+                      id: 'vars',
+                      label: 'Vars',
+                      numeric: true,
+                      cell: (d) => '${d.variablesCount ?? 0}',
+                    ),
+                  ],
+                    ),
+                  ),
+                );
+              }
               return ListView.separated(
                 padding: const EdgeInsets.all(NereusTokens.spaceMd),
                 itemCount: items.length,
@@ -142,6 +212,16 @@ class _DevicesScreenState extends ConsumerState<DevicesScreen> {
 }
 
 void _noop() {}
+
+extension on _DevicesScreenState {
+  Future<void> _openCreate(BuildContext context) {
+    return showEntitySheet<void>(
+      context: context,
+      title: 'Nuevo equipo / punto',
+      child: const DeviceForm(),
+    );
+  }
+}
 
 class _DeviceMap extends StatelessWidget {
   const _DeviceMap({required this.items});

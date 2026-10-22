@@ -33,7 +33,7 @@ final class DashboardProvider
   Dashboard create() => Dashboard();
 }
 
-String _$dashboardHash() => r'89ca2d1dd450bb457fc2935e7dc48e8d1bfb0c1b';
+String _$dashboardHash() => r'dad75acf5bc47c7d305c1d45f0861a6de213cfeb';
 
 abstract class _$Dashboard extends $AsyncNotifier<DeviceOverview> {
   FutureOr<DeviceOverview> build();

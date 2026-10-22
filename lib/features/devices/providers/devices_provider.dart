@@ -75,5 +75,5 @@ Future<List<DeviceEvent>> deviceEvents(Ref ref, int id) {
 
 @Riverpod(retry: nereusNoRetry)
 Future<List<ClientItem>> clients(Ref ref) {
-  return ref.watch(ticketsRepositoryProvider).clients();
+  return ref.watch(customersRepositoryProvider).list();
 }

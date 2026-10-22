@@ -3,20 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nereus_app/features/alerts/presentation/alerts_screen.dart';
 import 'package:nereus_app/features/auth/presentation/branch_picker_screen.dart';
-import 'package:nereus_app/features/customers/presentation/clients_screen.dart';
 import 'package:nereus_app/features/auth/presentation/forgot_password_screen.dart';
 import 'package:nereus_app/features/auth/presentation/login_screen.dart';
 import 'package:nereus_app/features/auth/presentation/reset_password_screen.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
+import 'package:nereus_app/features/catalog/presentation/catalog_screen.dart';
+import 'package:nereus_app/features/customers/presentation/clients_screen.dart';
 import 'package:nereus_app/features/devices/presentation/device_detail_screen.dart';
 import 'package:nereus_app/features/devices/presentation/devices_screen.dart';
+import 'package:nereus_app/features/equipment/presentation/equipment_screen.dart';
 import 'package:nereus_app/features/home/presentation/home_shell.dart';
 import 'package:nereus_app/features/home/presentation/home_screen.dart';
+import 'package:nereus_app/features/inventory/presentation/inventory_screen.dart';
+import 'package:nereus_app/features/org/presentation/org_screen.dart';
+import 'package:nereus_app/features/points/presentation/points_screen.dart';
 import 'package:nereus_app/features/profile/presentation/profile_screen.dart';
 import 'package:nereus_app/features/settings/presentation/settings_screen.dart';
 import 'package:nereus_app/features/tickets/presentation/ticket_create_screen.dart';
 import 'package:nereus_app/features/tickets/presentation/ticket_detail_screen.dart';
 import 'package:nereus_app/features/tickets/presentation/tickets_screen.dart';
+import 'package:nereus_app/features/tour/presentation/tour_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
@@ -69,6 +75,39 @@ GoRouter appRouter(Ref ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(path: '/home', builder: (_, __) => const HomeScreen()),
+              GoRoute(path: '/tour', builder: (_, __) => const TourScreen()),
+              GoRoute(path: '/alerts', builder: (_, __) => const AlertsScreen()),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: '/catalog', builder: (_, __) => const CatalogScreen()),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/inventory',
+                builder: (_, __) => const InventoryScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: '/clients', builder: (_, __) => const ClientsScreen()),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: '/points', builder: (_, __) => const PointsScreen()),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/equipment',
+                builder: (_, __) => const EquipmentScreen(),
+              ),
             ],
           ),
           StatefulShellBranch(
@@ -85,16 +124,6 @@ GoRouter appRouter(Ref ref) {
                   ),
                 ],
               ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(path: '/clients', builder: (_, __) => const ClientsScreen()),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(path: '/alerts', builder: (_, __) => const AlertsScreen()),
             ],
           ),
           StatefulShellBranch(
@@ -128,6 +157,10 @@ GoRouter appRouter(Ref ref) {
                   GoRoute(
                     path: 'settings',
                     builder: (_, __) => const SettingsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'org',
+                    builder: (_, __) => const OrgScreen(),
                   ),
                 ],
               ),

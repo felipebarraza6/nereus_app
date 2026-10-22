@@ -37,6 +37,24 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               GlassCard(
+                onTap: () => context.go('/profile/org'),
+                child: const ListTile(
+                  leading: Icon(Icons.groups_outlined),
+                  title: Text('Usuarios, roles y MQTT'),
+                  trailing: Icon(Icons.chevron_right),
+                ),
+              ),
+              const SizedBox(height: 12),
+              GlassCard(
+                onTap: () => context.go('/tour'),
+                child: const ListTile(
+                  leading: Icon(Icons.route_outlined),
+                  title: Text('Recorrido'),
+                  trailing: Icon(Icons.chevron_right),
+                ),
+              ),
+              const SizedBox(height: 12),
+              GlassCard(
                 onTap: () => context.go('/profile/settings'),
                 child: const ListTile(
                   leading: Icon(Icons.settings_outlined),

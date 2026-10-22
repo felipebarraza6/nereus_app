@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:nereus_app/core/cache/read_cache.dart';
 import 'package:nereus_app/core/json_util.dart';
 import 'package:nereus_app/core/network/api_error.dart';
+import 'package:nereus_app/features/catalog/domain/journey_models.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
 
 Never _rethrowAsApiError(Object error, StackTrace stack) {
@@ -194,6 +195,229 @@ class TelemetryRepository {
         },
       );
       return asResults(response.data).map(DeviceEvent.fromJson).toList();
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<List<TelemetryProjectItem>> projects() async {
+    try {
+      final response = await _dio.get<dynamic>(
+        '/api/iot-telemetry/projects/',
+        queryParameters: {'page_size': 100},
+      );
+      return asResults(response.data)
+          .map(TelemetryProjectItem.fromJson)
+          .toList();
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<TelemetryProjectItem> createProject(Map<String, dynamic> body) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/api/iot-telemetry/projects/',
+        data: body,
+      );
+      return TelemetryProjectItem.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<TelemetryProjectItem> updateProject(
+    String id,
+    Map<String, dynamic> body,
+  ) async {
+    try {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        '/api/iot-telemetry/projects/$id/',
+        data: body,
+      );
+      return TelemetryProjectItem.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<void> deleteProject(String id) async {
+    try {
+      await _dio.delete<void>('/api/iot-telemetry/projects/$id/');
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<Map<String, dynamic>> createDevice(Map<String, dynamic> body) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/api/iot-telemetry/devices/',
+        data: body,
+      );
+      return response.data ?? {};
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<Map<String, dynamic>> updateDevice(
+    int id,
+    Map<String, dynamic> body,
+  ) async {
+    try {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        '/api/iot-telemetry/devices/$id/',
+        data: body,
+      );
+      return response.data ?? {};
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<void> deleteDevice(int id) async {
+    try {
+      await _dio.delete<void>('/api/iot-telemetry/devices/$id/');
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<List<DeviceConfigItem>> deviceConfigs({int? deviceId}) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        '/api/iot-telemetry/device-configs/',
+        queryParameters: {
+          'page_size': 50,
+          if (deviceId != null) 'device': deviceId,
+        },
+      );
+      return asResults(response.data).map(DeviceConfigItem.fromJson).toList();
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<DeviceConfigItem> saveDeviceConfig({
+    String? id,
+    required Map<String, dynamic> body,
+  }) async {
+    try {
+      final response = id == null
+          ? await _dio.post<Map<String, dynamic>>(
+              '/api/iot-telemetry/device-configs/',
+              data: body,
+            )
+          : await _dio.patch<Map<String, dynamic>>(
+              '/api/iot-telemetry/device-configs/$id/',
+              data: body,
+            );
+      return DeviceConfigItem.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<List<VariableItem>> variables({int? deviceId}) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        '/api/iot-telemetry/variables/',
+        queryParameters: {
+          'page_size': 100,
+          if (deviceId != null) 'device': deviceId,
+        },
+      );
+      return asResults(response.data).map(VariableItem.fromJson).toList();
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<VariableItem> saveVariable({
+    String? id,
+    required Map<String, dynamic> body,
+  }) async {
+    try {
+      final response = id == null
+          ? await _dio.post<Map<String, dynamic>>(
+              '/api/iot-telemetry/variables/',
+              data: body,
+            )
+          : await _dio.patch<Map<String, dynamic>>(
+              '/api/iot-telemetry/variables/$id/',
+              data: body,
+            );
+      return VariableItem.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<void> deleteVariable(String id) async {
+    try {
+      await _dio.delete<void>('/api/iot-telemetry/variables/$id/');
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<List<ProviderItem>> providers() async {
+    try {
+      final response = await _dio.get<dynamic>(
+        '/api/iot-telemetry/providers/',
+        queryParameters: {'page_size': 50},
+      );
+      return asResults(response.data).map(ProviderItem.fromJson).toList();
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<List<BrokerItem>> mqttBrokers() async {
+    try {
+      final response = await _dio.get<dynamic>(
+        '/api/iot-telemetry/mqtt-brokers/',
+        queryParameters: {'page_size': 20},
+      );
+      return asResults(response.data).map(BrokerItem.fromJson).toList();
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<BrokerItem> saveBroker({
+    String? id,
+    required Map<String, dynamic> body,
+  }) async {
+    try {
+      final response = id == null
+          ? await _dio.post<Map<String, dynamic>>(
+              '/api/iot-telemetry/mqtt-brokers/',
+              data: body,
+            )
+          : await _dio.patch<Map<String, dynamic>>(
+              '/api/iot-telemetry/mqtt-brokers/$id/',
+              data: body,
+            );
+      return BrokerItem.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
+    }
+  }
+
+  Future<List<ComplianceSnapshot>> complianceConfigs({int? deviceId}) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        '/api/iot-telemetry/compliance-configs/',
+        queryParameters: {
+          'page_size': 50,
+          if (deviceId != null) 'device': deviceId,
+        },
+      );
+      return asResults(response.data)
+          .map(ComplianceSnapshot.fromJson)
+          .toList();
     } on Object catch (error, stack) {
       _rethrowAsApiError(error, stack);
     }

@@ -11,6 +11,10 @@ import 'package:nereus_app/core/network/session_controller.dart';
 import 'package:nereus_app/core/storage/secure_store.dart';
 import 'package:nereus_app/features/alerts/data/alerts_repository.dart';
 import 'package:nereus_app/features/auth/data/auth_repository.dart';
+import 'package:nereus_app/features/catalog/data/inventory_repository.dart';
+import 'package:nereus_app/features/customers/data/customers_repository.dart';
+import 'package:nereus_app/features/equipment/data/equipment_repository.dart';
+import 'package:nereus_app/features/org/data/org_repository.dart';
 import 'package:nereus_app/features/telemetry/data/telemetry_repository.dart';
 import 'package:nereus_app/features/tickets/data/tickets_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -99,6 +103,32 @@ TicketsRepository ticketsRepository(Ref ref) {
     dio: ref.watch(dioProvider),
     cache: ref.watch(readCacheProvider),
   );
+}
+
+@Riverpod(keepAlive: true)
+InventoryRepository inventoryRepository(Ref ref) {
+  return InventoryRepository(
+    dio: ref.watch(dioProvider),
+    cache: ref.watch(readCacheProvider),
+  );
+}
+
+@Riverpod(keepAlive: true)
+CustomersRepository customersRepository(Ref ref) {
+  return CustomersRepository(
+    dio: ref.watch(dioProvider),
+    cache: ref.watch(readCacheProvider),
+  );
+}
+
+@Riverpod(keepAlive: true)
+EquipmentRepository equipmentRepository(Ref ref) {
+  return EquipmentRepository(dio: ref.watch(dioProvider));
+}
+
+@Riverpod(keepAlive: true)
+OrgRepository orgRepository(Ref ref) {
+  return OrgRepository(dio: ref.watch(dioProvider));
 }
 
 @riverpod
