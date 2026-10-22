@@ -9,6 +9,10 @@ import 'package:nereus_app/features/auth/presentation/reset_password_screen.dart
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
 import 'package:nereus_app/features/catalog/presentation/catalog_screen.dart';
 import 'package:nereus_app/features/customers/presentation/clients_screen.dart';
+import 'package:nereus_app/features/fichas/presentation/client_360_screen.dart';
+import 'package:nereus_app/features/fichas/presentation/fichas_screen.dart';
+import 'package:nereus_app/features/fichas/presentation/levantamiento_fill_screen.dart';
+import 'package:nereus_app/features/fichas/presentation/levantamientos_screen.dart';
 import 'package:nereus_app/features/devices/presentation/device_detail_screen.dart';
 import 'package:nereus_app/features/devices/presentation/devices_screen.dart';
 import 'package:nereus_app/features/equipment/presentation/equipment_screen.dart';
@@ -94,7 +98,32 @@ GoRouter appRouter(Ref ref) {
           ),
           StatefulShellBranch(
             routes: [
-              GoRoute(path: '/clients', builder: (_, __) => const ClientsScreen()),
+              GoRoute(
+                path: '/clients',
+                builder: (_, __) => const ClientsScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) => Client360Screen(
+                      clientId: state.pathParameters['id'] ?? '',
+                    ),
+                  ),
+                ],
+              ),
+              GoRoute(path: '/fichas', builder: (_, __) => const FichasScreen()),
+              GoRoute(
+                path: '/levantamientos',
+                builder: (_, __) => const LevantamientosScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'fill/:id',
+                    builder: (context, state) => LevantamientoFillScreen(
+                      surveyId: state.pathParameters['id'] ?? '',
+                      clientId: state.uri.queryParameters['client'],
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           StatefulShellBranch(

@@ -70,6 +70,7 @@ class SelectField<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<T>(
+      isExpanded: true,
       // DropdownButtonFormField still uses `value` in this Flutter SDK.
       // ignore: deprecated_member_use
       value: value,

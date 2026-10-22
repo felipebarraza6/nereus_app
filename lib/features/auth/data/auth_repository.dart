@@ -12,6 +12,7 @@ class AuthRepository {
     required SecureStore store,
     required SessionController session,
     required ReadCache cache,
+    this.isFixture = false,
   })  : _dio = dio,
         _store = store,
         _session = session,
@@ -21,6 +22,39 @@ class AuthRepository {
   final SecureStore _store;
   final SessionController _session;
   final ReadCache _cache;
+  final bool isFixture;
+
+  static LoginComplete demoSession() {
+    return LoginComplete.fromJson(const {
+      'token': 'fixture-token',
+      'user': {
+        'id': 1,
+        'email': 'demo@smarthydro.app',
+        'full_name': 'Demo Nereus',
+        'is_superuser': true,
+      },
+      'branches': [
+        {
+          'branch_id': 1,
+          'branch_name': 'Sucursal demo',
+          'role_code': 'ADM',
+          'role_name': 'Administrador',
+          'is_active': true,
+        },
+      ],
+      'permissions': {
+        'enabled_apps': [
+          'customers',
+          'iot_telemetry',
+          'support',
+          'inventory',
+          'equipment',
+          'branches',
+          'accounts',
+        ],
+      },
+    });
+  }
 
   static ApiError _asApiError(Object error, [StackTrace? stack]) {
     nereusLog('AuthRepository', error, stack);
@@ -33,6 +67,16 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
+    if (isFixture) {
+      final login = demoSession();
+      _session.token = login.token;
+      try {
+        await _store.writeToken(login.token);
+      } on Object catch (error, stack) {
+        nereusLog('AuthRepository.writeToken', error, stack);
+      }
+      return login;
+    }
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '/api/accounts/users/login_complete/',

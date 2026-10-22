@@ -49,6 +49,26 @@ void main() {
     );
   }
 
+  test('fixture login does not call the API', () async {
+    final store = _Store();
+    final session = SessionController();
+    final dio = Dio()
+      ..httpClientAdapter = _Adapter((options) async {
+        fail('fixture login must not hit ${options.path}');
+      });
+    final repo = AuthRepository(
+      dio: dio,
+      store: store,
+      session: session,
+      cache: _Cache(),
+      isFixture: true,
+    );
+    final login = await repo.login(email: 'x', password: 'y');
+    expect(login.token, 'fixture-token');
+    expect(store.token, 'fixture-token');
+    expect(login.user.email, 'demo@smarthydro.app');
+  });
+
   test('login stores token from login_complete', () async {
     final store = _Store();
     final session = SessionController();

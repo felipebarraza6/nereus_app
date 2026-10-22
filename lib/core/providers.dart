@@ -5,6 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nereus_app/core/cache/app_database.dart';
 import 'package:nereus_app/core/cache/read_cache.dart';
 import 'package:nereus_app/core/config/app_config.dart';
+import 'package:nereus_app/features/fichas/data/fixture_ficha_repository.dart';
+import 'package:nereus_app/features/fichas/data/fixture_levantamiento_repository.dart';
+import 'package:nereus_app/features/fichas/data/fixture_store.dart';
+import 'package:nereus_app/features/fichas/data/yggdra_ficha_repository.dart';
+import 'package:nereus_app/features/fichas/data/yggdra_levantamiento_repository.dart';
+import 'package:nereus_app/features/fichas/domain/ficha_repository.dart';
 import 'package:nereus_app/core/debug/nereus_log.dart';
 import 'package:nereus_app/core/network/dio_factory.dart';
 import 'package:nereus_app/core/network/session_controller.dart';
@@ -72,12 +78,24 @@ Dio dio(Ref ref) {
 }
 
 @Riverpod(keepAlive: true)
+FixtureStore fixtureStore(Ref ref) => FixtureStore.seeded();
+
+@Riverpod(keepAlive: true)
+class DataMode extends _$DataMode {
+  @override
+  NereusDataMode build() => ref.watch(appConfigProvider).dataMode;
+
+  void useFixture() => state = NereusDataMode.fixture;
+}
+
+@Riverpod(keepAlive: true)
 AuthRepository authRepository(Ref ref) {
   return AuthRepository(
     dio: ref.watch(dioProvider),
     store: ref.watch(secureStoreProvider),
     session: ref.watch(sessionControllerProvider),
     cache: ref.watch(readCacheProvider),
+    isFixture: ref.watch(dataModeProvider) == NereusDataMode.fixture,
   );
 }
 
@@ -115,10 +133,32 @@ InventoryRepository inventoryRepository(Ref ref) {
 
 @Riverpod(keepAlive: true)
 CustomersRepository customersRepository(Ref ref) {
+  if (ref.watch(dataModeProvider) == NereusDataMode.fixture) {
+    return CustomersRepository.fixture(ref.watch(fixtureStoreProvider));
+  }
   return CustomersRepository(
     dio: ref.watch(dioProvider),
     cache: ref.watch(readCacheProvider),
   );
+}
+
+@Riverpod(keepAlive: true)
+FichaRepository fichaRepository(Ref ref) {
+  if (ref.watch(dataModeProvider) == NereusDataMode.fixture) {
+    return FixtureFichaRepository(ref.watch(fixtureStoreProvider));
+  }
+  return YggdraFichaRepository(
+    dio: ref.watch(dioProvider),
+    cache: ref.watch(readCacheProvider),
+  );
+}
+
+@Riverpod(keepAlive: true)
+LevantamientoRepository levantamientoRepository(Ref ref) {
+  if (ref.watch(dataModeProvider) == NereusDataMode.fixture) {
+    return FixtureLevantamientoRepository(ref.watch(fixtureStoreProvider));
+  }
+  return YggdraLevantamientoRepository(dio: ref.watch(dioProvider));
 }
 
 @Riverpod(keepAlive: true)

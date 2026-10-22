@@ -9,7 +9,8 @@ import 'package:nereus_app/features/auth/providers/session_controller.dart';
 import 'package:nereus_app/features/catalog/providers/journey_providers.dart';
 import 'package:nereus_app/features/customers/presentation/client_form.dart';
 import 'package:nereus_app/features/devices/providers/devices_provider.dart';
-import 'package:nereus_app/features/tickets/domain/ticket_models.dart';
+import 'package:go_router/go_router.dart';
+import 'package:nereus_app/features/customers/domain/client_models.dart';
 
 class ClientsScreen extends ConsumerWidget {
   const ClientsScreen({super.key});
@@ -55,7 +56,7 @@ class ClientsScreen extends ConsumerWidget {
           cell: (r) => r.isActive ? 'Activo' : 'Inactivo',
         ),
       ],
-      onOpen: canWrite ? openForm : null,
+      onOpen: (row) => context.go('/clients/${row.id}'),
       detailBuilder: (row) => ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -64,6 +65,10 @@ class ClientsScreen extends ConsumerWidget {
           Text(row.email ?? 'Sin email'),
           Text(row.phone ?? 'Sin teléfono'),
           Text(row.address ?? 'Sin dirección'),
+          FilledButton(
+            onPressed: () => context.go('/clients/${row.id}'),
+            child: const Text('Abrir ficha'),
+          ),
           if (canWrite) ...[
             const SizedBox(height: 16),
             FilledButton.tonal(

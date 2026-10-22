@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
+import 'package:nereus_app/core/config/app_config.dart';
+import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -25,6 +27,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _email.dispose();
     _password.dispose();
     super.dispose();
+  }
+
+  Future<void> _enterDemo() async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      ref.read(dataModeProvider.notifier).useFixture();
+      ref.invalidate(authRepositoryProvider);
+      await ref.read(sessionProvider.notifier).login(
+            'demo@smarthydro.app',
+            'demo',
+          );
+    } on Object catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _error = error is ApiError
+            ? error.message
+            : 'No pudimos abrir la demostración.';
+      });
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   Future<void> _submit() async {
@@ -126,6 +152,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         onPressed: () => context.go('/forgot-password'),
                         child: const Text('¿Olvidaste tu contraseña?'),
                       ),
+                      if (ref.watch(appConfigProvider).debug ||
+                          ref.watch(dataModeProvider) == NereusDataMode.fixture)
+                        TextButton(
+                          onPressed: _busy ? null : _enterDemo,
+                          child: const Text('Entrar con datos de demostración'),
+                        ),
                     ],
                   ),
                 ),

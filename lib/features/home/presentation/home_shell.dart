@@ -6,6 +6,7 @@ import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
+import 'package:nereus_app/core/widgets/debug_origin_banner.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
 import 'package:nereus_app/features/devices/providers/devices_provider.dart';
 
@@ -55,6 +56,20 @@ const shellDestinations = [
     section: 'Red',
   ),
   ShellDest(
+    path: '/fichas',
+    label: 'Fichas',
+    icon: Icons.assignment_outlined,
+    selectedIcon: Icons.assignment,
+    section: 'Red',
+  ),
+  ShellDest(
+    path: '/levantamientos',
+    label: 'Levantamientos',
+    icon: Icons.fact_check_outlined,
+    selectedIcon: Icons.assignment_turned_in,
+    section: 'Red',
+  ),
+  ShellDest(
     path: '/points',
     label: 'Puntos',
     icon: Icons.place_outlined,
@@ -91,23 +106,31 @@ const shellDestinations = [
   ),
 ];
 
-const mobileDestinations = [0, 6, 3, 7, 8];
+const mobileDestinations = [0, 8, 3, 9, 10];
 
 int destinationIndexFor(String path) {
   if (path.startsWith('/catalog')) return 1;
   if (path.startsWith('/inventory')) return 2;
   if (path.startsWith('/clients')) return 3;
-  if (path.startsWith('/points')) return 4;
-  if (path.startsWith('/equipment')) return 5;
-  if (path.startsWith('/devices') || path.startsWith('/alerts')) return 6;
-  if (path.startsWith('/tickets')) return 7;
-  if (path.startsWith('/profile') || path.startsWith('/settings')) return 8;
+  if (path.startsWith('/fichas')) return 4;
+  if (path.startsWith('/levantamientos')) return 5;
+  if (path.startsWith('/points')) return 6;
+  if (path.startsWith('/equipment')) return 7;
+  if (path.startsWith('/devices') || path.startsWith('/alerts')) return 8;
+  if (path.startsWith('/tickets')) return 9;
+  if (path.startsWith('/profile') || path.startsWith('/settings')) return 10;
   return 0;
 }
 
 List<String> breadcrumbsFor(String path) {
   if (path.startsWith('/devices/')) return ['Operación', 'Equipo'];
   if (path.startsWith('/tickets/')) return ['Tickets', 'Detalle'];
+  if (path.startsWith('/clients/') && path != '/clients') {
+    return ['Clientes', 'Ficha'];
+  }
+  if (path.startsWith('/levantamientos/fill')) {
+    return ['Levantamientos', 'Terreno'];
+  }
   if (path == '/tour') return ['Inicio', 'Recorrido'];
   if (path == '/alerts') return ['Operación', 'Alertas'];
   if (path == '/profile/settings') return ['Ajustes', 'Preferencias'];
@@ -138,10 +161,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   }
 
   void _go(int index) {
-    widget.navigationShell.goBranch(
-      index,
-      initialLocation: index == widget.navigationShell.currentIndex,
-    );
+    context.go(shellDestinations[index].path);
   }
 
   void _submitSearch(String raw) {
@@ -170,6 +190,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           child: Scaffold(
             body: Column(
               children: [
+                const DebugOriginBanner(),
                 OfflineBanner(offline: offline),
                 Expanded(
                   child: wide

@@ -307,6 +307,100 @@ final class DioProvider extends $FunctionalProvider<Dio, Dio, Dio>
 
 String _$dioHash() => r'caa143f409534bc2a98f15c4de704d3ddc2dbaf8';
 
+@ProviderFor(fixtureStore)
+const fixtureStoreProvider = FixtureStoreProvider._();
+
+final class FixtureStoreProvider
+    extends $FunctionalProvider<FixtureStore, FixtureStore, FixtureStore>
+    with $Provider<FixtureStore> {
+  const FixtureStoreProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'fixtureStoreProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$fixtureStoreHash();
+
+  @$internal
+  @override
+  $ProviderElement<FixtureStore> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  FixtureStore create(Ref ref) {
+    return fixtureStore(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(FixtureStore value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<FixtureStore>(value),
+    );
+  }
+}
+
+String _$fixtureStoreHash() => r'5bf93044b475b8f7e00d1b58eab008066a7e48ac';
+
+@ProviderFor(DataMode)
+const dataModeProvider = DataModeProvider._();
+
+final class DataModeProvider
+    extends $NotifierProvider<DataMode, NereusDataMode> {
+  const DataModeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'dataModeProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$dataModeHash();
+
+  @$internal
+  @override
+  DataMode create() => DataMode();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(NereusDataMode value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<NereusDataMode>(value),
+    );
+  }
+}
+
+String _$dataModeHash() => r'f2d3f1b1b6d278936cec0e40df949cf5f092d410';
+
+abstract class _$DataMode extends $Notifier<NereusDataMode> {
+  NereusDataMode build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<NereusDataMode, NereusDataMode>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<NereusDataMode, NereusDataMode>,
+              NereusDataMode,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
 @ProviderFor(authRepository)
 const authRepositoryProvider = AuthRepositoryProvider._();
 
@@ -346,7 +440,7 @@ final class AuthRepositoryProvider
   }
 }
 
-String _$authRepositoryHash() => r'97ccafaf8b85abcfc652c87185bf3386e3d3eee9';
+String _$authRepositoryHash() => r'5b936c83d4433f1d252d0da6887473b0f176d72b';
 
 @ProviderFor(telemetryRepository)
 const telemetryRepositoryProvider = TelemetryRepositoryProvider._();
@@ -583,7 +677,97 @@ final class CustomersRepositoryProvider
 }
 
 String _$customersRepositoryHash() =>
-    r'39a0d28d9a15361aff69f76e29f7c6b4fba84a75';
+    r'd0b225560db4b957aba2431c2d8097a4e068f4b2';
+
+@ProviderFor(fichaRepository)
+const fichaRepositoryProvider = FichaRepositoryProvider._();
+
+final class FichaRepositoryProvider
+    extends
+        $FunctionalProvider<FichaRepository, FichaRepository, FichaRepository>
+    with $Provider<FichaRepository> {
+  const FichaRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'fichaRepositoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$fichaRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<FichaRepository> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  FichaRepository create(Ref ref) {
+    return fichaRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(FichaRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<FichaRepository>(value),
+    );
+  }
+}
+
+String _$fichaRepositoryHash() => r'8f8c3fab71e296c3ba053288a2a23e508e251a22';
+
+@ProviderFor(levantamientoRepository)
+const levantamientoRepositoryProvider = LevantamientoRepositoryProvider._();
+
+final class LevantamientoRepositoryProvider
+    extends
+        $FunctionalProvider<
+          LevantamientoRepository,
+          LevantamientoRepository,
+          LevantamientoRepository
+        >
+    with $Provider<LevantamientoRepository> {
+  const LevantamientoRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'levantamientoRepositoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$levantamientoRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<LevantamientoRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  LevantamientoRepository create(Ref ref) {
+    return levantamientoRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(LevantamientoRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<LevantamientoRepository>(value),
+    );
+  }
+}
+
+String _$levantamientoRepositoryHash() =>
+    r'895f5287cb88ba9b65a4e5709138c2bb88e11fab';
 
 @ProviderFor(equipmentRepository)
 const equipmentRepositoryProvider = EquipmentRepositoryProvider._();
