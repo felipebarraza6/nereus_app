@@ -4,26 +4,28 @@ import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/network/session_controller.dart';
 import 'package:nereus_app/core/storage/secure_store.dart';
 import 'package:nereus_app/features/auth/domain/session_models.dart';
-import 'package:nereus_api_client/nereus_api_client.dart';
 
 class AuthRepository {
   AuthRepository({
     required Dio dio,
-    required AccountsApi accountsApi,
     required SecureStore store,
     required SessionController session,
     required ReadCache cache,
   })  : _dio = dio,
-        _accountsApi = accountsApi,
         _store = store,
         _session = session,
         _cache = cache;
 
   final Dio _dio;
-  final AccountsApi _accountsApi;
   final SecureStore _store;
   final SessionController _session;
   final ReadCache _cache;
+
+  static ApiError _asApiError(Object error) {
+    if (error is ApiError) return error;
+    if (error is DioException) return ApiError.fromDio(error);
+    return const ApiError(message: 'Error de red. Intenta de nuevo.');
+  }
 
   Future<LoginComplete> login({
     required String email,
@@ -49,18 +51,20 @@ class AuthRepository {
         'permissions': data['permissions'],
       });
       return login;
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+    } on Object catch (error) {
+      throw _asApiError(error);
     }
   }
 
+  /// OpenAPI models this as an email echo. The API returns `{message: ...}`.
   Future<void> forgotPassword(String email) async {
     try {
-      await _accountsApi.accountsUsersForgotPasswordCreate(
-        forgotPasswordRequest: ForgotPasswordRequest(email: email.trim()),
+      await _dio.post<Map<String, dynamic>>(
+        '/api/accounts/users/forgot_password/',
+        data: {'email': email.trim()},
       );
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+    } on Object catch (error) {
+      throw _asApiError(error);
     }
   }
 

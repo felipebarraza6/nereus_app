@@ -6,7 +6,6 @@ import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/network/session_controller.dart';
 import 'package:nereus_app/core/storage/secure_store.dart';
 import 'package:nereus_app/features/auth/data/auth_repository.dart';
-import 'package:nereus_api_client/nereus_api_client.dart';
 
 class _Cache extends Mock implements ReadCache {}
 
@@ -44,7 +43,6 @@ void main() {
     when(cache.clear).thenAnswer((_) async {});
     return AuthRepository(
       dio: dio,
-      accountsApi: AccountsApi(dio),
       store: store ?? _Store(),
       session: session ?? SessionController(),
       cache: cache,
@@ -93,6 +91,44 @@ void main() {
           'message',
           'Credenciales Invalidas',
         ),
+      ),
+    );
+  });
+
+  test('forgotPassword posts email without generated serializer', () async {
+    late RequestOptions captured;
+    final dio = Dio()
+      ..httpClientAdapter = _Adapter((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          '{"message":"Si el email existe en nuestro sistema, recibirás instrucciones."}',
+          200,
+          headers: {
+            Headers.contentTypeHeader: ['application/json'],
+          },
+        );
+      });
+    await repo(dio).forgotPassword('  ana@smarthydro.app  ');
+    expect(captured.path, '/api/accounts/users/forgot_password/');
+    expect(captured.method, 'POST');
+    expect(captured.data, {'email': 'ana@smarthydro.app'});
+  });
+
+  test('forgotPassword maps 400 to ApiError', () async {
+    final dio = Dio()
+      ..httpClientAdapter = _Adapter((options) async {
+        return ResponseBody.fromString(
+          '{"email":["Ingrese un correo válido."]}',
+          400,
+          headers: {
+            Headers.contentTypeHeader: ['application/json'],
+          },
+        );
+      });
+    expect(
+      () => repo(dio).forgotPassword('bad'),
+      throwsA(
+        isA<ApiError>().having((e) => e.message, 'message', 'Ingrese un correo válido.'),
       ),
     );
   });

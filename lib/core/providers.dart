@@ -51,10 +51,8 @@ NereusApiClient apiClient(Ref ref) {
 
 @Riverpod(keepAlive: true)
 AuthRepository authRepository(Ref ref) {
-  final client = ref.watch(apiClientProvider);
   return AuthRepository(
     dio: ref.watch(dioProvider),
-    accountsApi: client.getAccountsApi(),
     store: ref.watch(secureStoreProvider),
     session: ref.watch(sessionControllerProvider),
     cache: ref.watch(readCacheProvider),

@@ -38,8 +38,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             _email.text,
             _password.text,
           );
-    } on ApiError catch (error) {
-      setState(() => _error = error.message);
+    } on Object catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _error = error is ApiError
+            ? error.message
+            : 'No pudimos iniciar sesión. Intenta de nuevo.';
+      });
     } finally {
       if (mounted) setState(() => _busy = false);
     }
