@@ -78,6 +78,8 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
           ),
         Expanded(
           child: alerts.when(
+            skipLoadingOnReload: true,
+            skipLoadingOnRefresh: true,
             loading: () => const ShimmerList(),
             error: (error, _) => AsyncBody(
               isLoading: false,

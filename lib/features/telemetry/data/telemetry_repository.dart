@@ -17,8 +17,14 @@ class TelemetryRepository {
   final IotTelemetryApi _api;
   final Dio _dio;
   final ReadCache _cache;
+  Future<DeviceOverview>? _overviewInFlight;
 
-  Future<DeviceOverview> overview({bool allowStale = true}) async {
+  Future<DeviceOverview> overview({bool allowStale = true}) {
+    return _overviewInFlight ??= _loadOverview(allowStale: allowStale)
+        .whenComplete(() => _overviewInFlight = null);
+  }
+
+  Future<DeviceOverview> _loadOverview({required bool allowStale}) async {
     const key = 'telemetry.overview';
     try {
       final response = await _api.iotTelemetryDevicesOverviewRetrieve();

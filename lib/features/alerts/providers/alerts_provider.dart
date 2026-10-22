@@ -1,6 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nereus_app/core/polling/foreground_poll.dart';
 import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/features/alerts/data/alerts_repository.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
@@ -16,22 +15,31 @@ class AlertsFilter extends _$AlertsFilter {
   void setAcknowledged(bool? value) => state = value;
 }
 
-@riverpod
+@Riverpod(retry: nereusNoRetry)
 Future<List<AlertItem>> alerts(Ref ref) {
   final filter = ref.watch(alertsFilterProvider);
   return ref.watch(alertsRepositoryProvider).list(acknowledged: filter);
 }
 
-@riverpod
+@Riverpod(keepAlive: true, retry: nereusNoRetry)
 class AlertBadge extends _$AlertBadge {
-  Timer? _timer;
+  static const pollInterval = Duration(seconds: 45);
+
+  Future<AlertSummary>? _inFlight;
 
   @override
   Future<AlertSummary> build() async {
-    ref.onDispose(() => _timer?.cancel());
-    _timer ??= Timer.periodic(const Duration(seconds: 45), (_) {
-      ref.invalidateSelf();
+    ref.watch(foregroundPollProvider(pollInterval));
+    return _load();
+  }
+
+  Future<AlertSummary> _load() {
+    final existing = _inFlight;
+    if (existing != null) return existing;
+    final future = ref.read(alertsRepositoryProvider).summary();
+    _inFlight = future;
+    return future.whenComplete(() {
+      if (identical(_inFlight, future)) _inFlight = null;
     });
-    return ref.watch(alertsRepositoryProvider).summary();
   }
 }

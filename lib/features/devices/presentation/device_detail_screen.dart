@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nereus_app/core/polling/foreground_poll.dart';
 import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
@@ -23,6 +24,8 @@ class DeviceDetailScreen extends ConsumerWidget {
     final events = ref.watch(_eventsProvider(deviceId));
 
     return detail.when(
+      skipLoadingOnReload: true,
+      skipLoadingOnRefresh: true,
       loading: () => const Scaffold(body: ShimmerList()),
       error: (error, _) => Scaffold(
         appBar: const GlassAppBar(title: Text('Dispositivo')),
@@ -96,7 +99,10 @@ class DeviceDetailScreen extends ConsumerWidget {
                 child: SizedBox(
                   height: 220,
                   child: daily.when(
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    skipLoadingOnReload: true,
+                    skipLoadingOnRefresh: true,
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (error, _) => Text('$error'),
                     data: (points) => _Chart(points: points),
                   ),
@@ -106,6 +112,8 @@ class DeviceDetailScreen extends ConsumerWidget {
               Text('Calendario', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               calendar.when(
+                skipLoadingOnReload: true,
+                skipLoadingOnRefresh: true,
                 loading: () => const SizedBox(height: 48),
                 error: (error, _) => Text('$error'),
                 data: (cal) => Wrap(
@@ -125,6 +133,8 @@ class DeviceDetailScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               Text('Eventos', style: Theme.of(context).textTheme.titleMedium),
               events.when(
+                skipLoadingOnReload: true,
+                skipLoadingOnRefresh: true,
                 loading: () => const SizedBox.shrink(),
                 error: (error, _) => Text('$error'),
                 data: (items) => Column(
@@ -159,10 +169,14 @@ class DeviceDetailScreen extends ConsumerWidget {
 }
 
 final _eventsProvider =
-    FutureProvider.family<List<TelemetryEventList>, int>((ref, id) async {
-  final page = await ref.watch(telemetryRepositoryProvider).events(deviceId: id);
-  return page.results;
-});
+    FutureProvider.family<List<TelemetryEventList>, int>(
+  (ref, id) async {
+    final page =
+        await ref.watch(telemetryRepositoryProvider).events(deviceId: id);
+    return page.results;
+  },
+  retry: nereusNoRetry,
+);
 
 class _Chart extends StatelessWidget {
   const _Chart({required this.points});

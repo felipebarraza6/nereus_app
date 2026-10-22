@@ -18,9 +18,9 @@ final class DashboardProvider
     : super(
         from: null,
         argument: null,
-        retry: null,
+        retry: nereusNoRetry,
         name: r'dashboardProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -33,7 +33,7 @@ final class DashboardProvider
   Dashboard create() => Dashboard();
 }
 
-String _$dashboardHash() => r'fa02f88e79419fdc42e5a9daf35c795d42de0837';
+String _$dashboardHash() => r'3039db574d1434dad43ca22cdb337bc315733a59';
 
 abstract class _$Dashboard extends $AsyncNotifier<DeviceOverview> {
   FutureOr<DeviceOverview> build();

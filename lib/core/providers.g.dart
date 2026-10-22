@@ -136,7 +136,7 @@ final class SecureStoreProvider
   }
 }
 
-String _$secureStoreHash() => r'4152faa8e5b4f3e77b4fbdc5fc1bb48f80b1a2d0';
+String _$secureStoreHash() => r'3f4e88b2a8f1f8c5b4c895ef73576effb9d889c2';
 
 @ProviderFor(appDatabase)
 const appDatabaseProvider = AppDatabaseProvider._();
@@ -218,7 +218,7 @@ final class ReadCacheProvider
   }
 }
 
-String _$readCacheHash() => r'fcaa5572056267a08a593ac78c7cfa8e1420254b';
+String _$readCacheHash() => r'863393cf4e926b68790b19416923ceb0fa080197';
 
 @ProviderFor(sharedPreferences)
 const sharedPreferencesProvider = SharedPreferencesProvider._();
@@ -347,7 +347,7 @@ final class ApiClientProvider
   }
 }
 
-String _$apiClientHash() => r'df43b69836667b0fc8e9085466062bfe25782df7';
+String _$apiClientHash() => r'008c1ecf912b2c9cc99f1378af574b0734b4f724';
 
 @ProviderFor(authRepository)
 const authRepositoryProvider = AuthRepositoryProvider._();
@@ -388,7 +388,7 @@ final class AuthRepositoryProvider
   }
 }
 
-String _$authRepositoryHash() => r'58c3684c12840280229ef48d321f98eb77c402e4';
+String _$authRepositoryHash() => r'97ccafaf8b85abcfc652c87185bf3386e3d3eee9';
 
 @ProviderFor(telemetryRepository)
 const telemetryRepositoryProvider = TelemetryRepositoryProvider._();

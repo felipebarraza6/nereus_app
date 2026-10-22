@@ -24,6 +24,8 @@ class HomeScreen extends ConsumerWidget {
         ),
         Expanded(
           child: overview.when(
+            skipLoadingOnReload: true,
+            skipLoadingOnRefresh: true,
             loading: () => const ShimmerList(),
             error: (error, _) => AsyncBody(
               isLoading: false,

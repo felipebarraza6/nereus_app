@@ -18,7 +18,7 @@ final class DeviceQueryControllerProvider
     : super(
         from: null,
         argument: null,
-        retry: null,
+        retry: nereusNoRetry,
         name: r'deviceQueryControllerProvider',
         isAutoDispose: true,
         dependencies: null,
@@ -42,7 +42,7 @@ final class DeviceQueryControllerProvider
 }
 
 String _$deviceQueryControllerHash() =>
-    r'f61aa9d609bb07c40858ee2556f151364fedae6c';
+    r'6b90cbeec9179c484daeb4da24bed7ee1df93dbd';
 
 abstract class _$DeviceQueryController extends $Notifier<DeviceQuery> {
   DeviceQuery build();
@@ -78,7 +78,7 @@ final class DevicesProvider
     : super(
         from: null,
         argument: null,
-        retry: null,
+        retry: nereusNoRetry,
         name: r'devicesProvider',
         isAutoDispose: true,
         dependencies: null,
@@ -100,7 +100,7 @@ final class DevicesProvider
   }
 }
 
-String _$devicesHash() => r'247fc26c3aeb7640aaef67b67183d9c06cf6f9f2';
+String _$devicesHash() => r'a6cf3c02bf3153b346900d928e1cd5a4884d0b13';
 
 @ProviderFor(deviceDetail)
 const deviceDetailProvider = DeviceDetailFamily._();
@@ -117,7 +117,7 @@ final class DeviceDetailProvider
     required DeviceDetailFamily super.from,
     required int super.argument,
   }) : super(
-         retry: null,
+         retry: nereusNoRetry,
          name: r'deviceDetailProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -157,13 +157,13 @@ final class DeviceDetailProvider
   }
 }
 
-String _$deviceDetailHash() => r'2c74fdc31a64426bc132e71955e43d4692f0c6ef';
+String _$deviceDetailHash() => r'8384bbba978b1b7be63e8769db37ea4c40da7962';
 
 final class DeviceDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<DeviceDetail>, int> {
   const DeviceDetailFamily._()
     : super(
-        retry: null,
+        retry: nereusNoRetry,
         name: r'deviceDetailProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -192,7 +192,7 @@ final class DeviceCalendarProvider
     required DeviceCalendarFamily super.from,
     required int super.argument,
   }) : super(
-         retry: null,
+         retry: nereusNoRetry,
          name: r'deviceCalendarProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -232,13 +232,13 @@ final class DeviceCalendarProvider
   }
 }
 
-String _$deviceCalendarHash() => r'8e58a63b10bdf43fd9e5cbf20b8face3eb900f0e';
+String _$deviceCalendarHash() => r'02dbd0bb4da23995144de1653e126e8f6624ad01';
 
 final class DeviceCalendarFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<DeviceCalendar>, int> {
   const DeviceCalendarFamily._()
     : super(
-        retry: null,
+        retry: nereusNoRetry,
         name: r'deviceCalendarProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -267,7 +267,7 @@ final class DeviceDailyProvider
     required DeviceDailyFamily super.from,
     required int super.argument,
   }) : super(
-         retry: null,
+         retry: nereusNoRetry,
          name: r'deviceDailyProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -307,13 +307,13 @@ final class DeviceDailyProvider
   }
 }
 
-String _$deviceDailyHash() => r'9d6500fb7b07ffb14b00529efc2580c601f50f3f';
+String _$deviceDailyHash() => r'a4f0af3f16722b9dcbd0a979fa76e02a1be4e3ff';
 
 final class DeviceDailyFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<DailyPoint>>, int> {
   const DeviceDailyFamily._()
     : super(
-        retry: null,
+        retry: nereusNoRetry,
         name: r'deviceDailyProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
@@ -344,7 +344,7 @@ final class LatestReadingsProvider
     required LatestReadingsFamily super.from,
     required List<int> super.argument,
   }) : super(
-         retry: null,
+         retry: nereusNoRetry,
          name: r'latestReadingsProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -384,13 +384,13 @@ final class LatestReadingsProvider
   }
 }
 
-String _$latestReadingsHash() => r'805d5f18491c14c6ce15fc6d4c4e2b89cbddf581';
+String _$latestReadingsHash() => r'4259f4ef014accc4316a54cd8a1388ecbd66f4ab';
 
 final class LatestReadingsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<LatestValue>>, List<int>> {
   const LatestReadingsFamily._()
     : super(
-        retry: null,
+        retry: nereusNoRetry,
         name: r'latestReadingsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

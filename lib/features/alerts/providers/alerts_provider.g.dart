@@ -77,7 +77,7 @@ final class AlertsProvider
     : super(
         from: null,
         argument: null,
-        retry: null,
+        retry: nereusNoRetry,
         name: r'alertsProvider',
         isAutoDispose: true,
         dependencies: null,
@@ -99,7 +99,7 @@ final class AlertsProvider
   }
 }
 
-String _$alertsHash() => r'3006828b29f89b4148cb731d96b4f0a3d11f437d';
+String _$alertsHash() => r'479f7b4cbfedb5ff8b52d2f3b8392761a852bef5';
 
 @ProviderFor(AlertBadge)
 const alertBadgeProvider = AlertBadgeProvider._();
@@ -110,9 +110,9 @@ final class AlertBadgeProvider
     : super(
         from: null,
         argument: null,
-        retry: null,
+        retry: nereusNoRetry,
         name: r'alertBadgeProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -125,7 +125,7 @@ final class AlertBadgeProvider
   AlertBadge create() => AlertBadge();
 }
 
-String _$alertBadgeHash() => r'c0d200938dc68b4d884105da79fcf4537462ef74';
+String _$alertBadgeHash() => r'ca8d600689e5e561a131b97a6cd84d52bb47fe62';
 
 abstract class _$AlertBadge extends $AsyncNotifier<AlertSummary> {
   FutureOr<AlertSummary> build();

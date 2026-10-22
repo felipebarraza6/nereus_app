@@ -77,6 +77,8 @@ class _DevicesScreenState extends ConsumerState<DevicesScreen> {
         ),
         Expanded(
           child: devices.when(
+            skipLoadingOnReload: true,
+            skipLoadingOnRefresh: true,
             loading: () => const ShimmerList(),
             error: (error, _) => AsyncBody(
               isLoading: false,

@@ -33,7 +33,7 @@ final class SessionProvider
   Session create() => Session();
 }
 
-String _$sessionHash() => r'56b9ea429baa67c73e4262bcad2554170c142123';
+String _$sessionHash() => r'44c3f6b1940e8fb880f1e4b6af119025d29d4378';
 
 abstract class _$Session extends $AsyncNotifier<AuthSession> {
   FutureOr<AuthSession> build();
