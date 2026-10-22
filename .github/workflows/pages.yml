@@ -27,6 +27,8 @@ jobs:
       - run: flutter pub get
       - run: dart run build_runner build --delete-conflicting-outputs
       - run: flutter build web --release --base-href /nereus_app/ --dart-define=NEREUS_API_BASE=https://gateway.smarthydro.app/api
+      - name: SPA fallback for GitHub Pages deep links
+        run: cp build/web/index.html build/web/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build/web

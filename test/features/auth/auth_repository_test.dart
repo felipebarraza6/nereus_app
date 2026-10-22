@@ -141,6 +141,61 @@ void main() {
     expect(restored.branchId, isNull);
   });
 
+  test('resetPasswordConfirm posts token, new_password and confirm_password',
+      () async {
+    late RequestOptions captured;
+    final dio = Dio()
+      ..httpClientAdapter = _Adapter((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          '{"message":"Contraseña actualizada exitosamente"}',
+          200,
+          headers: {
+            Headers.contentTypeHeader: ['application/json'],
+          },
+        );
+      });
+    await repo(dio).resetPasswordConfirm(
+      token: 'abc',
+      newPassword: 'password1',
+      confirmPassword: 'password1',
+    );
+    expect(captured.path, '/api/accounts/users/reset_password_confirm/');
+    expect(captured.method, 'POST');
+    expect(captured.data, {
+      'token': 'abc',
+      'new_password': 'password1',
+      'confirm_password': 'password1',
+    });
+  });
+
+  test('resetPasswordConfirm maps API error', () async {
+    final dio = Dio()
+      ..httpClientAdapter = _Adapter((options) async {
+        return ResponseBody.fromString(
+          '{"error":"El enlace de recuperación ha expirado."}',
+          400,
+          headers: {
+            Headers.contentTypeHeader: ['application/json'],
+          },
+        );
+      });
+    expect(
+      () => repo(dio).resetPasswordConfirm(
+        token: 'expired',
+        newPassword: 'password1',
+        confirmPassword: 'password1',
+      ),
+      throwsA(
+        isA<ApiError>().having(
+          (e) => e.message,
+          'message',
+          'El enlace de recuperación ha expirado.',
+        ),
+      ),
+    );
+  });
+
   test('forgotPassword maps 400 to ApiError', () async {
     final dio = Dio()
       ..httpClientAdapter = _Adapter((options) async {

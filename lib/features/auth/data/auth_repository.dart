@@ -66,6 +66,26 @@ class AuthRepository {
     }
   }
 
+  /// Confirm a reset-email token. The API requires matching confirm_password.
+  Future<void> resetPasswordConfirm({
+    required String token,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    try {
+      await _dio.post<Map<String, dynamic>>(
+        '/api/accounts/users/reset_password_confirm/',
+        data: {
+          'token': token,
+          'new_password': newPassword,
+          'confirm_password': confirmPassword,
+        },
+      );
+    } on Object catch (error, stack) {
+      throw _asApiError(error, stack);
+    }
+  }
+
   /// OpenAPI models this as an email echo. The API returns `{message: ...}`.
   Future<void> forgotPassword(String email) async {
     try {

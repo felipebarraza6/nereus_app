@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
   cupertino_icons: ^1.0.8
   collection: ^1.19.1
   connectivity_plus: ^6.1.4

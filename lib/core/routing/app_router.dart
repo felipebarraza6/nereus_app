@@ -5,6 +5,7 @@ import 'package:nereus_app/features/alerts/presentation/alerts_screen.dart';
 import 'package:nereus_app/features/auth/presentation/branch_picker_screen.dart';
 import 'package:nereus_app/features/auth/presentation/forgot_password_screen.dart';
 import 'package:nereus_app/features/auth/presentation/login_screen.dart';
+import 'package:nereus_app/features/auth/presentation/reset_password_screen.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
 import 'package:nereus_app/features/devices/presentation/device_detail_screen.dart';
 import 'package:nereus_app/features/devices/presentation/devices_screen.dart';
@@ -30,16 +31,18 @@ GoRouter appRouter(Ref ref) {
     refreshListenable: refresh,
     redirect: (context, state) {
       final session = ref.read(sessionProvider).value;
-      final loggingIn = state.matchedLocation == '/login' ||
-          state.matchedLocation == '/forgot-password';
+      final loc = state.matchedLocation;
+      final isReset = loc.startsWith('/reset-password');
+      final loggingIn = loc == '/login' || loc == '/forgot-password';
       if (session == null) return null;
+      if (isReset) return null;
       if (!session.isAuthenticated) {
         return loggingIn ? null : '/login';
       }
       if (session.needsBranch) {
-        return state.matchedLocation == '/branch' ? null : '/branch';
+        return loc == '/branch' ? null : '/branch';
       }
-      if (loggingIn || state.matchedLocation == '/branch') {
+      if (loggingIn || loc == '/branch') {
         return '/home';
       }
       return null;
@@ -49,6 +52,12 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/forgot-password',
         builder: (_, __) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/reset-password/:token',
+        builder: (context, state) => ResetPasswordScreen(
+          token: state.pathParameters['token'] ?? '',
+        ),
       ),
       GoRoute(path: '/branch', builder: (_, __) => const BranchPickerScreen()),
       StatefulShellRoute.indexedStack(
