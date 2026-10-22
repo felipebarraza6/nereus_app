@@ -13,6 +13,7 @@ class AsyncBody extends StatelessWidget {
     this.errorMessage = 'No pudimos cargar los datos.',
     this.emptyMessage = 'No hay información para mostrar.',
     this.skeleton,
+    this.isNetworkError = false,
   });
 
   final bool isLoading;
@@ -23,6 +24,7 @@ class AsyncBody extends StatelessWidget {
   final String errorMessage;
   final String emptyMessage;
   final Widget? skeleton;
+  final bool isNetworkError;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,9 @@ class AsyncBody extends StatelessWidget {
     }
     if (hasError && isEmpty) {
       return _Message(
-        icon: Icons.wifi_off_rounded,
+        icon: isNetworkError
+            ? Icons.wifi_off_rounded
+            : Icons.error_outline_rounded,
         title: errorMessage,
         action: onRetry,
       );

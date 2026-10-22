@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
@@ -86,7 +87,8 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
               hasError: true,
               isEmpty: true,
               onRetry: () => ref.invalidate(alertsProvider),
-              errorMessage: '$error',
+              errorMessage: userFacingErrorMessage(error),
+              isNetworkError: isNetworkFailure(error),
               child: const SizedBox.shrink(),
             ),
             data: (items) {

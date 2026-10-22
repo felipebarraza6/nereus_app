@@ -5,6 +5,10 @@ import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
 import 'package:nereus_api_client/nereus_api_client.dart';
 
+Never _rethrowAsApiError(Object error, StackTrace stack) {
+  throw ApiError.fromAny(error, stack);
+}
+
 class TelemetryRepository {
   TelemetryRepository({
     required IotTelemetryApi api,
@@ -31,12 +35,12 @@ class TelemetryRepository {
       final json = Map<String, dynamic>.from(response.data ?? {});
       await _cache.putJson(key, json);
       return DeviceOverview.fromJson(json);
-    } on DioException catch (error) {
+    } on Object catch (error, stack) {
       if (allowStale) {
         final cached = await _cache.getJson(key);
         if (cached != null) return DeviceOverview.fromJson(cached);
       }
-      throw ApiError.fromDio(error);
+      _rethrowAsApiError(error, stack);
     }
   }
 
@@ -60,12 +64,12 @@ class TelemetryRepository {
       final json = response.data ?? {};
       await _cache.putJson(key, json);
       return asMapList(json['results']).map(DeviceItem.fromJson).toList();
-    } on DioException catch (error) {
+    } on Object catch (error, stack) {
       final cached = await _cache.getJson(key);
       if (cached != null) {
         return asMapList(cached['results']).map(DeviceItem.fromJson).toList();
       }
-      throw ApiError.fromDio(error);
+      _rethrowAsApiError(error, stack);
     }
   }
 
@@ -78,10 +82,16 @@ class TelemetryRepository {
       final json = response.data ?? {};
       await _cache.putJson(key, json);
       return DeviceDetail.fromJson(json);
-    } on DioException catch (error) {
+    } on Object catch (error, stack) {
       final cached = await _cache.getJson(key);
-      if (cached != null) return DeviceDetail.fromJson(cached);
-      throw ApiError.fromDio(error);
+      if (cached != null) {
+        try {
+          return DeviceDetail.fromJson(cached);
+        } on Object catch (cacheError, cacheStack) {
+          _rethrowAsApiError(cacheError, cacheStack);
+        }
+      }
+      _rethrowAsApiError(error, stack);
     }
   }
 
@@ -91,8 +101,8 @@ class TelemetryRepository {
         '/api/iot-telemetry/devices/$id/status/',
       );
       return DeviceStatus.fromJson(response.data ?? {});
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
     }
   }
 
@@ -105,8 +115,8 @@ class TelemetryRepository {
       return DeviceCalendar.fromJson(
         Map<String, dynamic>.from(response.data ?? {}),
       );
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
     }
   }
 
@@ -131,8 +141,8 @@ class TelemetryRepository {
           ),
         );
       });
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
     }
   }
 
@@ -153,8 +163,8 @@ class TelemetryRepository {
           if (day is Map)
             DailyPoint.fromJson(_flattenDaily(Map<String, dynamic>.from(day))),
       ];
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
     }
   }
 
@@ -190,8 +200,8 @@ class TelemetryRepository {
       );
       return response.data ??
           PaginatedTelemetryReadingList(count: 0, results: []);
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
     }
   }
 
@@ -206,8 +216,8 @@ class TelemetryRepository {
       );
       return response.data ??
           PaginatedTelemetryEventListList(count: 0, results: []);
-    } on DioException catch (error) {
-      throw ApiError.fromDio(error);
+    } on Object catch (error, stack) {
+      _rethrowAsApiError(error, stack);
     }
   }
 }

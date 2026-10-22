@@ -1120,7 +1120,6 @@ as int,
 
 }
 
-
 /// @nodoc
 mixin _$DeviceStatus {
 
@@ -1131,8 +1130,6 @@ mixin _$DeviceStatus {
 @pragma('vm:prefer-inline')
 $DeviceStatusCopyWith<DeviceStatus> get copyWith => _$DeviceStatusCopyWithImpl<DeviceStatus>(this as DeviceStatus, _$identity);
 
-  /// Serializes this DeviceStatus to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -1140,7 +1137,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceStatus&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isOnline, isOnline) || other.isOnline == isOnline)&&(identical(other.isDisconnected, isDisconnected) || other.isDisconnected == isDisconnected)&&(identical(other.lastReadingAt, lastReadingAt) || other.lastReadingAt == lastReadingAt)&&(identical(other.minutesSinceLastReading, minutesSinceLastReading) || other.minutesSinceLastReading == minutesSinceLastReading));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,id,name,isOnline,isDisconnected,lastReadingAt,minutesSinceLastReading);
 
@@ -1320,11 +1317,11 @@ return $default(_that.id,_that.name,_that.isOnline,_that.isDisconnected,_that.la
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _DeviceStatus implements DeviceStatus {
   const _DeviceStatus({required this.id, required this.name, @JsonKey(name: 'is_online') this.isOnline = false, @JsonKey(name: 'is_disconnected') this.isDisconnected = false, @JsonKey(name: 'last_reading_at') this.lastReadingAt, @JsonKey(name: 'minutes_since_last_reading') this.minutesSinceLastReading});
-  factory _DeviceStatus.fromJson(Map<String, dynamic> json) => _$DeviceStatusFromJson(json);
+  
 
 @override final  String id;
 @override final  String name;
@@ -1339,17 +1336,14 @@ class _DeviceStatus implements DeviceStatus {
 @pragma('vm:prefer-inline')
 _$DeviceStatusCopyWith<_DeviceStatus> get copyWith => __$DeviceStatusCopyWithImpl<_DeviceStatus>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$DeviceStatusToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceStatus&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.isOnline, isOnline) || other.isOnline == isOnline)&&(identical(other.isDisconnected, isDisconnected) || other.isDisconnected == isDisconnected)&&(identical(other.lastReadingAt, lastReadingAt) || other.lastReadingAt == lastReadingAt)&&(identical(other.minutesSinceLastReading, minutesSinceLastReading) || other.minutesSinceLastReading == minutesSinceLastReading));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,id,name,isOnline,isDisconnected,lastReadingAt,minutesSinceLastReading);
 
@@ -1398,7 +1392,6 @@ as int?,
 
 }
 
-
 /// @nodoc
 mixin _$CalendarDay {
 
@@ -1409,8 +1402,6 @@ mixin _$CalendarDay {
 @pragma('vm:prefer-inline')
 $CalendarDayCopyWith<CalendarDay> get copyWith => _$CalendarDayCopyWithImpl<CalendarDay>(this as CalendarDay, _$identity);
 
-  /// Serializes this CalendarDay to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -1418,7 +1409,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is CalendarDay&&(identical(other.date, date) || other.date == date)&&(identical(other.hasData, hasData) || other.hasData == hasData)&&(identical(other.recordsCount, recordsCount) || other.recordsCount == recordsCount)&&(identical(other.errorCount, errorCount) || other.errorCount == errorCount)&&(identical(other.avgValue, avgValue) || other.avgValue == avgValue));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,date,hasData,recordsCount,errorCount,avgValue);
 
@@ -1597,11 +1588,11 @@ return $default(_that.date,_that.hasData,_that.recordsCount,_that.errorCount,_th
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _CalendarDay implements CalendarDay {
   const _CalendarDay({required this.date, @JsonKey(name: 'has_data') this.hasData = false, @JsonKey(name: 'records_count') this.recordsCount = 0, @JsonKey(name: 'error_count') this.errorCount = 0, @JsonKey(name: 'avg_value') this.avgValue});
-  factory _CalendarDay.fromJson(Map<String, dynamic> json) => _$CalendarDayFromJson(json);
+  
 
 @override final  String date;
 @override@JsonKey(name: 'has_data') final  bool hasData;
@@ -1615,17 +1606,14 @@ class _CalendarDay implements CalendarDay {
 @pragma('vm:prefer-inline')
 _$CalendarDayCopyWith<_CalendarDay> get copyWith => __$CalendarDayCopyWithImpl<_CalendarDay>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$CalendarDayToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _CalendarDay&&(identical(other.date, date) || other.date == date)&&(identical(other.hasData, hasData) || other.hasData == hasData)&&(identical(other.recordsCount, recordsCount) || other.recordsCount == recordsCount)&&(identical(other.errorCount, errorCount) || other.errorCount == errorCount)&&(identical(other.avgValue, avgValue) || other.avgValue == avgValue));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,date,hasData,recordsCount,errorCount,avgValue);
 
@@ -1673,7 +1661,6 @@ as double?,
 
 }
 
-
 /// @nodoc
 mixin _$DeviceCalendar {
 
@@ -1684,8 +1671,6 @@ mixin _$DeviceCalendar {
 @pragma('vm:prefer-inline')
 $DeviceCalendarCopyWith<DeviceCalendar> get copyWith => _$DeviceCalendarCopyWithImpl<DeviceCalendar>(this as DeviceCalendar, _$identity);
 
-  /// Serializes this DeviceCalendar to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -1693,7 +1678,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceCalendar&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.deviceName, deviceName) || other.deviceName == deviceName)&&const DeepCollectionEquality().equals(other.calendar, calendar));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,deviceId,deviceName,const DeepCollectionEquality().hash(calendar));
 
@@ -1870,11 +1855,11 @@ return $default(_that.deviceId,_that.deviceName,_that.calendar);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _DeviceCalendar implements DeviceCalendar {
   const _DeviceCalendar({@JsonKey(name: 'device_id') required this.deviceId, @JsonKey(name: 'device_name') this.deviceName, this.calendar = const []});
-  factory _DeviceCalendar.fromJson(Map<String, dynamic> json) => _$DeviceCalendarFromJson(json);
+  
 
 @override@JsonKey(name: 'device_id') final  String deviceId;
 @override@JsonKey(name: 'device_name') final  String? deviceName;
@@ -1886,17 +1871,14 @@ class _DeviceCalendar implements DeviceCalendar {
 @pragma('vm:prefer-inline')
 _$DeviceCalendarCopyWith<_DeviceCalendar> get copyWith => __$DeviceCalendarCopyWithImpl<_DeviceCalendar>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$DeviceCalendarToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceCalendar&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.deviceName, deviceName) || other.deviceName == deviceName)&&const DeepCollectionEquality().equals(other.calendar, calendar));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,deviceId,deviceName,const DeepCollectionEquality().hash(calendar));
 
@@ -1942,7 +1924,6 @@ as List<CalendarDay>,
 
 }
 
-
 /// @nodoc
 mixin _$LatestValue {
 
@@ -1953,8 +1934,6 @@ mixin _$LatestValue {
 @pragma('vm:prefer-inline')
 $LatestValueCopyWith<LatestValue> get copyWith => _$LatestValueCopyWithImpl<LatestValue>(this as LatestValue, _$identity);
 
-  /// Serializes this LatestValue to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -1962,7 +1941,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is LatestValue&&(identical(other.id, id) || other.id == id)&&(identical(other.readingAt, readingAt) || other.readingAt == readingAt)&&(identical(other.processedValue, processedValue) || other.processedValue == processedValue)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.variableId, variableId) || other.variableId == variableId)&&(identical(other.variableName, variableName) || other.variableName == variableName)&&(identical(other.variableType, variableType) || other.variableType == variableType)&&(identical(other.isError, isError) || other.isError == isError));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,id,readingAt,processedValue,unit,variableId,variableName,variableType,isError);
 
@@ -2144,11 +2123,11 @@ return $default(_that.id,_that.readingAt,_that.processedValue,_that.unit,_that.v
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _LatestValue implements LatestValue {
   const _LatestValue({this.id, @JsonKey(name: 'reading_at') this.readingAt, @JsonKey(name: 'processed_value') this.processedValue, this.unit, @JsonKey(name: 'variable_id') this.variableId, @JsonKey(name: 'variable_name') this.variableName, @JsonKey(name: 'variable_type') this.variableType, @JsonKey(name: 'is_error') this.isError = false});
-  factory _LatestValue.fromJson(Map<String, dynamic> json) => _$LatestValueFromJson(json);
+  
 
 @override final  String? id;
 @override@JsonKey(name: 'reading_at') final  DateTime? readingAt;
@@ -2165,17 +2144,14 @@ class _LatestValue implements LatestValue {
 @pragma('vm:prefer-inline')
 _$LatestValueCopyWith<_LatestValue> get copyWith => __$LatestValueCopyWithImpl<_LatestValue>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$LatestValueToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _LatestValue&&(identical(other.id, id) || other.id == id)&&(identical(other.readingAt, readingAt) || other.readingAt == readingAt)&&(identical(other.processedValue, processedValue) || other.processedValue == processedValue)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.variableId, variableId) || other.variableId == variableId)&&(identical(other.variableName, variableName) || other.variableName == variableName)&&(identical(other.variableType, variableType) || other.variableType == variableType)&&(identical(other.isError, isError) || other.isError == isError));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,id,readingAt,processedValue,unit,variableId,variableName,variableType,isError);
 
@@ -2492,7 +2468,6 @@ as Map<String, int>,
 
 }
 
-
 /// @nodoc
 mixin _$DailyPoint {
 
@@ -2503,8 +2478,6 @@ mixin _$DailyPoint {
 @pragma('vm:prefer-inline')
 $DailyPointCopyWith<DailyPoint> get copyWith => _$DailyPointCopyWithImpl<DailyPoint>(this as DailyPoint, _$identity);
 
-  /// Serializes this DailyPoint to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -2512,7 +2485,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is DailyPoint&&(identical(other.date, date) || other.date == date)&&(identical(other.avgValue, avgValue) || other.avgValue == avgValue)&&(identical(other.sumValue, sumValue) || other.sumValue == sumValue)&&(identical(other.recordsCount, recordsCount) || other.recordsCount == recordsCount));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,date,avgValue,sumValue,recordsCount);
 
@@ -2690,11 +2663,11 @@ return $default(_that.date,_that.avgValue,_that.sumValue,_that.recordsCount);cas
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _DailyPoint implements DailyPoint {
   const _DailyPoint({required this.date, @JsonKey(name: 'avg_value') this.avgValue, @JsonKey(name: 'sum_value') this.sumValue, @JsonKey(name: 'records_count') this.recordsCount = 0});
-  factory _DailyPoint.fromJson(Map<String, dynamic> json) => _$DailyPointFromJson(json);
+  
 
 @override final  String date;
 @override@JsonKey(name: 'avg_value') final  double? avgValue;
@@ -2707,17 +2680,14 @@ class _DailyPoint implements DailyPoint {
 @pragma('vm:prefer-inline')
 _$DailyPointCopyWith<_DailyPoint> get copyWith => __$DailyPointCopyWithImpl<_DailyPoint>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$DailyPointToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _DailyPoint&&(identical(other.date, date) || other.date == date)&&(identical(other.avgValue, avgValue) || other.avgValue == avgValue)&&(identical(other.sumValue, sumValue) || other.sumValue == sumValue)&&(identical(other.recordsCount, recordsCount) || other.recordsCount == recordsCount));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,date,avgValue,sumValue,recordsCount);
 

@@ -67,27 +67,27 @@ abstract class _$AppForeground extends $Notifier<bool> {
   }
 }
 
-/// Increments once per [interval] while [appForegroundProvider] is true.
+/// Increments once per interval while the app is in the foreground.
 ///
-/// Uses [ref.listen] (not [ref.watch]) so pausing the app does not rebuild
-/// this provider and reset the timer. The first increment is after one
-/// interval; the watching provider's own first `build` is the mount fetch.
+/// Uses listen (not watch) so pausing the app does not rebuild this
+/// provider and reset the timer. The first increment is after one
+/// interval; the watching provider's own first build is the mount fetch.
 
 @ProviderFor(ForegroundPoll)
 const foregroundPollProvider = ForegroundPollFamily._();
 
-/// Increments once per [interval] while [appForegroundProvider] is true.
+/// Increments once per interval while the app is in the foreground.
 ///
-/// Uses [ref.listen] (not [ref.watch]) so pausing the app does not rebuild
-/// this provider and reset the timer. The first increment is after one
-/// interval; the watching provider's own first `build` is the mount fetch.
+/// Uses listen (not watch) so pausing the app does not rebuild this
+/// provider and reset the timer. The first increment is after one
+/// interval; the watching provider's own first build is the mount fetch.
 final class ForegroundPollProvider
     extends $NotifierProvider<ForegroundPoll, int> {
-  /// Increments once per [interval] while [appForegroundProvider] is true.
+  /// Increments once per interval while the app is in the foreground.
   ///
-  /// Uses [ref.listen] (not [ref.watch]) so pausing the app does not rebuild
-  /// this provider and reset the timer. The first increment is after one
-  /// interval; the watching provider's own first `build` is the mount fetch.
+  /// Uses listen (not watch) so pausing the app does not rebuild this
+  /// provider and reset the timer. The first increment is after one
+  /// interval; the watching provider's own first build is the mount fetch.
   const ForegroundPollProvider._({
     required ForegroundPollFamily super.from,
     required Duration super.argument,
@@ -134,11 +134,11 @@ final class ForegroundPollProvider
 
 String _$foregroundPollHash() => r'8a83c5775aeee3f651c8f1a983111dc171533063';
 
-/// Increments once per [interval] while [appForegroundProvider] is true.
+/// Increments once per interval while the app is in the foreground.
 ///
-/// Uses [ref.listen] (not [ref.watch]) so pausing the app does not rebuild
-/// this provider and reset the timer. The first increment is after one
-/// interval; the watching provider's own first `build` is the mount fetch.
+/// Uses listen (not watch) so pausing the app does not rebuild this
+/// provider and reset the timer. The first increment is after one
+/// interval; the watching provider's own first build is the mount fetch.
 
 final class ForegroundPollFamily extends $Family
     with $ClassFamilyOverride<ForegroundPoll, int, int, int, Duration> {
@@ -151,11 +151,11 @@ final class ForegroundPollFamily extends $Family
         isAutoDispose: false,
       );
 
-  /// Increments once per [interval] while [appForegroundProvider] is true.
+  /// Increments once per interval while the app is in the foreground.
   ///
-  /// Uses [ref.listen] (not [ref.watch]) so pausing the app does not rebuild
-  /// this provider and reset the timer. The first increment is after one
-  /// interval; the watching provider's own first `build` is the mount fetch.
+  /// Uses listen (not watch) so pausing the app does not rebuild this
+  /// provider and reset the timer. The first increment is after one
+  /// interval; the watching provider's own first build is the mount fetch.
 
   ForegroundPollProvider call(Duration interval) =>
       ForegroundPollProvider._(argument: interval, from: this);
@@ -164,11 +164,11 @@ final class ForegroundPollFamily extends $Family
   String toString() => r'foregroundPollProvider';
 }
 
-/// Increments once per [interval] while [appForegroundProvider] is true.
+/// Increments once per interval while the app is in the foreground.
 ///
-/// Uses [ref.listen] (not [ref.watch]) so pausing the app does not rebuild
-/// this provider and reset the timer. The first increment is after one
-/// interval; the watching provider's own first `build` is the mount fetch.
+/// Uses listen (not watch) so pausing the app does not rebuild this
+/// provider and reset the timer. The first increment is after one
+/// interval; the watching provider's own first build is the mount fetch.
 
 abstract class _$ForegroundPoll extends $Notifier<int> {
   late final _$args = ref.$arg as Duration;

@@ -2,7 +2,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:nereus_app/core/json_util.dart';
 
 part 'telemetry_models.freezed.dart';
-part 'telemetry_models.g.dart';
 
 @Freezed(makeCollectionsUnmodifiable: false)
 abstract class DeviceItem with _$DeviceItem {
@@ -113,8 +112,17 @@ abstract class DeviceStatus with _$DeviceStatus {
     @JsonKey(name: 'minutes_since_last_reading') int? minutesSinceLastReading,
   }) = _DeviceStatus;
 
-  factory DeviceStatus.fromJson(Map<String, dynamic> json) =>
-      _$DeviceStatusFromJson(json);
+  factory DeviceStatus.fromJson(Map<String, dynamic> json) {
+    return DeviceStatus(
+      id: asString(json['id']),
+      name: asString(json['name']),
+      isOnline: json['is_online'] == true,
+      isDisconnected: json['is_disconnected'] == true,
+      lastReadingAt: asDateTime(json['last_reading_at']),
+      minutesSinceLastReading:
+          asIntOrNull(json['minutes_since_last_reading']),
+    );
+  }
 }
 
 @Freezed(makeCollectionsUnmodifiable: false)
@@ -127,8 +135,15 @@ abstract class CalendarDay with _$CalendarDay {
     @JsonKey(name: 'avg_value') double? avgValue,
   }) = _CalendarDay;
 
-  factory CalendarDay.fromJson(Map<String, dynamic> json) =>
-      _$CalendarDayFromJson(json);
+  factory CalendarDay.fromJson(Map<String, dynamic> json) {
+    return CalendarDay(
+      date: asString(json['date']),
+      hasData: json['has_data'] == true,
+      recordsCount: asInt(json['records_count']),
+      errorCount: asInt(json['error_count']),
+      avgValue: asDoubleOrNull(json['avg_value']),
+    );
+  }
 }
 
 @Freezed(makeCollectionsUnmodifiable: false)
@@ -139,8 +154,13 @@ abstract class DeviceCalendar with _$DeviceCalendar {
     @Default([]) List<CalendarDay> calendar,
   }) = _DeviceCalendar;
 
-  factory DeviceCalendar.fromJson(Map<String, dynamic> json) =>
-      _$DeviceCalendarFromJson(json);
+  factory DeviceCalendar.fromJson(Map<String, dynamic> json) {
+    return DeviceCalendar(
+      deviceId: asString(json['device_id']),
+      deviceName: asStringOrNull(json['device_name']),
+      calendar: asMapList(json['calendar']).map(CalendarDay.fromJson).toList(),
+    );
+  }
 }
 
 @Freezed(makeCollectionsUnmodifiable: false)
@@ -156,8 +176,18 @@ abstract class LatestValue with _$LatestValue {
     @JsonKey(name: 'is_error') @Default(false) bool isError,
   }) = _LatestValue;
 
-  factory LatestValue.fromJson(Map<String, dynamic> json) =>
-      _$LatestValueFromJson(json);
+  factory LatestValue.fromJson(Map<String, dynamic> json) {
+    return LatestValue(
+      id: asStringOrNull(json['id']),
+      readingAt: asDateTime(json['reading_at']),
+      processedValue: asDoubleOrNull(json['processed_value']),
+      unit: asStringOrNull(json['unit']),
+      variableId: asStringOrNull(json['variable_id'] ?? json['variable']),
+      variableName: asStringOrNull(json['variable_name']),
+      variableType: asStringOrNull(json['variable_type']),
+      isError: json['is_error'] == true,
+    );
+  }
 }
 
 @Freezed(makeCollectionsUnmodifiable: false)
@@ -192,6 +222,12 @@ abstract class DailyPoint with _$DailyPoint {
     @JsonKey(name: 'records_count') @Default(0) int recordsCount,
   }) = _DailyPoint;
 
-  factory DailyPoint.fromJson(Map<String, dynamic> json) =>
-      _$DailyPointFromJson(json);
+  factory DailyPoint.fromJson(Map<String, dynamic> json) {
+    return DailyPoint(
+      date: asString(json['date']),
+      avgValue: asDoubleOrNull(json['avg_value']),
+      sumValue: asDoubleOrNull(json['sum_value']),
+      recordsCount: asInt(json['records_count']),
+    );
+  }
 }

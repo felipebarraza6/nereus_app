@@ -403,3 +403,80 @@ final class LatestReadingsFamily extends $Family
   @override
   String toString() => r'latestReadingsProvider';
 }
+
+@ProviderFor(deviceEvents)
+const deviceEventsProvider = DeviceEventsFamily._();
+
+final class DeviceEventsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<TelemetryEventList>>,
+          List<TelemetryEventList>,
+          FutureOr<List<TelemetryEventList>>
+        >
+    with
+        $FutureModifier<List<TelemetryEventList>>,
+        $FutureProvider<List<TelemetryEventList>> {
+  const DeviceEventsProvider._({
+    required DeviceEventsFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: nereusNoRetry,
+         name: r'deviceEventsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$deviceEventsHash();
+
+  @override
+  String toString() {
+    return r'deviceEventsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<TelemetryEventList>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<TelemetryEventList>> create(Ref ref) {
+    final argument = this.argument as int;
+    return deviceEvents(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is DeviceEventsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$deviceEventsHash() => r'c41416d58bc09d413979b80bf6a02178282d56cc';
+
+final class DeviceEventsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<TelemetryEventList>>, int> {
+  const DeviceEventsFamily._()
+    : super(
+        retry: nereusNoRetry,
+        name: r'deviceEventsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  DeviceEventsProvider call(int id) =>
+      DeviceEventsProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'deviceEventsProvider';
+}

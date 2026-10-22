@@ -13,6 +13,14 @@ void main() {
     expect(error.message, contains('conexión'));
   });
 
+  test('parse errors are generic and not network', () {
+    final error = ApiError.fromAny(TypeError(), StackTrace.current);
+    expect(error.message, ApiError.genericMessage);
+    expect(error.isNetwork, isFalse);
+    expect(userFacingErrorMessage(TypeError()), ApiError.genericMessage);
+    expect(isNetworkFailure(error), isFalse);
+  });
+
   test('server body wins over generic network copy', () {
     final error = ApiError.fromDio(
       DioException(

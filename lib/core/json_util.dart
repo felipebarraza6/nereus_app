@@ -4,6 +4,16 @@ int asInt(dynamic value, {int fallback = 0}) {
   return int.tryParse('$value') ?? fallback;
 }
 
+String? asStringOrNull(dynamic value) {
+  if (value == null) return null;
+  if (value is String) return value.isEmpty ? null : value;
+  return '$value';
+}
+
+String asString(dynamic value, {String fallback = ''}) {
+  return asStringOrNull(value) ?? fallback;
+}
+
 int? asIntOrNull(dynamic value) {
   if (value == null) return null;
   if (value is int) return value;

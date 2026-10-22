@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
@@ -85,7 +86,8 @@ class _DevicesScreenState extends ConsumerState<DevicesScreen> {
               hasError: true,
               isEmpty: true,
               onRetry: () => ref.invalidate(devicesProvider),
-              errorMessage: '$error',
+              errorMessage: userFacingErrorMessage(error),
+              isNetworkError: isNetworkFailure(error),
               child: const SizedBox.shrink(),
             ),
             data: (items) {

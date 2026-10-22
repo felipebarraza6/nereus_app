@@ -1,15 +1,29 @@
 import 'package:dio/dio.dart';
+import 'package:nereus_app/core/debug/nereus_log.dart';
 
 class ApiError implements Exception {
   const ApiError({
     required this.message,
     this.statusCode,
     this.fields = const {},
+    this.isNetwork = false,
   });
+
+  static const genericMessage = 'No pudimos cargar los datos.';
+  static const networkMessage =
+      'No hay conexión. Revisa tu red e intenta de nuevo.';
 
   final String message;
   final int? statusCode;
   final Map<String, List<String>> fields;
+  final bool isNetwork;
+
+  factory ApiError.fromAny(Object error, [StackTrace? stack]) {
+    if (error is ApiError) return error;
+    if (error is DioException) return ApiError.fromDio(error);
+    nereusLog('ApiError.parse', error, stack);
+    return const ApiError(message: genericMessage);
+  }
 
   factory ApiError.fromDio(DioException error) {
     final data = error.response?.data;
@@ -57,7 +71,8 @@ class ApiError implements Exception {
       case DioExceptionType.receiveTimeout:
       case DioExceptionType.connectionError:
         return const ApiError(
-          message: 'No hay conexión. Revisa tu red e intenta de nuevo.',
+          message: networkMessage,
+          isNetwork: true,
         );
       case DioExceptionType.cancel:
         return const ApiError(message: 'La solicitud se canceló.');
@@ -68,12 +83,20 @@ class ApiError implements Exception {
       case DioExceptionType.badResponse:
       case DioExceptionType.unknown:
       case DioExceptionType.transformTimeout:
-        return ApiError(
-          message: error.message ?? 'No pudimos completar la solicitud.',
-        );
+        nereusLog('ApiError.fromDio', error);
+        return const ApiError(message: genericMessage);
     }
   }
 
   @override
   String toString() => message;
 }
+
+String userFacingErrorMessage(Object error) {
+  if (error is ApiError) return error.message;
+  nereusLog('ui', error);
+  return ApiError.genericMessage;
+}
+
+bool isNetworkFailure(Object error) =>
+    error is ApiError && error.isNetwork;

@@ -2,14 +2,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nereus_app/core/polling/foreground_poll.dart';
-import 'package:nereus_app/core/providers.dart';
+import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
 import 'package:nereus_app/features/devices/providers/devices_provider.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
-import 'package:nereus_api_client/nereus_api_client.dart';
 
 class DeviceDetailScreen extends ConsumerWidget {
   const DeviceDetailScreen({super.key, required this.deviceId});
@@ -21,7 +19,7 @@ class DeviceDetailScreen extends ConsumerWidget {
     final detail = ref.watch(deviceDetailProvider(deviceId));
     final calendar = ref.watch(deviceCalendarProvider(deviceId));
     final daily = ref.watch(deviceDailyProvider(deviceId));
-    final events = ref.watch(_eventsProvider(deviceId));
+    final events = ref.watch(deviceEventsProvider(deviceId));
 
     return detail.when(
       skipLoadingOnReload: true,
@@ -34,7 +32,8 @@ class DeviceDetailScreen extends ConsumerWidget {
           hasError: true,
           isEmpty: true,
           onRetry: () => ref.invalidate(deviceDetailProvider(deviceId)),
-          errorMessage: '$error',
+          errorMessage: userFacingErrorMessage(error),
+          isNetworkError: isNetworkFailure(error),
           child: const SizedBox.shrink(),
         ),
       ),
@@ -103,7 +102,8 @@ class DeviceDetailScreen extends ConsumerWidget {
                     skipLoadingOnRefresh: true,
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (error, _) => Text('$error'),
+                    error: (error, _) =>
+                        Text(userFacingErrorMessage(error)),
                     data: (points) => _Chart(points: points),
                   ),
                 ),
@@ -115,7 +115,7 @@ class DeviceDetailScreen extends ConsumerWidget {
                 skipLoadingOnReload: true,
                 skipLoadingOnRefresh: true,
                 loading: () => const SizedBox(height: 48),
-                error: (error, _) => Text('$error'),
+                error: (error, _) => Text(userFacingErrorMessage(error)),
                 data: (cal) => Wrap(
                   spacing: 6,
                   runSpacing: 6,
@@ -136,7 +136,7 @@ class DeviceDetailScreen extends ConsumerWidget {
                 skipLoadingOnReload: true,
                 skipLoadingOnRefresh: true,
                 loading: () => const SizedBox.shrink(),
-                error: (error, _) => Text('$error'),
+                error: (error, _) => Text(userFacingErrorMessage(error)),
                 data: (items) => Column(
                   children: [
                     for (final event in items.take(8))
@@ -167,16 +167,6 @@ class DeviceDetailScreen extends ConsumerWidget {
     return '—';
   }
 }
-
-final _eventsProvider =
-    FutureProvider.family<List<TelemetryEventList>, int>(
-  (ref, id) async {
-    final page =
-        await ref.watch(telemetryRepositoryProvider).events(deviceId: id);
-    return page.results;
-  },
-  retry: nereusNoRetry,
-);
 
 class _Chart extends StatelessWidget {
   const _Chart({required this.points});
