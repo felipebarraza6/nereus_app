@@ -73,10 +73,10 @@ void main() {
     await tester.ensureVisible(submit);
     await tester.tap(submit);
     await tester.pump();
-    expect(find.textContaining('Elige un predio'), findsOneWidget);
+    expect(find.textContaining('Elige un cliente'), findsOneWidget);
   });
 
-  testWidgets('360 shows tenencias and captacion for the predio', (tester) async {
+  testWidgets('360 shows tenencias and captacion for the client', (tester) async {
     await tester.pumpWidget(
       wrap(const Client360Screen(clientId: FixtureStore.demoClientId)),
     );

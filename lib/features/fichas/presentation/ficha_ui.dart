@@ -61,8 +61,8 @@ IconData iconoSeccion(String key) {
 
 Color tonoSeccion(String key) {
   if (key == tenenciasSection.key) return NereusTokens.lagoon;
-  if (key == captacionSection.key) return NereusTokens.teal;
-  return NereusTokens.inkMuted;
+  if (key == captacionSection.key) return NereusTokens.emerald;
+  return NereusTokens.navy;
 }
 
 int camposConDato(List<FichaField> fields, List<FichaValue> values) {
@@ -109,13 +109,14 @@ class FichaGrid extends StatelessWidget {
   }
 }
 
+/// KPI card styled after `Kpi` in `nereus_smarthydro/src/components/desk.tsx`.
 class FichaKpi extends StatelessWidget {
   const FichaKpi({
     super.key,
     required this.label,
     required this.value,
     required this.icon,
-    this.tone = NereusTokens.teal,
+    this.tone = NereusTokens.navy,
     this.onTap,
   });
 
@@ -127,25 +128,37 @@ class FichaKpi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final muted = dark ? NereusTokens.darkMuted : NereusTokens.inkMuted;
     return GlassCard(
       onTap: onTap,
       semanticLabel: '$label $value',
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          CircleAvatar(
-            backgroundColor: tone.withValues(alpha: 0.16),
-            foregroundColor: tone,
-            child: Icon(icon, size: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label.toUpperCase(),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1,
+                  color: muted,
+                ),
+              ),
+              Icon(icon, size: 16, color: muted),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(value, style: Theme.of(context).textTheme.headlineMedium),
-                Text(label, style: Theme.of(context).textTheme.bodyMedium),
-              ],
-            ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: tone,
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ],
       ),
@@ -162,8 +175,9 @@ class FichaFieldChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final unit = field.unit;
     return StatusChip(
-      label: unit == null || unit.isEmpty ? field.name : '${field.name} ($unit)',
-      tone: NereusTokens.teal,
+      label:
+          unit == null || unit.isEmpty ? field.name : '${field.name} ($unit)',
+      tone: NereusTokens.navy,
     );
   }
 }
@@ -182,11 +196,17 @@ class FichaFieldLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final muted = dark ? NereusTokens.darkMuted : NereusTokens.inkMuted;
+    final line = dark ? NereusTokens.darkLine : NereusTokens.line;
     final unit = field.unit;
     final filled = value != null && value!.trim().isNotEmpty;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: line)),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -195,13 +215,16 @@ class FichaFieldLine extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(field.name, style: text.titleSmall),
+                Text(
+                  field.name,
+                  style: TextStyle(fontSize: 13, color: muted),
+                ),
                 Text(
                   [
                     tipoCampo(field.fieldType),
                     if (unit != null && unit.isNotEmpty) unit,
                   ].join(' · '),
-                  style: text.labelSmall,
+                  style: TextStyle(fontSize: 11, color: muted),
                 ),
               ],
             ),
@@ -211,8 +234,12 @@ class FichaFieldLine extends StatelessWidget {
             child: Text(
               filled ? value! : emptyLabel,
               textAlign: TextAlign.end,
-              style: text.titleSmall?.copyWith(
-                color: filled ? NereusTokens.ink : NereusTokens.inkMuted,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: filled
+                    ? Theme.of(context).colorScheme.onSurface
+                    : muted,
               ),
             ),
           ),
@@ -222,6 +249,7 @@ class FichaFieldLine extends StatelessWidget {
   }
 }
 
+/// Section panel styled after `Panel` in `nereus_smarthydro/src/routes/operaciones.tsx`.
 class FichaSectionCard extends StatelessWidget {
   const FichaSectionCard({
     super.key,
@@ -245,19 +273,54 @@ class FichaSectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final line = dark ? NereusTokens.darkLine : NereusTokens.line;
+    final muted = dark ? NereusTokens.darkMuted : NereusTokens.inkMuted;
     final tone = tonoSeccion(section.key);
     final filled = values == null ? null : camposConDato(fields, values!);
+
     return GlassCard(
       padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 4,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [tone, tone.withValues(alpha: 0.2)],
-              ),
+              border: Border(bottom: BorderSide(color: line)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: tone.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(iconoSeccion(section.key), size: 17, color: tone),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(section.name, style: text.titleMedium),
+                      if (section.description != null)
+                        Text(
+                          section.description!,
+                          style: TextStyle(fontSize: 12, color: muted),
+                        ),
+                    ],
+                  ),
+                ),
+                StatusChip(
+                  label: filled == null
+                      ? '${fields.length} campos'
+                      : '$filled de ${fields.length}',
+                  tone: tone,
+                ),
+              ],
             ),
           ),
           Padding(
@@ -265,33 +328,6 @@ class FichaSectionCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: tone.withValues(alpha: 0.16),
-                      foregroundColor: tone,
-                      child: Icon(iconoSeccion(section.key)),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(section.name, style: text.titleMedium),
-                          if (section.description != null)
-                            Text(section.description!, style: text.bodySmall),
-                        ],
-                      ),
-                    ),
-                    StatusChip(
-                      label: filled == null
-                          ? '${fields.length} campos'
-                          : '$filled de ${fields.length}',
-                      tone: tone,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
                 if (fields.isEmpty)
                   Text(
                     'Esta sección aún no tiene campos.',
@@ -312,18 +348,21 @@ class FichaSectionCard extends StatelessWidget {
                       value: _valueOf(field),
                     ),
                 if (onAction != null) ...[
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: [
                       FilledButton.icon(
                         onPressed: onAction,
-                        icon: const Icon(Icons.assignment_turned_in_outlined),
+                        icon: const Icon(
+                          Icons.assignment_turned_in_outlined,
+                          size: 16,
+                        ),
                         label: Text(actionLabel ?? 'Completar en terreno'),
                       ),
                       if (onSecondary != null)
-                        TextButton(
+                        OutlinedButton(
                           onPressed: onSecondary,
                           child: Text(secondaryLabel ?? 'Ver más'),
                         ),
@@ -364,18 +403,22 @@ class ContactoLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final muted = dark ? NereusTokens.darkMuted : NereusTokens.inkMuted;
     final filled = value != null && value!.trim().isNotEmpty;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: NereusTokens.teal),
-          const SizedBox(width: 10),
+          Icon(icon, size: 16, color: muted),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               filled ? value! : '$label no informado',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: filled ? null : NereusTokens.inkMuted,
+                    color: filled
+                        ? Theme.of(context).colorScheme.onSurface
+                        : muted,
                   ),
             ),
           ),

@@ -31,7 +31,7 @@ class ClientsScreen extends ConsumerWidget {
 
     return CrudPage<ClientItem>(
       title: 'Clientes',
-      subtitle: 'Organizaciones y predios de esta sucursal',
+      subtitle: 'Organizaciones y clientes de esta sucursal',
       value: clients,
       onRetry: () => ref.invalidate(clientsProvider),
       canWrite: canWrite,

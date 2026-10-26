@@ -34,6 +34,7 @@ class AuthSession {
   }
 
   bool get isClient {
+    if (user?.isSuperuser ?? false) return false;
     final role = currentBranch?.roleCode ??
         (branches.isEmpty ? 'CL' : branches.first.roleCode);
     return isClientRole(role);
@@ -65,7 +66,31 @@ class Session extends _$Session {
     ref.watch(sessionControllerProvider).onUnauthorized = logout;
     try {
       final restored = await repo.restore();
-      return AuthSession(token: restored.token, branchId: restored.branchId);
+      if (restored.token == null || restored.token!.isEmpty) {
+        return const AuthSession();
+      }
+      var profile = await repo.readStoredProfile();
+      if (!repo.isFixture) {
+        final fresh = await repo.loadProfile();
+        if (fresh != null) profile = fresh;
+      }
+      if (profile == null) {
+        return AuthSession(token: restored.token, branchId: restored.branchId);
+      }
+      final branchId = restored.branchId ??
+          (profile.branches.length == 1
+              ? '${profile.branches.first.branchId}'
+              : null);
+      if (branchId != null && restored.branchId == null) {
+        await repo.selectBranch(branchId);
+      }
+      return AuthSession(
+        token: restored.token,
+        user: profile.user,
+        branches: profile.branches,
+        branchId: branchId,
+        enabledApps: profile.enabledApps,
+      );
     } on Object catch (error, stack) {
       nereusLog('Session.restore', error, stack);
       return const AuthSession();

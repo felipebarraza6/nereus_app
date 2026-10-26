@@ -8,6 +8,9 @@ import 'package:nereus_app/features/auth/presentation/login_screen.dart';
 import 'package:nereus_app/features/auth/presentation/reset_password_screen.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
 import 'package:nereus_app/features/catalog/presentation/catalog_screen.dart';
+import 'package:nereus_app/features/crm/presentation/opportunity_screen.dart';
+import 'package:nereus_app/features/crm/presentation/pipeline_screen.dart';
+import 'package:nereus_app/features/crm/presentation/prospectos_screen.dart';
 import 'package:nereus_app/features/customers/presentation/clients_screen.dart';
 import 'package:nereus_app/features/fichas/presentation/client_360_screen.dart';
 import 'package:nereus_app/features/fichas/presentation/ficha_admin_screen.dart';
@@ -107,6 +110,24 @@ GoRouter appRouter(Ref ref) {
                     path: ':id',
                     builder: (context, state) => Client360Screen(
                       clientId: state.pathParameters['id'] ?? '',
+                    ),
+                  ),
+                ],
+              ),
+              GoRoute(
+                path: '/prospectos',
+                builder: (_, __) => const ProspectosScreen(),
+              ),
+              GoRoute(
+                path: '/pipeline',
+                builder: (context, state) => PipelineScreen(
+                  clientId: state.uri.queryParameters['client'],
+                ),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) => OpportunityScreen(
+                      opportunityId: state.pathParameters['id'] ?? '',
                     ),
                   ),
                 ],

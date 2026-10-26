@@ -27,6 +27,7 @@ class LevantamientosScreen extends ConsumerWidget {
       body: Column(
         children: [
           const PageHeader(
+            kicker: 'Terreno',
             title: 'Levantamientos',
             subtitle: 'Formularios de terreno para tenencias y captación',
           ),
@@ -63,8 +64,10 @@ class LevantamientosScreen extends ConsumerWidget {
                       ),
                       FichaKpi(
                         label: 'Activos',
-                        value: '${listos.where((item) => item.isActive).length}',
+                        value:
+                            '${listos.where((item) => item.isActive).length}',
                         icon: Icons.play_circle_outline,
+                        tone: NereusTokens.emerald,
                       ),
                       FichaKpi(
                         label: 'Preguntas',
@@ -79,7 +82,7 @@ class LevantamientosScreen extends ConsumerWidget {
                   Text('Plantillas', style: text.titleLarge),
                   const SizedBox(height: 4),
                   Text(
-                    'Ármalas una vez y úsalas en cada predio.',
+                    'Ármalas una vez y úsalas en cada cliente.',
                     style: text.bodyMedium,
                   ),
                   const SizedBox(height: 12),
@@ -100,15 +103,22 @@ class LevantamientosScreen extends ConsumerWidget {
                               children: [
                                 Row(
                                   children: [
-                                    CircleAvatar(
-                                      backgroundColor: NereusTokens.teal
-                                          .withValues(alpha: 0.14),
-                                      foregroundColor: NereusTokens.teal,
+                                    Container(
+                                      width: 34,
+                                      height: 34,
+                                      decoration: BoxDecoration(
+                                        color: NereusTokens.navy.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                       child: const Icon(
                                         Icons.fact_check_outlined,
+                                        size: 17,
+                                        color: NereusTokens.navy,
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
+                                    const SizedBox(width: 10),
                                     Expanded(
                                       child: Text(
                                         template.name,
@@ -117,13 +127,13 @@ class LevantamientosScreen extends ConsumerWidget {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 10),
                                 Text(
                                   '${template.questions.length} pregunta${template.questions.length == 1 ? '' : 's'}',
                                   style: text.bodyMedium,
                                 ),
-                                const SizedBox(height: 16),
-                                FilledButton.tonal(
+                                const SizedBox(height: 14),
+                                FilledButton(
                                   onPressed: () =>
                                       _usarPlantilla(context, ref, template),
                                   child: const Text('Usar en terreno'),
@@ -139,7 +149,7 @@ class LevantamientosScreen extends ConsumerWidget {
                   if (listos.isEmpty)
                     const GlassCard(
                       child: Text(
-                        'Cuando publiques una plantilla, aparece acá para llenarla en el predio.',
+                        'Cuando publiques una plantilla, aparece acá para llenarla con el cliente.',
                       ),
                     )
                   else
@@ -169,10 +179,11 @@ class LevantamientosScreen extends ConsumerWidget {
                                 StatusChip(
                                   label: levantamientoEstado(item.status),
                                   tone: item.isActive
-                                      ? NereusTokens.teal
+                                      ? NereusTokens.emerald
                                       : NereusTokens.inkMuted,
                                 ),
-                                const Icon(Icons.chevron_right),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.chevron_right, size: 18),
                               ],
                             ),
                           ),

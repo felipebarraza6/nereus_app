@@ -39,7 +39,7 @@ const tenenciasSection = WaterSectionSpec(
   name: 'Tenencias',
   color: '#2f6db5',
   icon: 'droplet',
-  description: 'Derechos de aprovechamiento del predio.',
+  description: 'Derechos de aprovechamiento del cliente.',
   fields: [
     WaterFieldSpec(
       key: 'derechos_ls',
@@ -105,4 +105,4 @@ const waterSections = [tenenciasSection, captacionSection];
 
 const tenenciasTemplateName = 'Ficha de tenencias';
 const captacionTemplateName = 'Levantamiento de captación';
-const pdfTemplateName = 'Ficha predio SmartHydro';
+const pdfTemplateName = 'Ficha cliente SmartHydro';

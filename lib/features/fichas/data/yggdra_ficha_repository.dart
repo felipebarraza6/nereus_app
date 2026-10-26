@@ -166,7 +166,7 @@ class YggdraFichaRepository implements FichaRepository {
 
   @override
   Future<List<FichaValue>> valuesForClient(String clientId) async {
-    const key = 'fichas.values';
+    final key = 'fichas.values.$clientId';
     try {
       final response = await _dio.get<dynamic>(
         '/api/customers/extra-field-values/',

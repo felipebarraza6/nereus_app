@@ -19,29 +19,35 @@ class FormPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return ListView(
       padding: const EdgeInsets.all(NereusTokens.spaceMd),
       children: [
-        ...[
-          for (final child in children) ...[
-            child,
-            const SizedBox(height: 12),
-          ],
+        for (final child in children) ...[
+          child,
+          const SizedBox(height: 12),
         ],
         if (error != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+          Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: scheme.error.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(NereusTokens.radiusSm),
+              border: Border.all(color: scheme.error.withValues(alpha: 0.3)),
+            ),
             child: Text(
               error!,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              style: TextStyle(color: scheme.error, fontSize: 12.5),
             ),
           ),
+        const SizedBox(height: 4),
         FilledButton(
           onPressed: busy ? null : onSubmit,
           child: busy
               ? const SizedBox(
-                  width: 18,
-                  height: 18,
+                  width: 16,
+                  height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : Text(submitLabel),
@@ -79,7 +85,10 @@ class SelectField<T> extends StatelessWidget {
         for (final item in items)
           DropdownMenuItem(
             value: item,
-            child: Text(itemLabel?.call(item) ?? '$item'),
+            child: Text(
+              itemLabel?.call(item) ?? '$item',
+              style: const TextStyle(fontSize: 13),
+            ),
           ),
       ],
       onChanged: onChanged == null ? null : (value) => onChanged!(value),

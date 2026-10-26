@@ -25,6 +25,7 @@ class SecureStore {
 
   static const tokenKey = 'nereus.token';
   static const branchKey = 'nereus.branch_id';
+  static const profileKey = 'nereus.session_profile';
 
   FlutterSecureStorage? _secure;
   final SharedPreferences? _prefs;
@@ -38,9 +39,14 @@ class SecureStore {
 
   Future<void> writeBranchId(String branchId) => _write(branchKey, branchId);
 
+  Future<String?> readProfile() => _read(profileKey);
+
+  Future<void> writeProfile(String profile) => _write(profileKey, profile);
+
   Future<void> clearSession() async {
     await _delete(tokenKey);
     await _delete(branchKey);
+    await _delete(profileKey);
   }
 
   Future<String?> _read(String key) async {

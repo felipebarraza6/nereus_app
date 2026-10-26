@@ -27,7 +27,7 @@ class FichasScreen extends ConsumerWidget {
         children: [
           PageHeader(
             title: 'Fichas',
-            subtitle: 'Tenencias de agua y datos de captación por predio',
+            subtitle: 'Tenencias de agua y datos de captación por cliente',
             actions: [
               TextButton.icon(
                 onPressed: () => context.go('/fichas/admin'),
@@ -97,7 +97,7 @@ class FichasScreen extends ConsumerWidget {
                             tone: NereusTokens.lagoon,
                           ),
                           FichaKpi(
-                            label: 'Predios',
+                            label: 'Clientes',
                             value: 'Abrir',
                             icon: Icons.apartment_outlined,
                             onTap: () => context.go('/clients'),
@@ -119,7 +119,7 @@ class FichasScreen extends ConsumerWidget {
                                 section,
                                 allFields,
                               ),
-                              secondaryLabel: 'Ver predios',
+                              secondaryLabel: 'Ver clientes',
                               onSecondary: () => context.go('/clients'),
                             ),
                         ],

@@ -17,7 +17,7 @@ class InventoryRepository {
   }
 
   Future<List<ProductItem>> products({String? productType, String? search}) async {
-    const key = 'inventory.products';
+    final key = 'inventory.products.${productType ?? ''}.${search ?? ''}';
     try {
       final response = await _dio.get<dynamic>(
         '/api/inventory/products/',

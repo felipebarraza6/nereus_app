@@ -1,13 +1,20 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nereus_app/core/config/app_config.dart';
 import 'package:nereus_app/core/network/api_error.dart';
+import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
-import 'package:nereus_app/core/config/app_config.dart';
-import 'package:nereus_app/core/providers.dart';
+import 'package:nereus_app/core/widgets/nereus_brand.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
 
+part 'login_widgets.dart';
+
+/// Exact port of `nereus_smarthydro/src/routes/conexion.tsx` and
+/// `nereus_smarthydro/src/routes/index.tsx`.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -20,6 +27,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _password = TextEditingController();
   final _form = GlobalKey<FormState>();
   bool _busy = false;
+  bool _obscure = true;
   String? _error;
 
   @override
@@ -29,7 +37,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  Future<void> _enterDemo() async {
+  Future<void> _enterDemo([String? targetRoute]) async {
     setState(() {
       _busy = true;
       _error = null;
@@ -41,6 +49,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             'demo@smarthydro.app',
             'demo',
           );
+      if (mounted && targetRoute != null) {
+        context.go(targetRoute);
+      }
     } on Object catch (error) {
       if (!mounted) return;
       setState(() {
@@ -78,89 +89,63 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final wide = width >= 960;
+    final showDemo = ref.watch(appConfigProvider).debug ||
+        ref.watch(dataModeProvider) == NereusDataMode.fixture ||
+        wide;
+
+    final loginStage = _LoginStageCard(
+      formKey: _form,
+      emailController: _email,
+      passwordController: _password,
+      busy: _busy,
+      obscure: _obscure,
+      error: _error,
+      showDemo: showDemo,
+      onToggleObscure: () => setState(() => _obscure = !_obscure),
+      onSubmit: _submit,
+      onForgotPassword: () => context.go('/forgot-password'),
+      onEnterDemo: _enterDemo,
+    );
+
     return AnimatedWaterBackdrop(
+      showWaterField: true,
       child: Scaffold(
-        body: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 440),
-            child: Padding(
-              padding: const EdgeInsets.all(NereusTokens.spaceLg),
-              child: GlassCard(
-                semanticLabel: 'Formulario de ingreso',
-                child: Form(
-                  key: _form,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Nereus',
-                        style: Theme.of(context).textTheme.displaySmall,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Monitoreo de agua en tiempo real',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        controller: _email,
-                        keyboardType: TextInputType.emailAddress,
-                        autofillHints: const [AutofillHints.email],
-                        decoration: const InputDecoration(
-                          labelText: 'Correo electrónico',
-                        ),
-                        validator: (value) =>
-                            (value == null || !value.contains('@'))
-                                ? 'Ingresa un correo válido'
-                                : null,
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _password,
-                        obscureText: true,
-                        autofillHints: const [AutofillHints.password],
-                        decoration: const InputDecoration(
-                          labelText: 'Contraseña',
-                        ),
-                        validator: (value) =>
-                            (value == null || value.isEmpty)
-                                ? 'Ingresa tu contraseña'
-                                : null,
-                      ),
-                      if (_error != null) ...[
-                        const SizedBox(height: 12),
-                        Text(
-                          _error!,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: wide ? NereusTokens.spaceXl : NereusTokens.spaceMd,
+                vertical: NereusTokens.spaceLg,
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: wide ? 1140 : 400),
+                child: wide
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 12,
+                            child: _SmartHydroDeskPitch(
+                              busy: _busy,
+                              onOpenDemoModule: _enterDemo,
+                            ),
                           ),
-                        ),
-                      ],
-                      const SizedBox(height: 20),
-                      FilledButton(
-                        onPressed: _busy ? null : _submit,
-                        child: _busy
-                            ? const SizedBox(
-                                height: 18,
-                                width: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : const Text('Entrar'),
-                      ),
-                      TextButton(
-                        onPressed: () => context.go('/forgot-password'),
-                        child: const Text('¿Olvidaste tu contraseña?'),
-                      ),
-                      if (ref.watch(appConfigProvider).debug ||
-                          ref.watch(dataModeProvider) == NereusDataMode.fixture)
-                        TextButton(
-                          onPressed: _busy ? null : _enterDemo,
-                          child: const Text('Entrar con datos de demostración'),
-                        ),
-                    ],
-                  ),
-                ),
+                          const SizedBox(width: 44),
+                          Expanded(
+                            flex: 9,
+                            child: Center(
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 380),
+                                child: loginStage,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : loginStage,
               ),
             ),
           ),
