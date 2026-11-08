@@ -44,7 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
     try {
       ref.read(dataModeProvider.notifier).useFixture();
-      ref.invalidate(authRepositoryProvider);
+      await ref.read(sessionProvider.future);
       await ref.read(sessionProvider.notifier).login(
             'demo@smarthydro.app',
             'demo',

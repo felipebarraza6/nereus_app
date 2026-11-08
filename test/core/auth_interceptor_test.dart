@@ -54,6 +54,24 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(loggedOut, isTrue);
   });
+
+  test('a demo session stays signed in when the API rejects the fixture token', () async {
+    final session = SessionController()..token = 'fixture-token';
+    var loggedOut = false;
+    session.onUnauthorized = () async => loggedOut = true;
+    final dio = Dio()
+      ..interceptors.add(AuthInterceptor(session))
+      ..httpClientAdapter = _Adapter((options) async {
+        return ResponseBody.fromString('{"detail":"x"}', 401);
+      });
+    try {
+      await dio.get<void>('/api/iot-telemetry/devices/');
+    } on DioException {
+      // expected
+    }
+    await Future<void>.delayed(Duration.zero);
+    expect(loggedOut, isFalse);
+  });
 }
 
 class _Adapter implements HttpClientAdapter {

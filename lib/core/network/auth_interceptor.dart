@@ -27,7 +27,7 @@ class AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     try {
-      if (err.response?.statusCode == 401) {
+      if (err.response?.statusCode == 401 && session.token != 'fixture-token') {
         final cb = session.onUnauthorized;
         if (cb != null) {
           Future<void>.microtask(cb);
