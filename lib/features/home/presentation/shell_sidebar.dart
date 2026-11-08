@@ -170,28 +170,36 @@ class _ShellDesktopSidebarState extends State<ShellDesktopSidebar> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
               children: [
-                for (final group in groups) ...[
-                  if (!_collapsed)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 4),
-                      child: Text(
-                        group.section.toUpperCase(),
-                        style: TextStyle(
-                          color: muted,
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.4,
+                for (final group in groups)
+                  if (group.section == 'Strøm — Operaciones')
+                    _StromMenu(
+                      indices: group.indices,
+                      selected: widget.selected,
+                      collapsed: _collapsed,
+                      onSelect: widget.onSelect,
+                    )
+                  else ...[
+                    if (!_collapsed)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 4),
+                        child: Text(
+                          group.section.toUpperCase(),
+                          style: TextStyle(
+                            color: muted,
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.4,
+                          ),
                         ),
                       ),
-                    ),
-                  for (final i in group.indices)
-                    _NavTile(
-                      dest: shellDestinations[i],
-                      selected: widget.selected == i,
-                      collapsed: _collapsed,
-                      onTap: () => widget.onSelect(i),
-                    ),
-                ],
+                    for (final i in group.indices)
+                      _NavTile(
+                        dest: shellDestinations[i],
+                        selected: widget.selected == i,
+                        collapsed: _collapsed,
+                        onTap: () => widget.onSelect(i),
+                      ),
+                  ],
               ],
             ),
           ),
@@ -245,18 +253,91 @@ class _ShellDesktopSidebarState extends State<ShellDesktopSidebar> {
 /// Nav item styled 1:1 after `nereus_smarthydro/src/components/desk.tsx`:
 /// active: `bg-primary text-primary-fg rounded-xl px-3 py-2 text-sm font-medium`
 /// inactive: `text-muted hover:bg-surface-2 hover:text-fg rounded-xl`
+class _StromMenu extends StatefulWidget {
+  const _StromMenu({
+    required this.indices,
+    required this.selected,
+    required this.collapsed,
+    required this.onSelect,
+  });
+
+  final List<int> indices;
+  final int selected;
+  final bool collapsed;
+  final ValueChanged<int> onSelect;
+
+  @override
+  State<_StromMenu> createState() => _StromMenuState();
+}
+
+class _StromMenuState extends State<_StromMenu> {
+  var _open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final active = widget.indices.contains(widget.selected);
+    final open = _open || active;
+    if (widget.collapsed) {
+      return _NavTile(
+        dest: const ShellDest(
+          path: '/strom',
+          label: 'Strøm — Operaciones',
+          icon: Icons.engineering_outlined,
+          selectedIcon: Icons.engineering,
+        ),
+        selected: active,
+        collapsed: true,
+        onTap: () => widget.onSelect(widget.indices.first),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _NavTile(
+          dest: const ShellDest(
+            path: '/strom',
+            label: 'Strøm — Operaciones',
+            icon: Icons.engineering_outlined,
+            selectedIcon: Icons.engineering,
+          ),
+          selected: false,
+          collapsed: false,
+          trailing: Icon(
+            open ? Icons.expand_less : Icons.expand_more,
+            size: 16,
+          ),
+          onTap: () => setState(() => _open = !open),
+        ),
+        if (open)
+          for (final i in widget.indices)
+            Padding(
+              padding: const EdgeInsets.only(left: 18),
+              child: _NavTile(
+                dest: shellDestinations[i],
+                selected: widget.selected == i,
+                collapsed: false,
+                onTap: () => widget.onSelect(i),
+              ),
+            ),
+      ],
+    );
+  }
+}
+
 class _NavTile extends StatelessWidget {
   const _NavTile({
     required this.dest,
     required this.selected,
     required this.collapsed,
     required this.onTap,
+    this.trailing,
   });
 
   final ShellDest dest;
   final bool selected;
   final bool collapsed;
   final VoidCallback onTap;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -306,6 +387,10 @@ class _NavTile extends StatelessWidget {
                           fontSize: 13.5,
                         ),
                       ),
+                    ),
+                    if (trailing != null) IconTheme(
+                      data: IconThemeData(color: fg),
+                      child: trailing!,
                     ),
                   ],
                 ],

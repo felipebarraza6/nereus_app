@@ -182,21 +182,28 @@ class ShellMobileDrawer extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 children: [
-                  for (final group in groups) ...[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 4),
-                      child: Text(
-                        group.section.toUpperCase(),
-                        style: Theme.of(context).textTheme.labelSmall,
+                  for (final group in groups)
+                    if (group.section == 'Strøm — Operaciones')
+                      _StromDrawer(
+                        indices: group.indices,
+                        selected: selected,
+                        onSelect: onSelect,
+                      )
+                    else ...[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 4),
+                        child: Text(
+                          group.section.toUpperCase(),
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
                       ),
-                    ),
-                    for (final i in group.indices)
-                      _DrawerTile(
-                        dest: shellDestinations[i],
-                        selected: selected == i,
-                        onTap: () => onSelect(i),
-                      ),
-                  ],
+                      for (final i in group.indices)
+                        _DrawerTile(
+                          dest: shellDestinations[i],
+                          selected: selected == i,
+                          onTap: () => onSelect(i),
+                        ),
+                    ],
                   const Divider(height: 20),
                   _DrawerTile(
                     dest: const ShellDest(
@@ -217,6 +224,52 @@ class ShellMobileDrawer extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _StromDrawer extends StatefulWidget {
+  const _StromDrawer({
+    required this.indices,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  final List<int> indices;
+  final int selected;
+  final ValueChanged<int> onSelect;
+
+  @override
+  State<_StromDrawer> createState() => _StromDrawerState();
+}
+
+class _StromDrawerState extends State<_StromDrawer> {
+  var _open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final open = _open || widget.indices.contains(widget.selected);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ListTile(
+          dense: true,
+          leading: const Icon(Icons.engineering_outlined),
+          title: const Text('Strøm — Operaciones'),
+          trailing: Icon(open ? Icons.expand_less : Icons.expand_more),
+          onTap: () => setState(() => _open = !open),
+        ),
+        if (open)
+          for (final i in widget.indices)
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: _DrawerTile(
+                dest: shellDestinations[i],
+                selected: widget.selected == i,
+                onTap: () => widget.onSelect(i),
+              ),
+            ),
+      ],
     );
   }
 }
