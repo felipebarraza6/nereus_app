@@ -114,6 +114,13 @@ const shellDestinations = [
     section: 'Monitoreo',
   ),
   ShellDest(
+    path: '/strom',
+    label: 'Strøm',
+    icon: Icons.engineering_outlined,
+    selectedIcon: Icons.engineering,
+    section: 'Monitoreo',
+  ),
+  ShellDest(
     path: '/profile',
     label: 'Ajustes',
     icon: Icons.settings_outlined,
@@ -123,10 +130,10 @@ const shellDestinations = [
 ];
 
 /// Destinations shown in the mobile bottom navigation.
-const mobileDestinations = [0, 10, 7, 3, 12];
+const mobileDestinations = [0, 10, 7, 3, 13];
 
 /// Destinations shown in the tablet rail when it is collapsed.
-const railDestinations = [0, 10, 3, 6, 7, 4, 11];
+const railDestinations = [0, 10, 3, 6, 7, 4, 11, 12];
 
 int destinationIndexFor(String path) {
   if (path.startsWith('/catalog')) return 1;
@@ -140,13 +147,21 @@ int destinationIndexFor(String path) {
   if (path.startsWith('/equipment')) return 9;
   if (path.startsWith('/devices') || path.startsWith('/alerts')) return 10;
   if (path.startsWith('/tickets')) return 11;
-  if (path.startsWith('/profile') || path.startsWith('/settings')) return 12;
+  if (path.startsWith('/strom')) return 12;
+  if (path.startsWith('/profile') || path.startsWith('/settings')) return 13;
   return 0;
 }
 
 List<String> breadcrumbsFor(String path) {
   if (path.startsWith('/devices/')) return ['Operación', 'Equipo'];
   if (path.startsWith('/tickets/')) return ['Tickets', 'Detalle'];
+  if (path.startsWith('/strom/') && path.contains('/visita/nueva')) {
+    return ['Strøm', 'Planificar'];
+  }
+  if (path.startsWith('/strom/') && path.contains('/visita/')) {
+    return ['Strøm', 'Visita'];
+  }
+  if (path.startsWith('/strom/')) return ['Strøm', 'Proyecto'];
   if (path.startsWith('/clients/') && path != '/clients') {
     return ['Clientes', 'Ficha 360'];
   }

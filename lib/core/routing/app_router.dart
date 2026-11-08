@@ -27,6 +27,10 @@ import 'package:nereus_app/features/org/presentation/org_screen.dart';
 import 'package:nereus_app/features/points/presentation/points_screen.dart';
 import 'package:nereus_app/features/profile/presentation/profile_screen.dart';
 import 'package:nereus_app/features/settings/presentation/settings_screen.dart';
+import 'package:nereus_app/features/strom/presentation/strom_plan_screen.dart';
+import 'package:nereus_app/features/strom/presentation/strom_project_screen.dart';
+import 'package:nereus_app/features/strom/presentation/strom_projects_screen.dart';
+import 'package:nereus_app/features/strom/presentation/strom_visit_screen.dart';
 import 'package:nereus_app/features/tickets/presentation/ticket_create_screen.dart';
 import 'package:nereus_app/features/tickets/presentation/ticket_detail_screen.dart';
 import 'package:nereus_app/features/tickets/presentation/tickets_screen.dart';
@@ -198,6 +202,37 @@ GoRouter appRouter(Ref ref) {
                     builder: (context, state) => TicketDetailScreen(
                       ticketId: state.pathParameters['id']!,
                     ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/strom',
+                builder: (_, __) => const StromProjectsScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':ticketId',
+                    builder: (context, state) => StromProjectScreen(
+                      ticketId: state.pathParameters['ticketId']!,
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: 'visita/nueva',
+                        builder: (context, state) => StromPlanScreen(
+                          ticketId: state.pathParameters['ticketId']!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'visita/:visitId',
+                        builder: (context, state) => StromVisitScreen(
+                          ticketId: state.pathParameters['ticketId']!,
+                          visitId: state.pathParameters['visitId']!,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
