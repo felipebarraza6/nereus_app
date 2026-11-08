@@ -5,6 +5,7 @@ import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/strom/domain/strom_models.dart';
+import 'package:nereus_app/features/strom/presentation/strom_desk.dart';
 import 'package:nereus_app/features/strom/providers/strom_providers.dart';
 
 class StromPlanScreen extends ConsumerStatefulWidget {
@@ -85,9 +86,10 @@ class _StromPlanScreenState extends ConsumerState<StromPlanScreen> {
         children: [
           const PageHeader(
             title: 'Planificar visita',
-            subtitle: 'La hidráulica y la eléctrica no se esperan',
+            subtitle: 'Hidráulica y eléctrica van en visitas distintas',
           ),
-          Padding(
+          StromReadingColumn(
+            child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: NereusTokens.spaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -142,6 +144,7 @@ class _StromPlanScreenState extends ConsumerState<StromPlanScreen> {
                   child: Text(_saving ? 'Guardando' : 'Crear visita'),
                 ),
               ],
+            ),
             ),
           ),
         ],

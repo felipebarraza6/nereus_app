@@ -50,6 +50,13 @@ class FixtureApiInterceptor extends Interceptor {
           'is_completed': false,
           'notes': '',
         },
+        {
+          'id': 'a-2',
+          'work_order': 'v-norte-1',
+          'description': 'Revisar el tablero del pozo 1',
+          'is_completed': false,
+          'notes': '',
+        },
       ],
       'feedback': null,
       'attachments': <Map<String, dynamic>>[],

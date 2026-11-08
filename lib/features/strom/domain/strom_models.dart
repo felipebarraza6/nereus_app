@@ -160,6 +160,42 @@ VisitSpecialty? specialtyFromNotes(String notes) {
   }
 }
 
+String projectStatusLabel(String status) {
+  switch (status) {
+    case 'OPEN':
+      return 'Abierto';
+    case 'IN_PROGRESS':
+      return 'En ejecución';
+    case 'WAITING':
+      return 'En espera';
+    case 'RESOLVED':
+      return 'Resuelto';
+    case 'CLOSED':
+      return 'Cerrado';
+    case 'CANCELLED':
+      return 'Cancelado';
+    default:
+      return status.isEmpty ? 'Sin estado' : status;
+  }
+}
+
+String visitStatusLabel(String status) {
+  switch (status) {
+    case 'SCHEDULED':
+      return 'Programada';
+    case 'IN_ROUTE':
+      return 'En ruta';
+    case 'ON_SITE':
+      return 'En terreno';
+    case 'COMPLETED':
+      return 'Ejecutada';
+    case 'CANCELLED':
+      return 'Cancelada';
+    default:
+      return status.isEmpty ? 'Sin estado' : status;
+  }
+}
+
 String specialtyLabel(VisitSpecialty specialty) {
   return specialty == VisitSpecialty.hidraulica ? 'Hidráulica' : 'Eléctrica';
 }

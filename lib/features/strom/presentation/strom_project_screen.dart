@@ -86,7 +86,7 @@ class StromProjectScreen extends ConsumerWidget {
                           ].where((part) => part.isNotEmpty).join(' · '),
                         ),
                         trailing: StatusChip(
-                          label: visit.status,
+                          label: visitStatusLabel(visit.status),
                           tone: visit.isCompleted
                               ? NereusTokens.lagoon
                               : NereusTokens.inkMuted,

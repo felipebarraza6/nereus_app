@@ -8,6 +8,7 @@ import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
 import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/strom/domain/strom_models.dart';
+import 'package:nereus_app/features/strom/presentation/strom_desk.dart';
 import 'package:nereus_app/features/strom/providers/strom_providers.dart';
 
 class StromVisitScreen extends ConsumerWidget {
@@ -182,7 +183,7 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setLocal) => AlertDialog(
-          title: const Text('Reprogramar'),
+          title: const Text('Reagendar'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -258,8 +259,9 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
             if (visit.crew.isNotEmpty) visit.crew,
           ].join(' · '),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: NereusTokens.spaceMd),
+        StromReadingColumn(
+          child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: NereusTokens.spaceMd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -270,7 +272,7 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
               const SizedBox(height: 8),
               OutlinedButton(
                 onPressed: _busy ? null : _reschedule,
-                child: const Text('Reprogramar con motivo'),
+                child: const Text('Reagendar con motivo'),
               ),
               const SizedBox(height: 16),
               Text('Check terreno', style: Theme.of(context).textTheme.titleMedium),
@@ -334,7 +336,7 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
               const SizedBox(height: 8),
               OutlinedButton(
                 onPressed: _busy ? null : () => _check(markExecuted: false),
-                child: const Text('Guardar validación'),
+                child: const Text('Guardar check técnico'),
               ),
               const SizedBox(height: 8),
               FilledButton(
@@ -350,6 +352,7 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
                 ),
             ],
           ),
+        ),
         ),
       ],
     );

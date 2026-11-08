@@ -27,9 +27,9 @@ import 'package:nereus_app/features/org/presentation/org_screen.dart';
 import 'package:nereus_app/features/points/presentation/points_screen.dart';
 import 'package:nereus_app/features/profile/presentation/profile_screen.dart';
 import 'package:nereus_app/features/settings/presentation/settings_screen.dart';
+import 'package:nereus_app/features/strom/presentation/strom_desk.dart';
 import 'package:nereus_app/features/strom/presentation/strom_plan_screen.dart';
 import 'package:nereus_app/features/strom/presentation/strom_project_screen.dart';
-import 'package:nereus_app/features/strom/presentation/strom_projects_screen.dart';
 import 'package:nereus_app/features/strom/presentation/strom_visit_screen.dart';
 import 'package:nereus_app/features/tickets/presentation/ticket_create_screen.dart';
 import 'package:nereus_app/features/tickets/presentation/ticket_detail_screen.dart';
@@ -209,9 +209,15 @@ GoRouter appRouter(Ref ref) {
           ),
           StatefulShellBranch(
             routes: [
+              ShellRoute(
+                builder: (context, state, child) => StromDesk(
+                  location: state.uri.path,
+                  child: child,
+                ),
+                routes: [
               GoRoute(
                 path: '/strom',
-                builder: (_, __) => const StromProjectsScreen(),
+                builder: (_, __) => const SizedBox.shrink(),
                 routes: [
                   GoRoute(
                     path: ':ticketId',
@@ -234,6 +240,8 @@ GoRouter appRouter(Ref ref) {
                       ),
                     ],
                   ),
+                ],
+              ),
                 ],
               ),
             ],

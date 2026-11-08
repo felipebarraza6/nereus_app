@@ -85,7 +85,7 @@ class _StromProjectsScreenState extends ConsumerState<StromProjectsScreen> {
                           '${project.ticketNumber} · ${project.clientName ?? 'Sin cliente'}',
                         ),
                         trailing: StatusChip(
-                          label: project.status,
+                          label: projectStatusLabel(project.status),
                           tone: NereusTokens.lagoon,
                         ),
                       ),
