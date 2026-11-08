@@ -14,6 +14,7 @@ class _Cache extends Mock implements ReadCache {}
 class _Store extends Fake implements SecureStore {
   String? token;
   String? branch;
+  String? mode;
 
   @override
   Future<void> writeToken(String value) async => token = value;
@@ -28,9 +29,16 @@ class _Store extends Fake implements SecureStore {
   Future<String?> readBranchId() async => branch;
 
   @override
+  Future<void> writeMode(String value) async => mode = value;
+
+  @override
+  Future<String?> readMode() async => mode;
+
+  @override
   Future<void> clearSession() async {
     token = null;
     branch = null;
+    mode = null;
   }
 }
 

@@ -13,6 +13,7 @@ class AuthInterceptor extends Interceptor {
       final token = session.token;
       if (token != null && token.isNotEmpty) {
         options.headers['Authorization'] = 'Token $token';
+        options.extra['sentToken'] = token;
       }
       final branchId = session.branchId;
       if (branchId != null && branchId.isNotEmpty) {
@@ -27,7 +28,14 @@ class AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     try {
-      if (err.response?.statusCode == 401 && session.token != 'fixture-token') {
+      final sent = err.requestOptions.extra['sentToken'];
+      final current = session.token;
+      final sameToken = sent is String && sent.isNotEmpty && sent == current;
+      final profileCall = err.requestOptions.path.contains('my-profile');
+      if (err.response?.statusCode == 401 &&
+          sameToken &&
+          profileCall &&
+          current != 'fixture-token') {
         final cb = session.onUnauthorized;
         if (cb != null) {
           Future<void>.microtask(cb);

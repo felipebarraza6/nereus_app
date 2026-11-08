@@ -265,7 +265,7 @@ class _SmartHydroDeskPitch extends StatelessWidget {
       title: 'Centro',
       subtitle: 'Resumen vivo del día',
       detail: 'Dispositivos, negocios, terreno y alertas en una sola vista.',
-      route: '/',
+      route: '/home',
       icon: Icons.layers_outlined,
     ),
     (

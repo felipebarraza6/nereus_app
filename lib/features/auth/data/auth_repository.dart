@@ -75,6 +75,7 @@ class AuthRepository {
       _session.token = login.token;
       try {
         await _store.writeToken(login.token);
+        await _store.writeMode('fixture');
       } on Object catch (error, stack) {
         nereusLog('AuthRepository.writeToken', error, stack);
       }
@@ -122,6 +123,7 @@ class AuthRepository {
       _session.token = login.token;
       try {
         await _store.writeToken(login.token);
+        await _store.writeMode('yggdra');
       } on Object catch (error, stack) {
         nereusLog('AuthRepository.writeToken', error, stack);
       }
@@ -174,13 +176,15 @@ class AuthRepository {
   }
 
   Future<void> logout() async {
-    try {
-      await _dio.post<Map<String, dynamic>>('/api/accounts/users/logout/');
-    } on Object catch (error, stack) {
-      nereusLog('AuthRepository.logout', error, stack);
-    } finally {
-      await clearLocal();
+    final demo = isFixture || _session.token == 'fixture-token';
+    if (!demo) {
+      try {
+        await _dio.post<Map<String, dynamic>>('/api/accounts/users/logout/');
+      } on Object catch (error, stack) {
+        nereusLog('AuthRepository.logout', error, stack);
+      }
     }
+    await clearLocal();
   }
 
   Future<void> clearLocal() async {
