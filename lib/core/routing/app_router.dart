@@ -27,8 +27,9 @@ import 'package:nereus_app/features/org/presentation/org_screen.dart';
 import 'package:nereus_app/features/points/presentation/points_screen.dart';
 import 'package:nereus_app/features/profile/presentation/profile_screen.dart';
 import 'package:nereus_app/features/settings/presentation/settings_screen.dart';
-import 'package:nereus_app/features/strom/presentation/strom_desk.dart';
 import 'package:nereus_app/features/strom/presentation/strom_plan_screen.dart';
+import 'package:nereus_app/features/strom/presentation/strom_projects_screen.dart';
+import 'package:nereus_app/features/strom/presentation/strom_sections.dart';
 import 'package:nereus_app/features/strom/presentation/strom_project_screen.dart';
 import 'package:nereus_app/features/strom/presentation/strom_visit_screen.dart';
 import 'package:nereus_app/features/tickets/presentation/ticket_create_screen.dart';
@@ -209,16 +210,48 @@ GoRouter appRouter(Ref ref) {
           ),
           StatefulShellBranch(
             routes: [
-              ShellRoute(
-                builder: (context, state, child) => StromDesk(
-                  location: state.uri.path,
-                  child: child,
-                ),
-                routes: [
               GoRoute(
                 path: '/strom',
-                builder: (_, __) => const SizedBox.shrink(),
+                builder: (_, __) => const StromProjectsScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'nuevo',
+                    builder: (_, __) => const StromProjectCreateScreen(),
+                  ),
+                  GoRoute(
+                    path: 'visitas',
+                    builder: (_, __) => const StromVisitsScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'nueva',
+                        builder: (_, __) => const StromVisitCreateScreen(),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'actividades',
+                    builder: (_, __) => const StromActivitiesScreen(),
+                  ),
+                  GoRoute(
+                    path: 'terreno',
+                    builder: (_, __) => const StromFieldScreen(),
+                  ),
+                  GoRoute(
+                    path: 'tecnico',
+                    builder: (_, __) => const StromTechnicalScreen(),
+                  ),
+                  GoRoute(
+                    path: 'aclaraciones',
+                    builder: (_, __) => const StromClarificationsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'indicadores',
+                    builder: (_, __) => const StromIndicatorsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'configuracion',
+                    builder: (_, __) => const StromConfigScreen(),
+                  ),
                   GoRoute(
                     path: ':ticketId',
                     builder: (context, state) => StromProjectScreen(
@@ -240,8 +273,6 @@ GoRouter appRouter(Ref ref) {
                       ),
                     ],
                   ),
-                ],
-              ),
                 ],
               ),
             ],

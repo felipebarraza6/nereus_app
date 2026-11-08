@@ -94,6 +94,26 @@ class FixtureApiInterceptor extends Interceptor {
         ],
       };
     }
+    if (path.contains('/support/tickets/submit') && method == 'POST') {
+      final body = _asMap(options.data);
+      final created = {
+        'id': 't-${++_seq}',
+        'status': 'OPEN',
+        'priority': 'MEDIUM',
+        'ticket_number': 'T-${1000 + _seq}',
+        'ticket_type_name': '',
+        'category_name': '',
+        ...body,
+      };
+      _tickets.insert(0, created);
+      return created;
+    }
+    if (path.contains('/support/comments')) {
+      if (method == 'POST') {
+        return {'id': 'c-${++_seq}', ..._asMap(options.data)};
+      }
+      return _page(const []);
+    }
     if (path.contains('/support/tickets')) {
       return _page(_tickets);
     }

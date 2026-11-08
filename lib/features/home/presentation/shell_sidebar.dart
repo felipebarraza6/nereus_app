@@ -6,7 +6,14 @@ import 'package:nereus_app/core/widgets/nereus_brand.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
 import 'package:nereus_app/features/home/presentation/home_shell.dart';
 
-const _sectionOrder = ['Monitoreo', 'CRM', 'Activos', 'Red', 'Sistema'];
+const _sectionOrder = [
+  'Monitoreo',
+  'Strøm — Operaciones',
+  'CRM',
+  'Activos',
+  'Red',
+  'Sistema',
+];
 
 List<({String section, List<int> indices})> groupedShellDestinations() {
   final result = <({String section, List<int> indices})>[];

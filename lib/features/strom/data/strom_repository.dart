@@ -28,6 +28,48 @@ class StromRepository {
     }
   }
 
+  Future<StromProject> createProject({
+    required String subject,
+    required String kind,
+    required String client,
+    required String po,
+    required String committed,
+    required String responsible,
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/api/support/tickets/submit/',
+        data: {
+          'subject': subject,
+          'description': composeProjectDescription(
+            kind: kind,
+            client: client,
+            po: po,
+            committed: committed,
+            responsible: responsible,
+          ),
+          'category_code': kind == 'SOPORTE' ? 'soporte' : 'proyecto',
+          'priority': 'MEDIUM',
+        },
+      );
+      return StromProject.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
+  Future<List<StromVisit>> visits() async {
+    try {
+      final response = await _dio.get<dynamic>(
+        '/api/support/work-orders/',
+        queryParameters: {'page_size': 50, 'ordering': '-scheduled_date'},
+      );
+      return asResults(response.data).map(StromVisit.fromJson).toList();
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
   Future<List<StromVisit>> visitsForTicket(String ticketId) async {
     try {
       final response = await _dio.get<dynamic>(
@@ -188,6 +230,24 @@ class StromRepository {
           data: {'status': 'COMPLETED'},
         );
       }
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
+  Future<void> addClarification({
+    required String ticketId,
+    required String content,
+  }) async {
+    try {
+      await _dio.post<dynamic>(
+        '/api/support/comments/',
+        data: {
+          'ticket': ticketId,
+          'content': content.trim(),
+          'visibility': 'INTERNAL',
+        },
+      );
     } on Object catch (error, stack) {
       _rethrow(error, stack);
     }

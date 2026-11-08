@@ -14,6 +14,10 @@ final stromProjectsProvider =
       );
 });
 
+final stromVisitsAllProvider = FutureProvider.autoDispose<List<StromVisit>>((ref) {
+  return ref.watch(stromRepositoryProvider).visits();
+});
+
 final stromVisitsProvider =
     FutureProvider.autoDispose.family<List<StromVisit>, String>((ref, ticketId) {
   return ref.watch(stromRepositoryProvider).visitsForTicket(ticketId);

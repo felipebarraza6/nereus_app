@@ -115,10 +115,59 @@ const shellDestinations = [
   ),
   ShellDest(
     path: '/strom',
-    label: 'Strøm',
-    icon: Icons.engineering_outlined,
-    selectedIcon: Icons.engineering,
-    section: 'Monitoreo',
+    label: 'Proyectos',
+    icon: Icons.assignment_outlined,
+    selectedIcon: Icons.assignment,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/visitas',
+    label: 'Visitas',
+    icon: Icons.event_outlined,
+    selectedIcon: Icons.event,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/actividades',
+    label: 'Actividades',
+    icon: Icons.checklist_outlined,
+    selectedIcon: Icons.checklist,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/terreno',
+    label: 'Check de terreno',
+    icon: Icons.landscape_outlined,
+    selectedIcon: Icons.landscape,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/tecnico',
+    label: 'Check técnico',
+    icon: Icons.fact_check_outlined,
+    selectedIcon: Icons.fact_check,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/aclaraciones',
+    label: 'Aclaraciones',
+    icon: Icons.forum_outlined,
+    selectedIcon: Icons.forum,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/indicadores',
+    label: 'Indicadores',
+    icon: Icons.insights_outlined,
+    selectedIcon: Icons.insights,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/configuracion',
+    label: 'Configuración',
+    icon: Icons.tune_outlined,
+    selectedIcon: Icons.tune,
+    section: 'Strøm — Operaciones',
   ),
   ShellDest(
     path: '/profile',
@@ -130,10 +179,10 @@ const shellDestinations = [
 ];
 
 /// Destinations shown in the mobile bottom navigation.
-const mobileDestinations = [0, 10, 7, 3, 13];
+const mobileDestinations = [0, 10, 7, 3, 20];
 
 /// Destinations shown in the tablet rail when it is collapsed.
-const railDestinations = [0, 10, 3, 6, 7, 4, 11, 12];
+const railDestinations = [0, 10, 3, 6, 7, 4, 11];
 
 int destinationIndexFor(String path) {
   if (path.startsWith('/catalog')) return 1;
@@ -147,21 +196,24 @@ int destinationIndexFor(String path) {
   if (path.startsWith('/equipment')) return 9;
   if (path.startsWith('/devices') || path.startsWith('/alerts')) return 10;
   if (path.startsWith('/tickets')) return 11;
+  if (path.startsWith('/strom/visitas')) return 13;
+  if (path.startsWith('/strom/actividades')) return 14;
+  if (path.startsWith('/strom/terreno')) return 15;
+  if (path.startsWith('/strom/tecnico')) return 16;
+  if (path.startsWith('/strom/aclaraciones')) return 17;
+  if (path.startsWith('/strom/indicadores')) return 18;
+  if (path.startsWith('/strom/configuracion')) return 19;
   if (path.startsWith('/strom')) return 12;
-  if (path.startsWith('/profile') || path.startsWith('/settings')) return 13;
+  if (path.startsWith('/profile') || path.startsWith('/settings')) return 20;
   return 0;
 }
 
 List<String> breadcrumbsFor(String path) {
   if (path.startsWith('/devices/')) return ['Operación', 'Equipo'];
   if (path.startsWith('/tickets/')) return ['Tickets', 'Detalle'];
-  if (path.startsWith('/strom/') && path.contains('/visita/nueva')) {
-    return ['Strøm', 'Planificar'];
+  if (path.startsWith('/strom')) {
+    return ['Strøm — Operaciones', shellDestinations[destinationIndexFor(path)].label];
   }
-  if (path.startsWith('/strom/') && path.contains('/visita/')) {
-    return ['Strøm', 'Visita'];
-  }
-  if (path.startsWith('/strom/')) return ['Strøm', 'Proyecto'];
   if (path.startsWith('/clients/') && path != '/clients') {
     return ['Clientes', 'Ficha 360'];
   }

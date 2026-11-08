@@ -15,6 +15,7 @@ class StromProject {
     this.clientName,
     this.typeName = '',
     this.categoryName = '',
+    this.description = '',
   });
 
   final String id;
@@ -24,10 +25,16 @@ class StromProject {
   final String? clientName;
   final String typeName;
   final String categoryName;
+  final String description;
 
   bool get looksLikeSupport {
-    final blob = '$typeName $categoryName'.toLowerCase();
+    final blob = '$typeName $categoryName ${projectKind(this)}'.toLowerCase();
     return blob.contains('soporte');
+  }
+
+  bool get looksLikeMaintenance {
+    return projectKind(this) == 'MANTENCION' ||
+        typeName.toLowerCase().contains('mantenci');
   }
 
   factory StromProject.fromJson(Map<String, dynamic> json) {
@@ -39,6 +46,7 @@ class StromProject {
       clientName: asStringOrNull(json['client_name']),
       typeName: asString(json['ticket_type_name']),
       categoryName: asString(json['category_name']),
+      description: asString(json['description']),
     );
   }
 }
@@ -158,6 +166,34 @@ VisitSpecialty? specialtyFromNotes(String notes) {
     default:
       return null;
   }
+}
+
+String projectKind(StromProject project) {
+  final fromDescription = lineValue(project.description, 'TIPO');
+  if (fromDescription.isNotEmpty) return fromDescription;
+  return lineValue(project.categoryName, 'TIPO');
+}
+
+String projectKindLabel(StromProject project) {
+  if (project.looksLikeSupport) return 'Soporte';
+  if (project.looksLikeMaintenance) return 'Mantención';
+  return 'Proyecto';
+}
+
+String composeProjectDescription({
+  required String kind,
+  required String client,
+  required String po,
+  required String committed,
+  required String responsible,
+}) {
+  return [
+    'TIPO=$kind',
+    if (client.trim().isNotEmpty) 'CLIENTE=${client.trim()}',
+    if (po.trim().isNotEmpty) 'OC=${po.trim()}',
+    if (committed.trim().isNotEmpty) 'COMPROMISO=${committed.trim()}',
+    if (responsible.trim().isNotEmpty) 'RESPONSABLE=${responsible.trim()}',
+  ].join('\n');
 }
 
 String projectStatusLabel(String status) {

@@ -6,6 +6,7 @@ import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/strom/domain/strom_models.dart';
 import 'package:nereus_app/features/strom/presentation/strom_desk.dart';
+import 'package:nereus_app/features/strom/providers/strom_setup.dart';
 import 'package:nereus_app/features/strom/providers/strom_providers.dart';
 
 class StromPlanScreen extends ConsumerStatefulWidget {
@@ -119,12 +120,21 @@ class _StromPlanScreenState extends ConsumerState<StromPlanScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: _crew,
+                DropdownButtonFormField<String>(
+                  initialValue: ref.watch(stromSetupProvider).crews.contains(_crew.text)
+                      ? _crew.text
+                      : null,
                   decoration: const InputDecoration(
                     labelText: 'Cuadrilla o contratista',
-                    helperText: 'Queda como dato. No necesita cuenta.',
+                    helperText: 'Sale de Configuración. Queda como dato.',
                   ),
+                  items: [
+                    for (final name in ref.watch(stromSetupProvider).crews)
+                      DropdownMenuItem(value: name, child: Text(name)),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) _crew.text = value;
+                  },
                 ),
                 const SizedBox(height: 12),
                 TextField(

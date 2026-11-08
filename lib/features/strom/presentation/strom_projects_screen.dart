@@ -5,8 +5,8 @@ import 'package:nereus_app/core/network/api_error.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
-import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/strom/domain/strom_models.dart';
+import 'package:nereus_app/features/strom/presentation/strom_chrome.dart';
 import 'package:nereus_app/features/strom/providers/strom_providers.dart';
 
 class StromProjectsScreen extends ConsumerStatefulWidget {
@@ -24,14 +24,13 @@ class _StromProjectsScreenState extends ConsumerState<StromProjectsScreen> {
     final projects = ref.watch(stromProjectsProvider(''));
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Column(
+      body: StromChrome(
+        title: 'Proyectos',
+        action: StromCreateButton(onPressed: () => context.go('/strom/nuevo')),
+        child: Column(
         children: [
-          const PageHeader(
-            title: 'Strøm',
-            subtitle: 'Proyectos y visitas de operaciones',
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: NereusTokens.spaceMd),
+          Align(
+            alignment: Alignment.centerLeft,
             child: SegmentedButton<String>(
               segments: const [
                 ButtonSegment(value: 'todos', label: Text('Todos')),
@@ -85,7 +84,8 @@ class _StromProjectsScreenState extends ConsumerState<StromProjectsScreen> {
                           '${project.ticketNumber} · ${project.clientName ?? 'Sin cliente'}',
                         ),
                         trailing: StatusChip(
-                          label: projectStatusLabel(project.status),
+                          label:
+                              '${projectKindLabel(project)} · ${projectStatusLabel(project.status)}',
                           tone: NereusTokens.lagoon,
                         ),
                       ),
@@ -96,6 +96,7 @@ class _StromProjectsScreenState extends ConsumerState<StromProjectsScreen> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
