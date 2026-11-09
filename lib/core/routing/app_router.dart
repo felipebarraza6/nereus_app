@@ -27,6 +27,7 @@ import 'package:nereus_app/features/org/presentation/org_screen.dart';
 import 'package:nereus_app/features/points/presentation/points_screen.dart';
 import 'package:nereus_app/features/profile/presentation/profile_screen.dart';
 import 'package:nereus_app/features/settings/presentation/settings_screen.dart';
+import 'package:nereus_app/features/strom/presentation/strom_dev_screen.dart';
 import 'package:nereus_app/features/strom/presentation/strom_plan_screen.dart';
 import 'package:nereus_app/features/strom/presentation/strom_projects_screen.dart';
 import 'package:nereus_app/features/strom/presentation/strom_sections.dart';
@@ -214,6 +215,10 @@ GoRouter appRouter(Ref ref) {
                 path: '/strom',
                 builder: (_, __) => const StromProjectsScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'dev',
+                    builder: (_, __) => const StromDevScreen(),
+                  ),
                   GoRoute(
                     path: 'nuevo',
                     builder: (_, __) => const StromProjectCreateScreen(),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nereus_app/features/home/presentation/home_shell.dart';
 import 'package:nereus_app/features/home/presentation/shell_sidebar.dart';
 import 'package:nereus_app/features/strom/presentation/strom_chrome.dart';
+import 'package:nereus_app/features/strom/presentation/strom_dev_screen.dart';
 
 void main() {
   test('operaciones lists its eight screens', () {
@@ -11,6 +13,7 @@ void main() {
         if (dest.section == 'Strøm — Operaciones') dest.label,
     ];
     expect(labels, [
+      'Dev',
       'Proyectos',
       'Visitas',
       'Actividades',
@@ -63,5 +66,35 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Proyectos'), findsOneWidget);
     expect(find.text('Configuración'), findsOneWidget);
+  });
+
+  testWidgets('dev lists the mvp and keeps pending steps closed', (tester) async {
+    tester.view.physicalSize = const Size(390, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: GoRouter(
+          initialLocation: '/strom/dev',
+          routes: [
+            GoRoute(
+              path: '/strom/dev',
+              builder: (_, __) => const StromDevScreen(),
+            ),
+            GoRoute(
+              path: '/strom',
+              builder: (_, __) => const Text('Pantalla de proyectos'),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Dev'), findsWidgets);
+    expect(find.text('OT técnica distinta de la visita'), findsOneWidget);
+    expect(find.text('Pendiente'), findsNWidgets(2));
+    await tester.tap(find.text('Proyecto'));
+    await tester.pumpAndSettle();
+    expect(find.text('Pantalla de proyectos'), findsOneWidget);
   });
 }

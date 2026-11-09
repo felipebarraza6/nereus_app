@@ -163,19 +163,61 @@ class GlassNavBar extends StatelessWidget {
     final bg = dark ? NereusTokens.darkPanel : NereusTokens.surface;
     final line = dark ? NereusTokens.darkLine : NereusTokens.line;
     final compact = MediaQuery.sizeOf(context).width < 420;
+    final scheme = Theme.of(context).colorScheme;
+    final muted = dark ? NereusTokens.darkMuted : NereusTokens.inkMuted;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: bg,
         border: Border(top: BorderSide(color: line)),
       ),
-      child: NavigationBar(
-        selectedIndex: selectedIndex,
-        destinations: destinations,
-        onDestinationSelected: onSelect,
-        height: compact ? 58 : 62,
-        labelBehavior: compact
-            ? NavigationDestinationLabelBehavior.onlyShowSelected
-            : NavigationDestinationLabelBehavior.alwaysShow,
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: compact ? 58 : 62,
+          child: Row(
+            children: [
+              for (var i = 0; i < destinations.length; i++)
+                Expanded(
+                  child: InkWell(
+                    onTap: () => onSelect(i),
+                    splashFactory: NoSplash.splashFactory,
+                    highlightColor: Colors.transparent,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconTheme(
+                          data: IconThemeData(
+                            size: 18,
+                            color: i == selectedIndex ? scheme.primary : muted,
+                          ),
+                          child: i == selectedIndex
+                              ? (destinations[i].selectedIcon ?? destinations[i].icon)
+                              : destinations[i].icon,
+                        ),
+                        if (!compact || i == selectedIndex) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            destinations[i].label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: i == selectedIndex
+                                  ? FontWeight.w600
+                                  : FontWeight.w500,
+                              color: i == selectedIndex
+                                  ? scheme.onSurface
+                                  : muted,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
