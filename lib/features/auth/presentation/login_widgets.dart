@@ -269,7 +269,7 @@ class _SmartHydroDeskPitch extends StatelessWidget {
       icon: Icons.layers_outlined,
     ),
     (
-      title: 'CRM',
+      title: 'Kilde',
       subtitle: 'Prospectos · embudo · propuestas',
       detail: 'El camino comercial completo hasta convertir en cliente.',
       route: '/pipeline',

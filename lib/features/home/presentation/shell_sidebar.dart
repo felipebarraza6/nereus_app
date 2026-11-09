@@ -9,7 +9,7 @@ import 'package:nereus_app/features/home/presentation/home_shell.dart';
 const _sectionOrder = [
   'Monitoreo',
   'Strøm — Operaciones',
-  'CRM',
+  'Kilde',
   'Activos',
   'Red',
   'Sistema',
