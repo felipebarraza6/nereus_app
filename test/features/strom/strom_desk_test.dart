@@ -20,6 +20,7 @@ void main() {
       'Check de terreno',
       'Check técnico',
       'Aclaraciones',
+      'Auditoría',
       'Indicadores',
       'Configuración',
     ]);

@@ -14,6 +14,11 @@ final stromProjectsProvider =
       );
 });
 
+final stromCommentsProvider = FutureProvider.autoDispose
+    .family<List<Map<String, dynamic>>, String>((ref, ticketId) {
+  return ref.watch(stromRepositoryProvider).comments(ticketId);
+});
+
 final stromVisitsAllProvider = FutureProvider.autoDispose<List<StromVisit>>((ref) {
   return ref.watch(stromRepositoryProvider).visits();
 });

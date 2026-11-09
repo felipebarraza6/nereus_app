@@ -6,6 +6,7 @@ class FixtureApiInterceptor extends Interceptor {
   FixtureApiInterceptor(this.session);
 
   final SessionController session;
+  final List<Map<String, dynamic>> _comments = [];
   final List<Map<String, dynamic>> _tickets = [
     {
       'id': 't-norte',
@@ -112,9 +113,19 @@ class FixtureApiInterceptor extends Interceptor {
     }
     if (path.contains('/support/comments')) {
       if (method == 'POST') {
-        return {'id': 'c-${++_seq}', ..._asMap(options.data)};
+        final saved = {
+          'id': 'c-${++_seq}',
+          'created': DateTime.now().toUtc().toIso8601String(),
+          ..._asMap(options.data),
+        };
+        _comments.insert(0, saved);
+        return saved;
       }
-      return _page(const []);
+      final ticket = options.queryParameters['ticket']?.toString();
+      final rows = ticket == null || ticket.isEmpty
+          ? _comments
+          : _comments.where((row) => row['ticket'] == ticket).toList();
+      return _page(rows);
     }
     if (path.contains('/support/tickets')) {
       final id = _tailId(path, '/tickets/');

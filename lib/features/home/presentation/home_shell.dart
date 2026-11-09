@@ -163,6 +163,13 @@ const shellDestinations = [
     section: 'Strøm — Operaciones',
   ),
   ShellDest(
+    path: '/strom/auditoria',
+    label: 'Auditoría',
+    icon: Icons.history_outlined,
+    selectedIcon: Icons.history,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
     path: '/strom/indicadores',
     label: 'Indicadores',
     icon: Icons.insights_outlined,
@@ -186,7 +193,7 @@ const shellDestinations = [
 ];
 
 /// Destinations shown in the mobile bottom navigation.
-const mobileDestinations = [0, 10, 7, 3, 21];
+const mobileDestinations = [0, 10, 7, 3, 22];
 
 /// Destinations shown in the tablet rail when it is collapsed.
 const railDestinations = [0, 10, 3, 6, 7, 4, 11];
@@ -209,10 +216,11 @@ int destinationIndexFor(String path) {
   if (path.startsWith('/strom/terreno')) return 16;
   if (path.startsWith('/strom/tecnico')) return 17;
   if (path.startsWith('/strom/aclaraciones')) return 18;
-  if (path.startsWith('/strom/indicadores')) return 19;
-  if (path.startsWith('/strom/configuracion')) return 20;
+  if (path.startsWith('/strom/auditoria')) return 19;
+  if (path.startsWith('/strom/indicadores')) return 20;
+  if (path.startsWith('/strom/configuracion')) return 21;
   if (path.startsWith('/strom')) return 13;
-  if (path.startsWith('/profile') || path.startsWith('/settings')) return 21;
+  if (path.startsWith('/profile') || path.startsWith('/settings')) return 22;
   return 0;
 }
 

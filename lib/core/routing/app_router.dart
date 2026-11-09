@@ -250,6 +250,10 @@ GoRouter appRouter(Ref ref) {
                     builder: (_, __) => const StromClarificationsScreen(),
                   ),
                   GoRoute(
+                    path: 'auditoria',
+                    builder: (_, __) => const StromAuditScreen(),
+                  ),
+                  GoRoute(
                     path: 'indicadores',
                     builder: (_, __) => const StromIndicatorsScreen(),
                   ),

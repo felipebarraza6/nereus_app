@@ -305,6 +305,18 @@ class StromRepository {
     }
   }
 
+  Future<List<Map<String, dynamic>>> comments(String ticketId) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        '/api/support/comments/',
+        queryParameters: {'ticket': ticketId, 'page_size': 50},
+      );
+      return asResults(response.data);
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
   Future<void> addClarification({
     required String ticketId,
     required String content,

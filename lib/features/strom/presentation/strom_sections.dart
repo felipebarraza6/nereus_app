@@ -10,6 +10,10 @@ import 'package:nereus_app/features/strom/presentation/strom_chrome.dart';
 import 'package:nereus_app/features/strom/providers/strom_providers.dart';
 import 'package:nereus_app/features/strom/providers/strom_setup.dart';
 
+void _aviso(BuildContext context, String text) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+}
+
 class StromProjectCreateScreen extends ConsumerStatefulWidget {
   const StromProjectCreateScreen({super.key, this.ticketId});
 
@@ -248,8 +252,13 @@ class _StromVisitCreateScreenState extends ConsumerState<StromVisitCreateScreen>
 
   Future<void> _save() async {
     final projectId = _projectId;
-    final crew = _crew;
-    if (projectId == null || crew == null) return;
+    final crew = _crew ?? (ref.read(stromSetupProvider).crews.isEmpty
+        ? null
+        : ref.read(stromSetupProvider).crews.first);
+    if (projectId == null || crew == null) {
+      _aviso(context, 'Elige el proyecto y la cuadrilla.');
+      return;
+    }
     setState(() => _saving = true);
     try {
       final visit = await ref.read(stromRepositoryProvider).createVisit(
@@ -359,14 +368,84 @@ class _StromActivitiesScreenState extends ConsumerState<StromActivitiesScreen> {
 
   Future<void> _add() async {
     final visitId = _visitId;
-    final template = _template;
-    if (visitId == null || template == null) return;
+    final template = _template ??
+        (ref.read(stromSetupProvider).templates.isEmpty
+            ? null
+            : ref.read(stromSetupProvider).templates.first);
+    if (visitId == null || template == null) {
+      _aviso(context, 'Elige la visita y la plantilla.');
+      return;
+    }
     await ref.read(stromRepositoryProvider).addActivity(
           workOrderId: visitId,
           description: template,
         );
     ref.invalidate(stromVisitProvider(visitId));
     ref.invalidate(stromVisitsAllProvider);
+  }
+
+  Future<void> _record(StromActivity item) async {
+    final visitId = _visitId;
+    if (visitId == null) return;
+    final measurement = TextEditingController(text: item.measurement);
+    final observation = TextEditingController(text: item.observation);
+    var result = item.result ?? ActivityResult.completa;
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setLocal) => AlertDialog(
+          title: Text(item.description),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButton<ActivityResult>(
+                value: result,
+                isExpanded: true,
+                items: [
+                  for (final value in ActivityResult.values)
+                    DropdownMenuItem(
+                      value: value,
+                      child: Text(resultLabel(value)),
+                    ),
+                ],
+                onChanged: (value) {
+                  if (value != null) setLocal(() => result = value);
+                },
+              ),
+              TextField(
+                controller: measurement,
+                decoration: const InputDecoration(labelText: 'Medición'),
+              ),
+              TextField(
+                controller: observation,
+                decoration: const InputDecoration(labelText: 'Observación'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Guardar'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (saved == true) {
+      await ref.read(stromRepositoryProvider).recordActivity(
+            itemId: item.id,
+            result: result,
+            measurement: measurement.text,
+            observation: observation.text,
+          );
+      ref.invalidate(stromVisitProvider(visitId));
+    }
+    measurement.dispose();
+    observation.dispose();
   }
 
   @override
@@ -383,8 +462,11 @@ class _StromActivitiesScreenState extends ConsumerState<StromActivitiesScreen> {
           error: (error, _) => Text(userFacingErrorMessage(error)),
           data: (items) {
             final visitId = _visitId ?? (items.isEmpty ? null : items.first.id);
+            final detail = visitId == null
+                ? null
+                : ref.watch(stromVisitProvider(visitId)).asData?.value;
             final selected = items.where((visit) => visit.id == visitId);
-            final current = selected.isEmpty ? null : selected.first;
+            final current = detail ?? (selected.isEmpty ? null : selected.first);
             return StromForm(
               onSubmit: _add,
               submitLabel: 'Agregar actividad',
@@ -417,10 +499,12 @@ class _StromActivitiesScreenState extends ConsumerState<StromActivitiesScreen> {
                   for (final item in current.items)
                     ListTile(
                       contentPadding: EdgeInsets.zero,
+                      onTap: () => _record(item),
                       title: Text(item.description),
                       subtitle: Text(
                         item.result == null ? 'Sin resultado' : resultLabel(item.result!),
                       ),
+                      trailing: const Icon(Icons.edit_outlined),
                     ),
               ],
             );
@@ -431,11 +515,74 @@ class _StromActivitiesScreenState extends ConsumerState<StromActivitiesScreen> {
   }
 }
 
-class StromFieldScreen extends ConsumerWidget {
+class StromFieldScreen extends ConsumerStatefulWidget {
   const StromFieldScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StromFieldScreen> createState() => _StromFieldScreenState();
+}
+
+class _StromFieldScreenState extends ConsumerState<StromFieldScreen> {
+  String? _visitId;
+
+  Future<void> _record(StromVisit visit, StromActivity item) async {
+    final measurement = TextEditingController(text: item.measurement);
+    var result = item.result ?? ActivityResult.completa;
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setLocal) => AlertDialog(
+          title: Text(item.description),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButton<ActivityResult>(
+                value: result,
+                isExpanded: true,
+                items: [
+                  for (final value in ActivityResult.values)
+                    DropdownMenuItem(value: value, child: Text(resultLabel(value))),
+                ],
+                onChanged: (value) {
+                  if (value != null) setLocal(() => result = value);
+                },
+              ),
+              TextField(
+                controller: measurement,
+                decoration: const InputDecoration(labelText: 'Medición'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Guardar'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (saved != true) {
+      measurement.dispose();
+      return;
+    }
+    await ref.read(stromRepositoryProvider).recordActivity(
+          itemId: item.id,
+          result: result,
+          measurement: measurement.text,
+          observation: '',
+        );
+    measurement.dispose();
+    ref.invalidate(stromVisitProvider(visit.id));
+    if (mounted) _aviso(context, 'Resultado guardado. El proyecto sigue abierto.');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final visits = ref.watch(stromVisitsAllProvider);
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -445,32 +592,89 @@ class StromFieldScreen extends ConsumerWidget {
         child: visits.when(
           loading: () => const ShimmerList(),
           error: (error, _) => Text(userFacingErrorMessage(error)),
-          data: (items) => ListView(
-            children: [
-              for (final visit in items)
-                ListTile(
-                  title: Text(visit.number.isEmpty ? 'Visita' : visit.number),
-                  subtitle: Text(
-                    '${visit.items.where((item) => item.result != null).length} de ${visit.items.length} con resultado',
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.go(
-                    '/strom/${visit.ticketId}/visita/${visit.id}',
-                  ),
+          data: (items) {
+            if (items.isEmpty) return const Text('No hay visitas.');
+            final visitId = _visitId ?? items.first.id;
+            final visit = ref.watch(stromVisitProvider(visitId)).asData?.value ??
+                items.firstWhere((item) => item.id == visitId);
+            return ListView(
+              children: [
+                DropdownButtonFormField<String>(
+                  initialValue: visitId,
+                  decoration: const InputDecoration(labelText: 'Visita'),
+                  items: [
+                    for (final item in items)
+                      DropdownMenuItem(
+                        value: item.id,
+                        child: Text(item.number.isEmpty ? item.id : item.number),
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => _visitId = value),
                 ),
-            ],
-          ),
+                const SizedBox(height: 12),
+                for (final item in visit.items)
+                  ListTile(
+                    title: Text(item.description),
+                    subtitle: Text(
+                      item.result == null ? 'Sin resultado' : resultLabel(item.result!),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _record(visit, item),
+                  ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
 
-class StromTechnicalScreen extends ConsumerWidget {
+class StromTechnicalScreen extends ConsumerStatefulWidget {
   const StromTechnicalScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StromTechnicalScreen> createState() => _StromTechnicalScreenState();
+}
+
+class _StromTechnicalScreenState extends ConsumerState<StromTechnicalScreen> {
+  String? _visitId;
+  var _decision = TechnicalDecision.aprobada;
+  final _note = TextEditingController();
+  var _saving = false;
+
+  @override
+  void dispose() {
+    _note.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save(StromVisit visit, {required bool markExecuted}) async {
+    setState(() => _saving = true);
+    try {
+      await ref.read(stromRepositoryProvider).saveTechnicalCheck(
+            current: visit,
+            decision: _decision,
+            note: _note.text,
+            markExecuted: markExecuted,
+          );
+      ref.invalidate(stromVisitProvider(visit.id));
+      ref.invalidate(stromVisitsAllProvider);
+      if (mounted) {
+        _aviso(
+          context,
+          markExecuted ? 'Visita ejecutada.' : 'Check técnico guardado.',
+        );
+      }
+    } on Object catch (error) {
+      if (mounted) _aviso(context, userFacingErrorMessage(error));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final visits = ref.watch(stromVisitsAllProvider);
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -480,26 +684,72 @@ class StromTechnicalScreen extends ConsumerWidget {
         child: visits.when(
           loading: () => const ShimmerList(),
           error: (error, _) => Text(userFacingErrorMessage(error)),
-          data: (items) => ListView(
-            children: [
-              for (final visit in items)
-                ListTile(
-                  title: Text(visit.number.isEmpty ? 'Visita' : visit.number),
-                  subtitle: Text(
-                    canMarkVisitExecuted(visit.items)
-                        ? 'Lista para el check del líder'
-                        : 'Falta resultado en alguna actividad',
-                  ),
-                  trailing: StatusChip(
-                    label: visitStatusLabel(visit.status),
-                    tone: NereusTokens.hydroOlive,
-                  ),
-                  onTap: () => context.go(
-                    '/strom/${visit.ticketId}/visita/${visit.id}',
-                  ),
+          data: (items) {
+            if (items.isEmpty) return const Text('No hay visitas.');
+            final visitId = _visitId ?? items.first.id;
+            final visit = ref.watch(stromVisitProvider(visitId)).asData?.value ??
+                items.firstWhere((item) => item.id == visitId);
+            final ready = canMarkVisitExecuted(visit.items);
+            return ListView(
+              children: [
+                DropdownButtonFormField<String>(
+                  initialValue: visitId,
+                  decoration: const InputDecoration(labelText: 'Visita'),
+                  items: [
+                    for (final item in items)
+                      DropdownMenuItem(
+                        value: item.id,
+                        child: Text(item.number.isEmpty ? item.id : item.number),
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => _visitId = value),
                 ),
-            ],
-          ),
+                const SizedBox(height: 12),
+                Text(
+                  ready
+                      ? 'Lista para el check del líder.'
+                      : 'Falta resultado en alguna actividad.',
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<TechnicalDecision>(
+                  initialValue: _decision,
+                  decoration: const InputDecoration(labelText: 'Decisión'),
+                  items: const [
+                    DropdownMenuItem(
+                      value: TechnicalDecision.aprobada,
+                      child: Text('Aprobada'),
+                    ),
+                    DropdownMenuItem(
+                      value: TechnicalDecision.observaciones,
+                      child: Text('Con observaciones'),
+                    ),
+                    DropdownMenuItem(
+                      value: TechnicalDecision.correccion,
+                      child: Text('Corrección'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) setState(() => _decision = value);
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _note,
+                  decoration: const InputDecoration(labelText: 'Nota'),
+                ),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: _saving || !ready ? null : () => _save(visit, markExecuted: true),
+                  child: const Text('Dejar la visita ejecutada'),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: _saving ? null : () => _save(visit, markExecuted: false),
+                  child: const Text('Guardar check técnico'),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -528,7 +778,10 @@ class _StromClarificationsScreenState
 
   Future<void> _save() async {
     final projectId = _projectId;
-    if (projectId == null || _text.text.trim().isEmpty) return;
+    if (projectId == null || _text.text.trim().isEmpty) {
+      _aviso(context, 'Elige el proyecto y escribe la aclaración.');
+      return;
+    }
     setState(() => _saving = true);
     try {
       await ref.read(stromRepositoryProvider).addClarification(
@@ -536,11 +789,8 @@ class _StromClarificationsScreenState
             content: _text.text,
           );
       _text.clear();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Aclaración guardada')),
-        );
-      }
+      ref.invalidate(stromCommentsProvider(projectId));
+      if (mounted) _aviso(context, 'Aclaración guardada');
     } on Object catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -562,31 +812,124 @@ class _StromClarificationsScreenState
         child: projects.when(
           loading: () => const ShimmerList(),
           error: (error, _) => Text(userFacingErrorMessage(error)),
-          data: (items) => StromForm(
-            saving: _saving,
-            onSubmit: _save,
-            children: [
-              DropdownButtonFormField<String>(
-                initialValue: _projectId,
-                decoration: const InputDecoration(labelText: 'Proyecto *'),
-                items: [
-                  for (final project in items)
-                    DropdownMenuItem(
-                      value: project.id,
-                      child: Text(project.subject),
-                    ),
-                ],
-                onChanged: (value) => setState(() => _projectId = value),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _text,
-                minLines: 3,
-                maxLines: 6,
-                decoration: const InputDecoration(labelText: 'Aclaración *'),
-              ),
-            ],
-          ),
+          data: (items) {
+            final notes = _projectId == null
+                ? const AsyncValue<List<Map<String, dynamic>>>.data([])
+                : ref.watch(stromCommentsProvider(_projectId!));
+            return ListView(
+              children: [
+                DropdownButtonFormField<String>(
+                  initialValue: _projectId,
+                  decoration: const InputDecoration(labelText: 'Proyecto *'),
+                  items: [
+                    for (final project in items)
+                      DropdownMenuItem(
+                        value: project.id,
+                        child: Text(project.subject),
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => _projectId = value),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _text,
+                  minLines: 3,
+                  maxLines: 6,
+                  decoration: const InputDecoration(labelText: 'Aclaración *'),
+                ),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: _saving ? null : _save,
+                  child: Text(_saving ? 'Guardando' : 'Guardar'),
+                ),
+                const SizedBox(height: 16),
+                notes.when(
+                  loading: () => const Text('Cargando aclaraciones'),
+                  error: (error, _) => Text(userFacingErrorMessage(error)),
+                  data: (rows) {
+                    if (rows.isEmpty) return const Text('Sin aclaraciones.');
+                    return Column(
+                      children: [
+                        for (final row in rows)
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('${row['content'] ?? ''}'),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class StromAuditScreen extends ConsumerStatefulWidget {
+  const StromAuditScreen({super.key});
+
+  @override
+  ConsumerState<StromAuditScreen> createState() => _StromAuditScreenState();
+}
+
+class _StromAuditScreenState extends ConsumerState<StromAuditScreen> {
+  String? _projectId;
+
+  @override
+  Widget build(BuildContext context) {
+    final projects = ref.watch(stromProjectsProvider(''));
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: StromChrome(
+        title: 'Auditoría',
+        subtitle: 'Strøm — Operaciones. Aclaraciones y reprogramaciones guardadas.',
+        child: projects.when(
+          loading: () => const ShimmerList(),
+          error: (error, _) => Text(userFacingErrorMessage(error)),
+          data: (items) {
+            if (items.isEmpty) return const Text('No hay proyectos.');
+            final projectId = _projectId ?? items.first.id;
+            final notes = ref.watch(stromCommentsProvider(projectId));
+            return ListView(
+              children: [
+                DropdownButtonFormField<String>(
+                  initialValue: projectId,
+                  decoration: const InputDecoration(labelText: 'Proyecto'),
+                  items: [
+                    for (final project in items)
+                      DropdownMenuItem(
+                        value: project.id,
+                        child: Text(project.subject),
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => _projectId = value),
+                ),
+                const SizedBox(height: 12),
+                notes.when(
+                  loading: () => const Text('Cargando'),
+                  error: (error, _) => Text(userFacingErrorMessage(error)),
+                  data: (rows) {
+                    if (rows.isEmpty) {
+                      return const Text('Todavía no hay movimientos.');
+                    }
+                    return Column(
+                      children: [
+                        for (final row in rows)
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('${row['content'] ?? ''}'),
+                            subtitle: Text('${row['created'] ?? ''}'),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -680,6 +1023,10 @@ class _StromConfigScreenState extends ConsumerState<StromConfigScreen> {
         subtitle: 'Strøm — Operaciones. Estas listas quedan en esta sesión.',
         child: StromForm(
           onSubmit: () {
+            if (_crew.text.trim().isEmpty && _template.text.trim().isEmpty) {
+              _aviso(context, 'Escribe una cuadrilla o una plantilla.');
+              return;
+            }
             ref.read(stromSetupProvider.notifier).addCrew(_crew.text);
             ref.read(stromSetupProvider.notifier).addTemplate(_template.text);
             _crew.clear();
