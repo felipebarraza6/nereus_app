@@ -139,14 +139,26 @@ class _Fact extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final narrow = MediaQuery.sizeOf(context).width < 840;
+    final labelStyle = Theme.of(context).textTheme.bodyMedium;
+    if (narrow) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: labelStyle),
+            const SizedBox(height: 2),
+            Text(value),
+          ],
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          SizedBox(
-            width: 160,
-            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          ),
+          SizedBox(width: 160, child: Text(label, style: labelStyle)),
           Expanded(child: Text(value)),
         ],
       ),

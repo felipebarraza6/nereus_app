@@ -345,20 +345,28 @@ class _NavTile extends StatelessWidget {
     final dark = Theme.of(context).brightness == Brightness.dark;
     final muted = dark ? NereusTokens.darkMuted : NereusTokens.inkMuted;
     final hoverBg = dark ? NereusTokens.darkRaised : NereusTokens.surface2;
-    final fg = selected ? scheme.onPrimary : muted;
+    final fg = selected ? scheme.onSurface : muted;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 3),
       child: Tooltip(
         message: dest.label,
         child: Material(
-          color: selected ? scheme.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
+          color: selected ? scheme.primary.withValues(alpha: 0.08) : Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
+            side: BorderSide(
+              color: selected ? scheme.primary : Colors.transparent,
+            ),
+          ),
           child: InkWell(
             onTap: onTap,
-            hoverColor: selected ? scheme.primary : hoverBg,
+            splashFactory: NoSplash.splashFactory,
+            hoverColor: selected ? scheme.primary.withValues(alpha: 0.08) : hoverBg,
             borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
-            child: Padding(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: collapsed ? 10 : 12,
                 vertical: 9,
@@ -381,7 +389,7 @@ class _NavTile extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: selected ? scheme.onPrimary : scheme.onSurface,
+                          color: scheme.onSurface,
                           fontWeight:
                               selected ? FontWeight.w600 : FontWeight.w500,
                           fontSize: 13.5,
@@ -395,6 +403,7 @@ class _NavTile extends StatelessWidget {
                   ],
                 ],
               ),
+            ),
             ),
           ),
         ),
