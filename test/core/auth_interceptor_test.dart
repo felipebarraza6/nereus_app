@@ -37,8 +37,8 @@ void main() {
     expect(sent, isTrue);
   });
 
-  test('logs out on 401', () async {
-    final session = SessionController();
+  test('logs out when the current token is rejected on my-profile', () async {
+    final session = SessionController()..token = 'abc';
     var loggedOut = false;
     session.onUnauthorized = () async => loggedOut = true;
     final dio = Dio()
@@ -47,12 +47,49 @@ void main() {
         return ResponseBody.fromString('{"detail":"x"}', 401);
       });
     try {
-      await dio.get<void>('/api/accounts/users/me/');
+      await dio.get<void>('/api/accounts/users/my-profile/');
     } on DioException {
       // expected
     }
     await Future<void>.delayed(Duration.zero);
     expect(loggedOut, isTrue);
+  });
+
+  test('a later 401 from another call does not clear the session', () async {
+    final session = SessionController()..token = 'fresh-token';
+    var loggedOut = false;
+    session.onUnauthorized = () async => loggedOut = true;
+    final dio = Dio()
+      ..interceptors.add(AuthInterceptor(session))
+      ..httpClientAdapter = _Adapter((options) async {
+        return ResponseBody.fromString('{"detail":"Token inválido"}', 401);
+      });
+    try {
+      await dio.get<void>('/api/iot-telemetry/devices/overview/');
+    } on DioException {
+      // expected
+    }
+    await Future<void>.delayed(Duration.zero);
+    expect(loggedOut, isFalse);
+    expect(session.token, 'fresh-token');
+  });
+
+  test('a demo session stays signed in when the API rejects the fixture token', () async {
+    final session = SessionController()..token = 'fixture-token';
+    var loggedOut = false;
+    session.onUnauthorized = () async => loggedOut = true;
+    final dio = Dio()
+      ..interceptors.add(AuthInterceptor(session))
+      ..httpClientAdapter = _Adapter((options) async {
+        return ResponseBody.fromString('{"detail":"x"}', 401);
+      });
+    try {
+      await dio.get<void>('/api/iot-telemetry/devices/');
+    } on DioException {
+      // expected
+    }
+    await Future<void>.delayed(Duration.zero);
+    expect(loggedOut, isFalse);
   });
 }
 

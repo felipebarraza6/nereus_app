@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:nereus_app/core/config/app_config.dart';
+import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/core/theme/app_theme.dart';
 import 'package:nereus_app/core/theme/glass.dart';
 import 'package:nereus_app/features/auth/domain/session_models.dart';
@@ -90,6 +92,7 @@ void main() {
 Widget _frame(Widget child, {required bool wide, required String crumb}) {
   return ProviderScope(
     overrides: [
+      appConfigProvider.overrideWithValue(const AppConfig()),
       sessionProvider.overrideWith(_SessionOverride.new),
       dashboardProvider.overrideWith(_DashboardOverride.new),
       devicesProvider.overrideWith((ref) {
@@ -166,6 +169,7 @@ Widget _frame(Widget child, {required bool wide, required String crumb}) {
       enabled: false,
       child: MaterialApp.router(
         theme: AppTheme.light(),
+        debugShowCheckedModeBanner: false,
         routerConfig: GoRouter(
           routes: [
             GoRoute(

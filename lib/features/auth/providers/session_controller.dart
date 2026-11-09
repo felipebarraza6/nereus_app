@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:nereus_app/core/debug/nereus_log.dart';
 import 'package:nereus_app/core/providers.dart';
+import 'package:nereus_app/features/auth/data/auth_repository.dart';
 import 'package:nereus_app/features/auth/domain/session_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -34,6 +35,7 @@ class AuthSession {
   }
 
   bool get isClient {
+    if (user?.isSuperuser ?? false) return false;
     final role = currentBranch?.roleCode ??
         (branches.isEmpty ? 'CL' : branches.first.roleCode);
     return isClientRole(role);
@@ -59,15 +61,57 @@ class AuthSession {
 
 @Riverpod(keepAlive: true)
 class Session extends _$Session {
+  AuthSession? _live;
+
   @override
   FutureOr<AuthSession> build() async {
     final repo = ref.watch(authRepositoryProvider);
     ref.watch(sessionControllerProvider).onUnauthorized = logout;
     try {
       final restored = await repo.restore();
-      return AuthSession(token: restored.token, branchId: restored.branchId);
+      final token = restored.token;
+      if (token == null || token.isEmpty) {
+        if (_live != null && _live!.isAuthenticated) return _live!;
+        return const AuthSession();
+      }
+      final demo = token == 'fixture-token';
+      if (demo) {
+        Future<void>.microtask(
+          () => ref.read(dataModeProvider.notifier).useFixture(),
+        );
+      }
+      var profile = await repo.readStoredProfile();
+      if (profile == null && demo) {
+        profile = AuthRepository.demoSession();
+      }
+      if (!demo && !repo.isFixture) {
+        final fresh = await repo.loadProfile();
+        if (fresh != null) profile = fresh;
+      }
+      if (profile == null) {
+        final kept = AuthSession(token: token, branchId: restored.branchId);
+        _live = kept;
+        return kept;
+      }
+      final branchId = restored.branchId ??
+          (profile.branches.length == 1
+              ? '${profile.branches.first.branchId}'
+              : null);
+      if (branchId != null && restored.branchId == null) {
+        await repo.selectBranch(branchId);
+      }
+      final session = AuthSession(
+        token: token,
+        user: profile.user,
+        branches: profile.branches,
+        branchId: branchId,
+        enabledApps: profile.enabledApps,
+      );
+      _live = session;
+      return session;
     } on Object catch (error, stack) {
       nereusLog('Session.restore', error, stack);
+      if (_live != null && _live!.isAuthenticated) return _live!;
       return const AuthSession();
     }
   }
@@ -82,15 +126,14 @@ class Session extends _$Session {
       branchId = '${login.branches.first.branchId}';
       await ref.read(authRepositoryProvider).selectBranch(branchId);
     }
-    state = AsyncData(
-      AuthSession(
-        token: login.token,
-        user: login.user,
-        branches: login.branches,
-        branchId: branchId,
-        enabledApps: login.enabledApps,
-      ),
+    _live = AuthSession(
+      token: login.token,
+      user: login.user,
+      branches: login.branches,
+      branchId: branchId,
+      enabledApps: login.enabledApps,
     );
+    state = AsyncData(_live!);
     return login;
   }
 
@@ -106,6 +149,7 @@ class Session extends _$Session {
     } on Object catch (error, stack) {
       nereusLog('Session.logout', error, stack);
     }
+    _live = const AuthSession();
     state = const AsyncData(AuthSession());
   }
 }

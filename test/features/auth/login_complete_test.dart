@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nereus_app/features/auth/domain/session_models.dart';
+import 'package:nereus_app/features/auth/providers/session_controller.dart';
 import 'package:nereus_app/features/telemetry/domain/telemetry_models.dart';
 
 void main() {
@@ -30,6 +31,16 @@ void main() {
     expect(login.branches.single.branchId, 12);
     expect(login.enabledApps, ['iot_telemetry']);
     expect(isTeamRole(login.branches.single.roleCode), isTrue);
+  });
+
+  test('superuser is not treated as a client', () {
+    const session = AuthSession(
+      token: 't',
+      user: SessionUser(id: 1, email: 'a@b.cl', isSuperuser: true),
+      branches: [BranchAssignment(branchId: 1, roleCode: 'CL')],
+      branchId: '1',
+    );
+    expect(session.isClient, isFalse);
   });
 
   test('parses devices overview KPIs', () {

@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
 
+/// Crisp shadcn/ui + `nereus_smarthydro` theme (zero Material 3 bloat).
 abstract final class AppTheme {
   static ThemeData light() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: NereusTokens.teal,
+    const scheme = ColorScheme(
       brightness: Brightness.light,
-      primary: NereusTokens.teal,
+      primary: NereusTokens.navy,
       onPrimary: Colors.white,
-      secondary: NereusTokens.lagoon,
+      primaryContainer: NereusTokens.surface2,
+      onPrimaryContainer: NereusTokens.navy,
+      secondary: NereusTokens.hydroBlue,
       onSecondary: Colors.white,
-      tertiary: NereusTokens.tealBright,
-      onTertiary: NereusTokens.ink,
+      secondaryContainer: NereusTokens.surface2,
+      onSecondaryContainer: NereusTokens.navy,
+      tertiary: NereusTokens.hydroOlive,
+      onTertiary: Colors.white,
       error: NereusTokens.coral,
       onError: Colors.white,
-      surface: NereusTokens.foam,
+      surface: NereusTokens.surface,
       onSurface: NereusTokens.ink,
+      onSurfaceVariant: NereusTokens.inkMuted,
+      surfaceContainerHighest: NereusTokens.surface2,
+      outline: NereusTokens.line,
+      outlineVariant: NereusTokens.line,
     );
     return _theme(scheme, dark: false);
   }
@@ -24,62 +32,86 @@ abstract final class AppTheme {
     const scheme = ColorScheme(
       brightness: Brightness.dark,
       primary: NereusTokens.mint,
-      onPrimary: NereusTokens.ink,
-      secondary: Color(0xFF7DD3FC),
-      onSecondary: NereusTokens.ink,
-      tertiary: NereusTokens.tealBright,
-      onTertiary: NereusTokens.ink,
+      onPrimary: NereusTokens.darkCanvas,
+      primaryContainer: NereusTokens.darkRaised,
+      onPrimaryContainer: NereusTokens.darkInk,
+      secondary: Color(0xFF38BDF8),
+      onSecondary: NereusTokens.darkCanvas,
+      secondaryContainer: NereusTokens.darkRaised,
+      onSecondaryContainer: NereusTokens.darkInk,
+      tertiary: NereusTokens.hydroLime,
+      onTertiary: NereusTokens.darkCanvas,
       error: Color(0xFFFB7185),
-      onError: NereusTokens.ink,
-      surface: NereusTokens.darkCanvas,
+      onError: NereusTokens.darkCanvas,
+      surface: NereusTokens.darkPanel,
       onSurface: NereusTokens.darkInk,
-      surfaceContainerHighest: NereusTokens.darkPanel,
-      outline: Color(0x665EEAD4),
+      onSurfaceVariant: NereusTokens.darkMuted,
+      surfaceContainerHighest: NereusTokens.darkRaised,
+      outline: NereusTokens.darkLine,
+      outlineVariant: NereusTokens.darkLine,
     );
     return _theme(scheme, dark: true);
   }
 
   static ThemeData _theme(ColorScheme scheme, {required bool dark}) {
+    final muted = dark ? NereusTokens.darkMuted : NereusTokens.inkMuted;
+    final line = dark ? NereusTokens.darkLine : NereusTokens.line;
+    final surface = dark ? NereusTokens.darkPanel : NereusTokens.surface;
+    final surface2 = dark ? NereusTokens.darkRaised : NereusTokens.surface2;
+
     final text = TextTheme(
       displaySmall: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.8,
+        fontSize: 30,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.7,
         color: scheme.onSurface,
-        height: 1.1,
+        height: 1.12,
       ),
       headlineMedium: TextStyle(
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: FontWeight.w600,
-        letterSpacing: -0.4,
+        letterSpacing: -0.5,
         color: scheme.onSurface,
-        height: 1.15,
+        height: 1.18,
       ),
       titleLarge: TextStyle(
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.2,
         color: scheme.onSurface,
       ),
       titleMedium: TextStyle(
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: FontWeight.w600,
+        letterSpacing: -0.1,
         color: scheme.onSurface,
       ),
       bodyLarge: TextStyle(
-        fontSize: 16,
-        height: 1.45,
+        fontSize: 14,
+        height: 1.5,
         color: scheme.onSurface,
       ),
       bodyMedium: TextStyle(
-        fontSize: 14,
-        height: 1.45,
-        color: dark ? const Color(0xFFB7D4D1) : NereusTokens.inkMuted,
-      ),
-      labelLarge: const TextStyle(
         fontSize: 13,
+        height: 1.45,
+        color: muted,
+      ),
+      bodySmall: TextStyle(
+        fontSize: 12,
+        height: 1.4,
+        color: muted,
+      ),
+      labelLarge: TextStyle(
+        fontSize: 12,
         fontWeight: FontWeight.w600,
-        letterSpacing: 0.15,
+        letterSpacing: 0.1,
+        color: scheme.onSurface,
+      ),
+      labelSmall: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1.2,
+        color: muted,
       ),
     );
 
@@ -87,20 +119,59 @@ abstract final class AppTheme {
       useMaterial3: true,
       colorScheme: scheme,
       textTheme: text,
-      fontFamily: 'Roboto',
-      scaffoldBackgroundColor: Colors.transparent,
-      visualDensity: VisualDensity.standard,
-      dataTableTheme: DataTableThemeData(
-        headingTextStyle: text.labelLarge,
-        dataTextStyle: text.bodyMedium?.copyWith(fontSize: 13),
-        headingRowHeight: 36,
-        dataRowMinHeight: 36,
-        dataRowMaxHeight: 44,
-        dividerThickness: 0.6,
+      fontFamily: 'Inter',
+      fontFamilyFallback: const ['system-ui', 'Roboto', 'sans-serif'],
+      scaffoldBackgroundColor: dark ? NereusTokens.darkCanvas : NereusTokens.bg,
+      visualDensity: VisualDensity.compact,
+      splashFactory: NoSplash.splashFactory,
+      highlightColor: Colors.transparent,
+      hoverColor: surface2.withValues(alpha: 0.65),
+      dividerColor: line,
+      dividerTheme: DividerThemeData(
+        color: line,
+        thickness: 1,
+        space: 1,
       ),
-      splashFactory: InkSparkle.splashFactory,
+      cardTheme: CardThemeData(
+        color: surface,
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
+          side: BorderSide(color: line),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: surface,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
+          side: BorderSide(color: line),
+        ),
+        titleTextStyle: text.titleLarge,
+        contentTextStyle: text.bodyMedium,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: surface,
+        elevation: 4,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
+          side: BorderSide(color: line),
+        ),
+      ),
+      dataTableTheme: DataTableThemeData(
+        headingTextStyle: text.labelSmall,
+        dataTextStyle: text.bodyMedium?.copyWith(color: scheme.onSurface),
+        headingRowHeight: 36,
+        dataRowMinHeight: 38,
+        dataRowMaxHeight: 46,
+        dividerThickness: 1,
+      ),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         foregroundColor: scheme.onSurface,
@@ -108,60 +179,119 @@ abstract final class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: dark
-            ? const Color(0x66FFFFFF)
-            : const Color(0x99FFFFFF),
+        isDense: true,
+        fillColor: surface,
+        hintStyle: TextStyle(color: muted.withValues(alpha: 0.7), fontSize: 13),
+        labelStyle: TextStyle(
+          color: muted,
+          fontSize: 12.5,
+          fontWeight: FontWeight.w500,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
-          borderSide: BorderSide(color: scheme.outline),
+          borderSide: BorderSide(color: line),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
-          borderSide: BorderSide(color: scheme.outline),
+          borderSide: BorderSide(color: line),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
           borderSide: BorderSide(color: scheme.primary, width: 1.4),
         ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
+          borderSide: BorderSide(color: scheme.error),
+        ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: NereusTokens.spaceMd,
-          vertical: 14,
+          horizontal: 12,
+          vertical: 11,
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(48, 48),
+          elevation: 0,
+          backgroundColor: scheme.primary,
+          foregroundColor: scheme.onPrimary,
+          minimumSize: const Size(44, 40),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          textStyle: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.1,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
           ),
         ),
       ),
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: Colors.transparent,
-        indicatorColor: scheme.primary.withValues(alpha: 0.16),
-        labelTextStyle: WidgetStatePropertyAll(
-          text.labelLarge?.copyWith(fontSize: 12),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: surface,
+          foregroundColor: scheme.onSurface,
+          minimumSize: const Size(0, 38),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          side: BorderSide(color: line),
+          textStyle: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
+          ),
         ),
       ),
-      navigationRailTheme: NavigationRailThemeData(
-        backgroundColor: Colors.transparent,
-        indicatorColor: scheme.primary.withValues(alpha: 0.16),
-        selectedIconTheme: IconThemeData(color: scheme.primary),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: scheme.onSurface,
+          minimumSize: const Size(0, 34),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          textStyle: const TextStyle(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w600,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(NereusTokens.radiusSm),
+          ),
+        ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: scheme.primary,
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: scheme.onPrimary, size: 18);
+          }
+          return IconThemeData(color: muted, size: 18);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            fontSize: 11,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+            color: selected ? scheme.onSurface : muted,
+          );
+        }),
       ),
       chipTheme: ChipThemeData(
-        selectedColor: scheme.primary.withValues(alpha: 0.14),
-        checkmarkColor: scheme.primary,
+        backgroundColor: surface,
+        selectedColor: scheme.primary,
+        secondarySelectedColor: scheme.primary,
+        checkmarkColor: scheme.onPrimary,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         labelStyle: TextStyle(
           color: scheme.onSurface,
-          fontWeight: FontWeight.w600,
-          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          fontSize: 12,
         ),
         secondaryLabelStyle: TextStyle(
-          color: scheme.primary,
+          color: scheme.onPrimary,
           fontWeight: FontWeight.w600,
-          fontSize: 13,
+          fontSize: 12,
         ),
-        side: BorderSide(color: scheme.outline),
+        side: BorderSide(color: line),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(NereusTokens.radiusPill),
         ),

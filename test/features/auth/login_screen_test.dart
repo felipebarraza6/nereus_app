@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nereus_app/core/config/app_config.dart';
 import 'package:nereus_app/core/network/api_error.dart';
+import 'package:nereus_app/core/providers.dart';
 import 'package:nereus_app/core/theme/app_theme.dart';
 import 'package:nereus_app/features/auth/domain/session_models.dart';
 import 'package:nereus_app/features/auth/presentation/login_screen.dart';
@@ -10,8 +12,11 @@ import 'package:nereus_app/features/auth/providers/session_controller.dart';
 void main() {
   testWidgets('login screen validates empty fields', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(
-        child: TickerMode(
+      ProviderScope(
+        overrides: [
+          appConfigProvider.overrideWithValue(const AppConfig()),
+        ],
+        child: const TickerMode(
           enabled: false,
           child: MaterialApp(
             home: LoginScreen(),
@@ -29,6 +34,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          appConfigProvider.overrideWithValue(const AppConfig()),
           sessionProvider.overrideWith(_FailingSession.new),
         ],
         child: TickerMode(

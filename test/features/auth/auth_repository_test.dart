@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -12,6 +14,7 @@ class _Cache extends Mock implements ReadCache {}
 class _Store extends Fake implements SecureStore {
   String? token;
   String? branch;
+  String? mode;
 
   @override
   Future<void> writeToken(String value) async => token = value;
@@ -26,9 +29,16 @@ class _Store extends Fake implements SecureStore {
   Future<String?> readBranchId() async => branch;
 
   @override
+  Future<void> writeMode(String value) async => mode = value;
+
+  @override
+  Future<String?> readMode() async => mode;
+
+  @override
   Future<void> clearSession() async {
     token = null;
     branch = null;
+    mode = null;
   }
 }
 
@@ -48,6 +58,28 @@ void main() {
       cache: cache,
     );
   }
+
+  test('fixture login does not call the API', () async {
+    final store = _Store();
+    final session = SessionController();
+    final dio = Dio()
+      ..httpClientAdapter = _Adapter((options) async {
+        fail('fixture login must not hit ${options.path}');
+      });
+    final cache = _Cache();
+    when(() => cache.putJson(any(), any())).thenAnswer((_) async {});
+    final repo = AuthRepository(
+      dio: dio,
+      store: store,
+      session: session,
+      cache: cache,
+      isFixture: true,
+    );
+    final login = await repo.login(email: 'x', password: 'y');
+    expect(login.token, 'fixture-token');
+    expect(store.token, 'fixture-token');
+    expect(login.user.email, 'demo@smarthydro.app');
+  });
 
   test('login stores token from login_complete', () async {
     final store = _Store();
@@ -133,6 +165,36 @@ void main() {
     ).login(email: 'a@b.cl', password: 'x');
     expect(login.token, 'abc');
     expect(session.token, 'abc');
+  });
+
+  test('loadProfile keeps a team role when my-profile omits role_code', () async {
+    final store = SecureStore.memory();
+    final session = SessionController()..token = 'abc';
+    final dio = Dio()
+      ..httpClientAdapter = _Adapter((options) async {
+        expect(options.path, '/api/accounts/users/my-profile/');
+        return ResponseBody.fromString(
+          jsonEncode({
+            'id': 7,
+            'email': 'felipe@smarthydro.app',
+            'is_superuser': true,
+            'type_user': 'ADM',
+            'branch_assignments': [
+              {'branch_id': 3, 'branch_name': 'Nahuen', 'role_code': null},
+            ],
+          }),
+          200,
+          headers: {
+            Headers.contentTypeHeader: ['application/json'],
+          },
+        );
+      });
+    final profile = await repo(dio, store: store, session: session).loadProfile();
+    expect(profile, isNotNull);
+    expect(profile!.user.isSuperuser, isTrue);
+    expect(profile.branches.single.roleCode, 'ADMIN');
+    final stored = await repo(dio, store: store, session: session).readStoredProfile();
+    expect(stored?.branches.single.roleCode, 'ADMIN');
   });
 
   test('restore does not throw when storage fails', () async {

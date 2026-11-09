@@ -1,7 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:nereus_app/core/theme/tokens.dart';
+import 'package:nereus_app/core/widgets/nereus_brand.dart';
 
 bool shouldUseGlass(BuildContext context) {
   final mq = MediaQuery.of(context);
@@ -11,6 +10,11 @@ bool shouldUseGlass(BuildContext context) {
   return true;
 }
 
+bool _isDark(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark;
+
+/// Crisp shadcn/ui + `nereus_smarthydro` surface panel (`rounded-2xl border
+/// border-line bg-surface shadow-sm`).
 class GlassSurface extends StatelessWidget {
   const GlassSurface({
     super.key,
@@ -31,43 +35,29 @@ class GlassSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final glass = shouldUseGlass(context);
-    final tint = scheme.brightness == Brightness.dark
-        ? Colors.white.withValues(alpha: opacity ?? NereusTokens.glassOpacityDark)
-        : Colors.white.withValues(alpha: opacity ?? NereusTokens.glassOpacity);
+    final dark = _isDark(context);
+    final bg = dark ? NereusTokens.darkPanel : NereusTokens.surface;
+    final line = dark ? NereusTokens.darkLine : NereusTokens.line;
 
-    final panel = DecoratedBox(
+    return DecoratedBox(
       decoration: BoxDecoration(
-        color: glass ? tint : scheme.surface.withValues(alpha: 0.92),
+        color: opacity != null ? bg.withValues(alpha: opacity) : bg,
         borderRadius: borderRadius,
         border: Border.all(
           width: NereusTokens.borderWidth,
-          color: Colors.white.withValues(
-            alpha: scheme.brightness == Brightness.dark ? 0.18 : 0.62,
-          ),
+          color: line,
         ),
-        boxShadow: NereusTokens.elevation1,
+        boxShadow: dark ? NereusTokens.elevation2 : NereusTokens.elevation1,
       ),
-      child: padding == null ? child : Padding(padding: padding!, child: child),
-    );
-
-    if (!glass) {
-      return ClipRRect(borderRadius: borderRadius, child: panel);
-    }
-
-    return RepaintBoundary(
       child: ClipRRect(
         borderRadius: borderRadius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: panel,
-        ),
+        child: padding == null ? child : Padding(padding: padding!, child: child),
       ),
     );
   }
 }
 
+/// Crisp shadcn/ui card (`border border-line bg-surface rounded-2xl p-4 shadow-sm`).
 class GlassCard extends StatelessWidget {
   const GlassCard({
     super.key,
@@ -85,7 +75,7 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final card = GlassSurface(
-      borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
+      borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
       padding: padding,
       child: child,
     );
@@ -99,7 +89,8 @@ class GlassCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
+          splashFactory: NoSplash.splashFactory,
+          borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
           child: card,
         ),
       ),
@@ -107,6 +98,7 @@ class GlassCard extends StatelessWidget {
   }
 }
 
+/// Top header bar matching `desk.tsx` (`border-b border-line bg-surface`).
 class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   const GlassAppBar({
     super.key,
@@ -120,22 +112,25 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leading;
 
   @override
-  Size get preferredSize => const Size.fromHeight(64);
+  Size get preferredSize => const Size.fromHeight(56);
 
   @override
   Widget build(BuildContext context) {
-    return GlassSurface(
-      borderRadius: const BorderRadius.vertical(
-        bottom: Radius.circular(NereusTokens.radiusMd),
+    final dark = _isDark(context);
+    final bg = dark ? NereusTokens.darkPanel : NereusTokens.surface;
+    final line = dark ? NereusTokens.darkLine : NereusTokens.line;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: bg,
+        border: Border(bottom: BorderSide(color: line)),
       ),
       child: SafeArea(
         bottom: false,
         child: SizedBox(
           height: 56,
           child: NavigationToolbar(
-            leading: leading ?? (Navigator.of(context).canPop()
-                ? const BackButton()
-                : null),
+            leading: leading ??
+                (Navigator.of(context).canPop() ? const BackButton() : null),
             middle: DefaultTextStyle.merge(
               style: Theme.of(context).textTheme.titleLarge,
               child: title,
@@ -150,6 +145,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
+/// Compact bottom bar for mobile viewports (`border-t border-line bg-surface`).
 class GlassNavBar extends StatelessWidget {
   const GlassNavBar({
     super.key,
@@ -164,29 +160,81 @@ class GlassNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = _isDark(context);
+    final bg = dark ? NereusTokens.darkPanel : NereusTokens.surface;
+    final line = dark ? NereusTokens.darkLine : NereusTokens.line;
     final compact = MediaQuery.sizeOf(context).width < 420;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      child: GlassSurface(
-        borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
-        child: NavigationBar(
-          selectedIndex: selectedIndex,
-          destinations: destinations,
-          onDestinationSelected: onSelect,
-          height: compact ? 60 : 68,
-          labelBehavior: compact
-              ? NavigationDestinationLabelBehavior.onlyShowSelected
-              : NavigationDestinationLabelBehavior.alwaysShow,
+    final scheme = Theme.of(context).colorScheme;
+    final muted = dark ? NereusTokens.darkMuted : NereusTokens.inkMuted;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: bg,
+        border: Border(top: BorderSide(color: line)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: compact ? 58 : 62,
+          child: Row(
+            children: [
+              for (var i = 0; i < destinations.length; i++)
+                Expanded(
+                  child: InkWell(
+                    onTap: () => onSelect(i),
+                    splashFactory: NoSplash.splashFactory,
+                    highlightColor: Colors.transparent,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconTheme(
+                          data: IconThemeData(
+                            size: 18,
+                            color: i == selectedIndex ? scheme.primary : muted,
+                          ),
+                          child: i == selectedIndex
+                              ? (destinations[i].selectedIcon ?? destinations[i].icon)
+                              : destinations[i].icon,
+                        ),
+                        if (!compact || i == selectedIndex) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            destinations[i].label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: i == selectedIndex
+                                  ? FontWeight.w600
+                                  : FontWeight.w500,
+                              color: i == selectedIndex
+                                  ? scheme.onSurface
+                                  : muted,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
+/// Canvas backdrop used across the app shell (`#F4F6F8` in light, `#071318` in
+/// dark) and animated `WaterField` (`fluid.tsx`) on the login stage.
 class AnimatedWaterBackdrop extends StatefulWidget {
-  const AnimatedWaterBackdrop({super.key, required this.child});
+  const AnimatedWaterBackdrop({
+    super.key,
+    required this.child,
+    this.showWaterField = false,
+  });
 
   final Widget child;
+  final bool showWaterField;
 
   @override
   State<AnimatedWaterBackdrop> createState() => _AnimatedWaterBackdropState();
@@ -196,8 +244,8 @@ class _AnimatedWaterBackdropState extends State<AnimatedWaterBackdrop>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(seconds: 18),
-  )..repeat(reverse: true);
+    duration: const Duration(seconds: 16),
+  )..repeat();
 
   @override
   void dispose() {
@@ -208,27 +256,75 @@ class _AnimatedWaterBackdropState extends State<AnimatedWaterBackdrop>
   @override
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
+    final bg = dark ? NereusTokens.darkCanvas : NereusTokens.bg;
+
+    if (!widget.showWaterField) {
+      return ColoredBox(color: bg, child: widget.child);
+    }
+
     final reduce = MediaQuery.of(context).disableAnimations;
-    final colors = dark
-        ? const [Color(0xFF071416), Color(0xFF0C2C2E), Color(0xFF12363A)]
-        : const [Color(0xFFF4FBFA), Color(0xFFE3F4F0), Color(0xFFD7EAF7)];
+    if (reduce) {
+      return ColoredBox(
+        color: bg,
+        child: CustomPaint(
+          painter: WaterBasinPainter(
+            progress: 0.25,
+            dark: dark,
+            showCenterCore: true,
+          ),
+          child: widget.child,
+        ),
+      );
+    }
 
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        final t = reduce ? 0.35 : _controller.value;
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment(-1 + t, -1),
-              end: Alignment(1 - t, 1),
-              colors: colors,
+        return ColoredBox(
+          color: bg,
+          child: CustomPaint(
+            painter: WaterBasinPainter(
+              progress: _controller.value,
+              dark: dark,
+              showCenterCore: true,
             ),
+            child: child,
           ),
-          child: child,
         );
       },
       child: widget.child,
+    );
+  }
+}
+
+/// Desktop sidebar matching `nereus_smarthydro/src/components/desk.tsx`
+/// (`<aside class="w-64 shrink-0 border-r border-line bg-surface">`).
+class GlassSidebar extends StatelessWidget {
+  const GlassSidebar({
+    super.key,
+    required this.child,
+    this.width = 256,
+    this.margin = EdgeInsets.zero,
+  });
+
+  final Widget child;
+  final double width;
+  final EdgeInsets margin;
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = _isDark(context);
+    final bg = dark ? NereusTokens.darkPanel : NereusTokens.surface;
+    final line = dark ? NereusTokens.darkLine : NereusTokens.line;
+    return AnimatedContainer(
+      duration: NereusTokens.motionFast,
+      width: width,
+      margin: margin,
+      decoration: BoxDecoration(
+        color: bg,
+        border: Border(right: BorderSide(color: line)),
+      ),
+      child: child,
     );
   }
 }

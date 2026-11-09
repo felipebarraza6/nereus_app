@@ -3,11 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nereus_app/core/providers.dart';
+import 'package:nereus_app/core/theme/breakpoints.dart';
 import 'package:nereus_app/core/theme/glass.dart';
-import 'package:nereus_app/core/theme/tokens.dart';
 import 'package:nereus_app/core/widgets/async_body.dart';
+import 'package:nereus_app/core/widgets/debug_origin_banner.dart';
 import 'package:nereus_app/features/auth/providers/session_controller.dart';
 import 'package:nereus_app/features/devices/providers/devices_provider.dart';
+import 'package:nereus_app/features/home/presentation/shell_bars.dart';
+import 'package:nereus_app/features/home/presentation/shell_sidebar.dart';
 
 class ShellDest {
   const ShellDest({
@@ -52,7 +55,35 @@ const shellDestinations = [
     label: 'Clientes',
     icon: Icons.apartment_outlined,
     selectedIcon: Icons.apartment_rounded,
-    section: 'Red',
+    section: 'Kilde',
+  ),
+  ShellDest(
+    path: '/fichas',
+    label: 'Fichas',
+    icon: Icons.assignment_outlined,
+    selectedIcon: Icons.assignment,
+    section: 'Kilde',
+  ),
+  ShellDest(
+    path: '/levantamientos',
+    label: 'Levantamientos',
+    icon: Icons.fact_check_outlined,
+    selectedIcon: Icons.assignment_turned_in,
+    section: 'Kilde',
+  ),
+  ShellDest(
+    path: '/prospectos',
+    label: 'Prospectos',
+    icon: Icons.person_add_alt_1_outlined,
+    selectedIcon: Icons.person_add_alt_1,
+    section: 'Kilde',
+  ),
+  ShellDest(
+    path: '/pipeline',
+    label: 'Pipeline',
+    icon: Icons.view_kanban_outlined,
+    selectedIcon: Icons.view_kanban,
+    section: 'Kilde',
   ),
   ShellDest(
     path: '/points',
@@ -83,6 +114,76 @@ const shellDestinations = [
     section: 'Monitoreo',
   ),
   ShellDest(
+    path: '/strom/dev',
+    label: 'Dev',
+    icon: Icons.account_tree_outlined,
+    selectedIcon: Icons.account_tree,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom',
+    label: 'Proyectos',
+    icon: Icons.assignment_outlined,
+    selectedIcon: Icons.assignment,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/visitas',
+    label: 'Visitas',
+    icon: Icons.event_outlined,
+    selectedIcon: Icons.event,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/actividades',
+    label: 'Actividades',
+    icon: Icons.checklist_outlined,
+    selectedIcon: Icons.checklist,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/terreno',
+    label: 'Check de terreno',
+    icon: Icons.landscape_outlined,
+    selectedIcon: Icons.landscape,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/tecnico',
+    label: 'Check técnico',
+    icon: Icons.fact_check_outlined,
+    selectedIcon: Icons.fact_check,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/aclaraciones',
+    label: 'Aclaraciones',
+    icon: Icons.forum_outlined,
+    selectedIcon: Icons.forum,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/auditoria',
+    label: 'Auditoría',
+    icon: Icons.history_outlined,
+    selectedIcon: Icons.history,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/indicadores',
+    label: 'Indicadores',
+    icon: Icons.insights_outlined,
+    selectedIcon: Icons.insights,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
+    path: '/strom/configuracion',
+    label: 'Configuración',
+    icon: Icons.tune_outlined,
+    selectedIcon: Icons.tune,
+    section: 'Strøm — Operaciones',
+  ),
+  ShellDest(
     path: '/profile',
     label: 'Ajustes',
     icon: Icons.settings_outlined,
@@ -91,23 +192,52 @@ const shellDestinations = [
   ),
 ];
 
-const mobileDestinations = [0, 6, 3, 7, 8];
+/// Destinations shown in the mobile bottom navigation.
+const mobileDestinations = [0, 10, 7, 3, 22];
+
+/// Destinations shown in the tablet rail when it is collapsed.
+const railDestinations = [0, 10, 3, 6, 7, 4, 11];
 
 int destinationIndexFor(String path) {
   if (path.startsWith('/catalog')) return 1;
   if (path.startsWith('/inventory')) return 2;
   if (path.startsWith('/clients')) return 3;
-  if (path.startsWith('/points')) return 4;
-  if (path.startsWith('/equipment')) return 5;
-  if (path.startsWith('/devices') || path.startsWith('/alerts')) return 6;
-  if (path.startsWith('/tickets')) return 7;
-  if (path.startsWith('/profile') || path.startsWith('/settings')) return 8;
+  if (path.startsWith('/fichas')) return 4;
+  if (path.startsWith('/levantamientos')) return 5;
+  if (path.startsWith('/prospectos')) return 6;
+  if (path.startsWith('/pipeline')) return 7;
+  if (path.startsWith('/points')) return 8;
+  if (path.startsWith('/equipment')) return 9;
+  if (path.startsWith('/devices') || path.startsWith('/alerts')) return 10;
+  if (path.startsWith('/tickets')) return 11;
+  if (path.startsWith('/strom/dev')) return 12;
+  if (path.startsWith('/strom/visitas')) return 14;
+  if (path.startsWith('/strom/actividades')) return 15;
+  if (path.startsWith('/strom/terreno')) return 16;
+  if (path.startsWith('/strom/tecnico')) return 17;
+  if (path.startsWith('/strom/aclaraciones')) return 18;
+  if (path.startsWith('/strom/auditoria')) return 19;
+  if (path.startsWith('/strom/indicadores')) return 20;
+  if (path.startsWith('/strom/configuracion')) return 21;
+  if (path.startsWith('/strom')) return 13;
+  if (path.startsWith('/profile') || path.startsWith('/settings')) return 22;
   return 0;
 }
 
 List<String> breadcrumbsFor(String path) {
   if (path.startsWith('/devices/')) return ['Operación', 'Equipo'];
   if (path.startsWith('/tickets/')) return ['Tickets', 'Detalle'];
+  if (path.startsWith('/strom')) {
+    return ['Strøm — Operaciones', shellDestinations[destinationIndexFor(path)].label];
+  }
+  if (path.startsWith('/clients/') && path != '/clients') {
+    return ['Clientes', 'Ficha 360'];
+  }
+  if (path.startsWith('/fichas/admin')) return ['Fichas', 'Administrar'];
+  if (path.startsWith('/levantamientos/fill')) {
+    return ['Levantamientos', 'Terreno'];
+  }
+  if (path.startsWith('/pipeline/')) return ['Pipeline', 'Oportunidad'];
   if (path == '/tour') return ['Inicio', 'Recorrido'];
   if (path == '/alerts') return ['Operación', 'Alertas'];
   if (path == '/profile/settings') return ['Ajustes', 'Preferencias'];
@@ -126,7 +256,6 @@ class HomeShell extends ConsumerStatefulWidget {
 }
 
 class _HomeShellState extends ConsumerState<HomeShell> {
-  bool _collapsed = false;
   final _search = TextEditingController();
   final _searchFocus = FocusNode();
 
@@ -138,10 +267,11 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   }
 
   void _go(int index) {
-    widget.navigationShell.goBranch(
-      index,
-      initialLocation: index == widget.navigationShell.currentIndex,
-    );
+    if (index < 0 || index >= shellDestinations.length) {
+      context.go('/tour');
+      return;
+    }
+    context.go(shellDestinations[index].path);
   }
 
   void _submitSearch(String raw) {
@@ -150,9 +280,20 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     context.go('/devices');
   }
 
+  void _logout() => ref.read(sessionProvider.notifier).logout();
+
+  void _focusSearchIfNotEditing() {
+    final primary = FocusManager.instance.primaryFocus;
+    final ctx = primary?.context;
+    if (ctx != null && ctx.widget is EditableText) {
+      return;
+    }
+    _searchFocus.requestFocus();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final wide = MediaQuery.sizeOf(context).width >= 960;
+    final breakpoint = context.breakpoint;
     final offline = ref.watch(isOfflineProvider).value ?? false;
     final session = ref.watch(sessionProvider).value;
     final path = GoRouterState.of(context).uri.path;
@@ -162,7 +303,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.slash):
-            _searchFocus.requestFocus,
+            _focusSearchIfNotEditing,
       },
       child: Focus(
         autofocus: true,
@@ -170,468 +311,156 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           child: Scaffold(
             body: Column(
               children: [
+                const DebugOriginBanner(),
                 OfflineBanner(offline: offline),
                 Expanded(
-                  child: wide
-                      ? Row(
-                          children: [
-                            _DesktopSidebar(
-                              collapsed: _collapsed,
-                              selected: selected,
-                              onSelect: _go,
-                              onToggle: () =>
-                                  setState(() => _collapsed = !_collapsed),
-                              userLabel: session?.user?.fullName ??
-                                  session?.user?.email ??
-                                  '',
-                              branchLabel:
-                                  session?.currentBranch?.branchName ?? '',
-                            ),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  _TopBar(
-                                    crumbs: crumbs,
-                                    searchController: _search,
-                                    searchFocus: _searchFocus,
-                                    onSearch: _submitSearch,
-                                    session: session,
-                                    onLogout: () =>
-                                        ref.read(sessionProvider.notifier).logout(),
-                                  ),
-                                  Expanded(child: widget.navigationShell),
-                                ],
-                              ),
-                            ),
-                          ],
-                        )
-                      : SafeArea(
-                          bottom: false,
-                          child: Column(
-                            children: [
-                              _MobileHeader(
-                                crumbs: crumbs,
-                                onSearch: _searchFocus.requestFocus,
-                                onMore: () => _showMore(context),
-                              ),
-                              Expanded(child: widget.navigationShell),
-                            ],
-                          ),
-                        ),
+                  child: _ShellLayout(
+                    breakpoint: breakpoint,
+                    selected: selected,
+                    session: session,
+                    crumbs: crumbs,
+                    searchController: _search,
+                    searchFocus: _searchFocus,
+                    onSearch: _submitSearch,
+                    onDestinationSelect: _go,
+                    onLogout: _logout,
+                    navigationShell: widget.navigationShell,
+                  ),
                 ),
               ],
             ),
-            bottomNavigationBar: wide
-                ? null
-                : GlassNavBar(
-                    selectedIndex: () {
-                      final mobileIndex = mobileDestinations.indexOf(selected);
-                      return mobileIndex < 0 ? 0 : mobileIndex;
-                    }(),
+            bottomNavigationBar: _phoneShell(breakpoint)
+                ? ShellMobileBottomNav(selected: selected, onSelect: _go)
+                : null,
+            drawer: _phoneShell(breakpoint)
+                ? ShellMobileDrawer(
+                    selected: selected,
                     onSelect: (index) {
-                      _go(mobileDestinations[index]);
+                      Navigator.of(context).pop();
+                      _go(index);
                     },
-                    destinations: [
-                      for (final i in mobileDestinations)
-                        NavigationDestination(
-                          icon: Icon(shellDestinations[i].icon),
-                          selectedIcon: Icon(
-                            shellDestinations[i].selectedIcon ??
-                                shellDestinations[i].icon,
-                          ),
-                          label: shellDestinations[i].label,
-                        ),
-                    ],
-                  ),
+                  )
+                : null,
           ),
         ),
       ),
     );
   }
-
-  Future<void> _showMore(BuildContext context) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              for (var i = 0; i < shellDestinations.length; i++)
-                ListTile(
-                  leading: Icon(shellDestinations[i].icon),
-                  title: Text(shellDestinations[i].label),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _go(i);
-                  },
-                ),
-              ListTile(
-                leading: const Icon(Icons.route_outlined),
-                title: const Text('Recorrido'),
-                onTap: () {
-                  Navigator.pop(context);
-                  context.go('/tour');
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.notifications_outlined),
-                title: const Text('Alertas'),
-                onTap: () {
-                  Navigator.pop(context);
-                  context.go('/alerts');
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 }
 
-class _DesktopSidebar extends StatelessWidget {
-  const _DesktopSidebar({
-    required this.collapsed,
-    required this.selected,
-    required this.onSelect,
-    required this.onToggle,
-    required this.userLabel,
-    required this.branchLabel,
-  });
+bool _phoneShell(NereusBreakpoint breakpoint) {
+  return breakpoint == NereusBreakpoint.compact ||
+      breakpoint == NereusBreakpoint.medium;
+}
 
-  final bool collapsed;
-  final int selected;
-  final ValueChanged<int> onSelect;
-  final VoidCallback onToggle;
-  final String userLabel;
-  final String branchLabel;
+class _BranchFade extends StatefulWidget {
+  const _BranchFade({required this.index, required this.child});
+
+  final int index;
+  final Widget child;
+
+  @override
+  State<_BranchFade> createState() => _BranchFadeState();
+}
+
+class _BranchFadeState extends State<_BranchFade> {
+  var _visible = true;
+
+  @override
+  void didUpdateWidget(_BranchFade oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.index == widget.index) return;
+    setState(() => _visible = false);
+    Future<void>.delayed(const Duration(milliseconds: 90), () {
+      if (mounted) setState(() => _visible = true);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final width = collapsed ? 76.0 : 248.0;
-    return AnimatedContainer(
-      duration: NereusTokens.motionFast,
-      width: width,
-      margin: const EdgeInsets.fromLTRB(10, 10, 0, 10),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: const Color(0xF00F2A2C),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: NereusTokens.elevation2,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 14, 10, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  const SizedBox(width: 6),
-                  Icon(
-                    Icons.water_drop,
-                    color: NereusTokens.mint,
-                    size: collapsed ? 22 : 20,
-                  ),
-                  if (!collapsed) ...[
-                    const SizedBox(width: 10),
-                    const Expanded(
-                      child: Text(
-                        'Nereus',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.4,
-                        ),
-                      ),
-                    ),
-                  ] else
-                    const Spacer(),
-                  IconButton(
-                    tooltip: collapsed ? 'Expandir' : 'Colapsar',
-                    onPressed: onToggle,
-                    icon: Icon(
-                      collapsed ? Icons.chevron_right : Icons.chevron_left,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-              if (!collapsed)
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(8, 0, 8, 12),
-                  child: Text(
-                    'Telemetría hídrica',
-                    style: TextStyle(color: Color(0xFF9EC9C4), fontSize: 12),
-                  ),
-                ),
-              Expanded(
-                child: ListView(
-                  children: [
-                    for (final group in const [
-                      (section: 'Monitoreo', indices: [0, 6, 7]),
-                      (section: 'Activos', indices: [1, 2, 5]),
-                      (section: 'Red', indices: [3, 4]),
-                      (section: 'Sistema', indices: [8]),
-                    ]) ...[
-                      if (!collapsed)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 14, 8, 6),
-                          child: Text(
-                            group.section,
-                            style: const TextStyle(
-                              color: Color(0xFF7AA8A3),
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.6,
-                            ),
-                          ),
-                        ),
-                      for (final i in group.indices)
-                        _SideTile(
-                          dest: shellDestinations[i],
-                          selected: selected == i,
-                          collapsed: collapsed,
-                          onTap: () => onSelect(i),
-                        ),
-                    ],
-                  ],
-                ),
-              ),
-              if (!collapsed) ...[
-                _SideTile(
-                  dest: const ShellDest(
-                    path: '/tour',
-                    label: 'Recorrido',
-                    icon: Icons.route_outlined,
-                    selectedIcon: Icons.route,
-                  ),
-                  selected: false,
-                  collapsed: collapsed,
-                  onTap: () => context.go('/tour'),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  userLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                ),
-                Text(
-                  branchLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Color(0xFF9EC9C4), fontSize: 12),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
+    return AnimatedOpacity(
+      opacity: _visible ? 1 : 0.35,
+      duration: const Duration(milliseconds: 140),
+      curve: Curves.easeOut,
+      child: widget.child,
     );
   }
 }
 
-class _SideTile extends StatelessWidget {
-  const _SideTile({
-    required this.dest,
+class _ShellLayout extends StatelessWidget {
+  const _ShellLayout({
+    required this.breakpoint,
     required this.selected,
-    required this.collapsed,
-    required this.onTap,
-  });
-
-  final ShellDest dest;
-  final bool selected;
-  final bool collapsed;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
-      child: Tooltip(
-        message: dest.label,
-        child: Material(
-          color: selected
-              ? NereusTokens.tealBright.withValues(alpha: 0.22)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          child: InkWell(
-            onTap: onTap,
-            hoverColor: Colors.white.withValues(alpha: 0.06),
-            borderRadius: BorderRadius.circular(10),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: collapsed ? 8 : 10,
-                vertical: 9,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    selected ? (dest.selectedIcon ?? dest.icon) : dest.icon,
-                    size: 20,
-                    color: selected ? NereusTokens.mint : const Color(0xFFD5EEEC),
-                  ),
-                  if (!collapsed) ...[
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        dest.label,
-                        style: TextStyle(
-                          color: selected ? Colors.white : const Color(0xFFE7F4F3),
-                          fontWeight:
-                              selected ? FontWeight.w600 : FontWeight.w500,
-                          fontSize: 13.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TopBar extends StatelessWidget {
-  const _TopBar({
+    required this.session,
     required this.crumbs,
     required this.searchController,
     required this.searchFocus,
     required this.onSearch,
-    required this.session,
+    required this.onDestinationSelect,
     required this.onLogout,
+    required this.navigationShell,
   });
 
+  final NereusBreakpoint breakpoint;
+  final int selected;
+  final AuthSession? session;
   final List<String> crumbs;
   final TextEditingController searchController;
   final FocusNode searchFocus;
   final ValueChanged<String> onSearch;
-  final AuthSession? session;
+  final ValueChanged<int> onDestinationSelect;
   final VoidCallback onLogout;
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-      child: GlassSurface(
-        borderRadius: BorderRadius.circular(16),
-        opacity: 0.9,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: SizedBox(
-          height: 48,
-          child: Row(
+    final page = _BranchFade(
+      index: navigationShell.currentIndex,
+      child: navigationShell,
+    );
+    switch (breakpoint) {
+      case NereusBreakpoint.compact:
+      case NereusBreakpoint.medium:
+        return SafeArea(
+          bottom: false,
+          child: Column(
             children: [
-              Text(
-                crumbs.join('  /  '),
-                style: Theme.of(context).textTheme.labelLarge,
+              ShellMobileHeader(
+                crumbs: crumbs,
+                onSearch: onSearch,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: TextField(
-                  controller: searchController,
-                  focusNode: searchFocus,
-                  onSubmitted: onSearch,
-                  decoration: const InputDecoration(
-                    hintText: 'Buscar equipos  (/)',
-                    isDense: true,
-                    filled: false,
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    prefixIcon: Icon(Icons.search, size: 18),
-                    contentPadding: EdgeInsets.symmetric(vertical: 8),
-                  ),
-                ),
-              ),
-              IconButton(
-                tooltip: 'Alertas',
-                onPressed: () => context.go('/alerts'),
-                icon: const Icon(Icons.notifications_outlined),
-              ),
-              IconButton(
-                tooltip: 'Recorrido',
-                onPressed: () => context.go('/tour'),
-                icon: const Icon(Icons.route_outlined),
-              ),
-              PopupMenuButton<String>(
-                tooltip: 'Cuenta',
-                onSelected: (value) {
-                  if (value == 'profile') context.go('/profile');
-                  if (value == 'org') context.go('/profile/org');
-                  if (value == 'settings') context.go('/profile/settings');
-                  if (value == 'logout') onLogout();
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    enabled: false,
-                    child: Text(
-                      session?.user?.email ?? 'Sesión',
-                    ),
-                  ),
-                  const PopupMenuItem(value: 'profile', child: Text('Perfil')),
-                  const PopupMenuItem(value: 'org', child: Text('Sucursal')),
-                  const PopupMenuItem(value: 'settings', child: Text('Preferencias')),
-                  const PopupMenuItem(value: 'logout', child: Text('Cerrar sesión')),
-                ],
-                child: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: NereusTokens.teal.withValues(alpha: 0.16),
-                  child: Text(
-                    (session?.user?.fullName ?? session?.user?.email ?? 'N')
-                        .characters
-                        .first
-                        .toUpperCase(),
-                    style: const TextStyle(
-                      color: NereusTokens.teal,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
+              Expanded(child: page),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _MobileHeader extends StatelessWidget {
-  const _MobileHeader({
-    required this.crumbs,
-    required this.onSearch,
-    required this.onMore,
-  });
-
-  final List<String> crumbs;
-  final VoidCallback onSearch;
-  final VoidCallback onMore;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              crumbs.last,
-              style: Theme.of(context).textTheme.titleLarge,
+        );
+      case NereusBreakpoint.expanded:
+      case NereusBreakpoint.large:
+      case NereusBreakpoint.extraLarge:
+        return Row(
+          children: [
+            ShellDesktopSidebar(
+              selected: selected,
+              onSelect: onDestinationSelect,
+              session: session,
+              onLogout: onLogout,
             ),
-          ),
-          IconButton(
-            onPressed: () => context.go('/tour'),
-            icon: const Icon(Icons.route_outlined),
-          ),
-          IconButton(onPressed: onSearch, icon: const Icon(Icons.search)),
-          IconButton(onPressed: onMore, icon: const Icon(Icons.menu)),
-        ],
-      ),
-    );
+            Expanded(
+              child: Column(
+                children: [
+                  ShellTopBar(
+                    crumbs: crumbs,
+                    searchController: searchController,
+                    searchFocus: searchFocus,
+                    onSearch: onSearch,
+                    session: session,
+                    onLogout: onLogout,
+                  ),
+                  Expanded(child: page),
+                ],
+              ),
+            ),
+          ],
+        );
+    }
   }
 }

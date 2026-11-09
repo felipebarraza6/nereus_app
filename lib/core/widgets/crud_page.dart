@@ -7,6 +7,8 @@ import 'package:nereus_app/core/widgets/async_body.dart';
 import 'package:nereus_app/core/widgets/nereus_table.dart';
 import 'package:nereus_app/core/widgets/page_header.dart';
 
+/// Shared master-detail CRUD page styled after `nereus_smarthydro/src/components/desk.tsx`
+/// (`Panel` + shadcn/ui DataTable, zero Material FAB bloat).
 class CrudPage<T> extends StatefulWidget {
   const CrudPage({
     super.key,
@@ -17,6 +19,7 @@ class CrudPage<T> extends StatefulWidget {
     required this.columns,
     required this.rowTitle,
     required this.rowSubtitle,
+    this.kicker,
     this.onCreate,
     this.onOpen,
     this.detailBuilder,
@@ -28,6 +31,7 @@ class CrudPage<T> extends StatefulWidget {
 
   final String title;
   final String subtitle;
+  final String? kicker;
   final AsyncValue<List<T>> value;
   final VoidCallback onRetry;
   final List<NereusColumn<T>> columns;
@@ -52,46 +56,52 @@ class _CrudPageState<T> extends State<CrudPage<T>> {
   @override
   Widget build(BuildContext context) {
     final wide = MediaQuery.sizeOf(context).width >= 960;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final muted = dark ? NereusTokens.darkMuted : NereusTokens.inkMuted;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
-      floatingActionButton: widget.canWrite && widget.onCreate != null && !wide
-          ? FloatingActionButton.extended(
-              onPressed: widget.onCreate,
-              icon: const Icon(Icons.add),
-              label: Text(widget.createLabel),
-            )
-          : null,
       body: Column(
         children: [
           PageHeader(
+            kicker: widget.kicker,
             title: widget.title,
             subtitle: widget.subtitle,
             actions: [
               ...widget.actions,
-              if (widget.canWrite && widget.onCreate != null && wide)
+              if (widget.canWrite && widget.onCreate != null)
                 FilledButton.icon(
                   onPressed: widget.onCreate,
-                  icon: const Icon(Icons.add, size: 18),
+                  icon: const Icon(Icons.add, size: 16),
                   label: Text(widget.createLabel),
                 ),
             ],
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: GlassSurface(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              borderRadius: BorderRadius.circular(NereusTokens.radiusSm),
-              child: TextField(
-                decoration: const InputDecoration(
-                  hintText: 'Filtrar',
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  filled: false,
-                  prefixIcon: Icon(Icons.search, size: 18),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: SizedBox(
+                      height: 36,
+                      child: TextField(
+                        style: const TextStyle(fontSize: 13),
+                        decoration: InputDecoration(
+                          hintText: 'Filtrar registros…',
+                          prefixIcon: Icon(
+                            Icons.search,
+                            size: 16,
+                            color: muted,
+                          ),
+                        ),
+                        onChanged: (value) => setState(() => _query = value),
+                      ),
+                    ),
+                  ),
                 ),
-                onChanged: (value) => setState(() => _query = value),
-              ),
+              ],
             ),
           ),
           Expanded(
@@ -113,7 +123,10 @@ class _CrudPageState<T> extends State<CrudPage<T>> {
                 final rows = q.isEmpty
                     ? items
                     : items.where((row) {
-                        return widget.rowTitle(row).toLowerCase().contains(q) ||
+                        return widget
+                                .rowTitle(row)
+                                .toLowerCase()
+                                .contains(q) ||
                             widget.rowSubtitle(row).toLowerCase().contains(q);
                       }).toList();
                 if (rows.isEmpty) {
@@ -130,7 +143,8 @@ class _CrudPageState<T> extends State<CrudPage<T>> {
                     ? Padding(
                         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                         child: GlassSurface(
-                          borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
+                          borderRadius:
+                              BorderRadius.circular(NereusTokens.radiusLg),
                           child: NereusTable<T>(
                             columns: widget.columns,
                             rows: rows,
@@ -143,21 +157,55 @@ class _CrudPageState<T> extends State<CrudPage<T>> {
                         ),
                       )
                     : ListView.separated(
-                        padding: const EdgeInsets.all(NereusTokens.spaceMd),
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                         itemCount: rows.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           final row = rows[index];
+                          final subtitle = widget.rowSubtitle(row);
                           return GlassCard(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                             onTap: () {
                               setState(() => _selected = row);
                               widget.onOpen?.call(row);
                             },
-                            child: ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              title: Text(widget.rowTitle(row)),
-                              subtitle: Text(widget.rowSubtitle(row)),
-                              trailing: const Icon(Icons.chevron_right),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        widget.rowTitle(row),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium,
+                                      ),
+                                      if (subtitle.isNotEmpty) ...[
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          subtitle,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: muted,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Abrir →',
+                                  style: TextStyle(fontSize: 11.5, color: muted),
+                                ),
+                              ],
                             ),
                           );
                         },

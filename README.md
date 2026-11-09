@@ -12,7 +12,12 @@ App Flutter de telemetría hídrica para SmartHydro / Nereus.
 ```bash
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
+# Debug (sin define) habla con Nereus local en http://localhost:8000
+flutter run
+# Producción / gateway
 flutter run --dart-define=NEREUS_API_BASE=https://gateway.smarthydro.app/api
+# Reunión / demo sin backend
+flutter run --dart-define=NEREUS_DATA_MODE=fixture
 ```
 
 Regenerar el cliente OpenAPI (requiere `~/code/nereus_api_ref` y Java 17):

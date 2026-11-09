@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:nereus_app/core/network/auth_interceptor.dart';
+import 'package:nereus_app/core/network/fixture_api.dart';
 import 'package:nereus_app/core/network/session_controller.dart';
 
 Dio createNereusDio({
@@ -16,6 +17,7 @@ Dio createNereusDio({
       headers: const {'Accept': 'application/json'},
     ),
   );
+  client.interceptors.add(FixtureApiInterceptor(session));
   client.interceptors.add(AuthInterceptor(session));
   return client;
 }

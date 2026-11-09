@@ -214,6 +214,26 @@ Role codes seen at login: `ADM`, `OWN`, `CL`, plus custom
 
 ---
 
+## 8. Fichas, tenencias y levantamientos (customers + surveys)
+
+Nereus no llama `/api/crm/*`. Las fichas de predio usan campos extra y surveys:
+
+| Paso | Method | Path |
+|---|---|---|
+| Secciones | GET/POST | `/api/customers/extra-field-groups/` |
+| Campos | GET/POST | `/api/customers/extra-field-definitions/` |
+| Valores | GET/POST/PATCH | `/api/customers/extra-field-values/` |
+| Plantillas de formulario | GET/POST | `/api/surveys/templates/` |
+| Publicar levantamiento | POST | `/api/surveys/surveys/` `survey_type=CUSTOM` |
+| Respuestas | GET/POST | `/api/surveys/responses/` |
+| PDF | GET/POST | `/api/customers/card-templates/`, `client-cards/generate/` |
+
+Tenencias = grupo `derechos_agua`. Captación = grupo `captacion`. Las preguntas del levantamiento usan `definition.key` como id; al aplicar, se escribe el extra-field-value.
+
+En debug, la app usa `http://localhost:8000` si no hay `NEREUS_API_BASE`. `NEREUS_DATA_MODE=fixture` sirve la misma UI con datos en memoria.
+
+---
+
 ## Out of scope (do not call from this client)
 
 - Any DGA/SMA submission, `dga_password` write, `send_endpoint` write.
@@ -221,3 +241,4 @@ Role codes seen at login: `ADM`, `OWN`, `CL`, plus custom
 - Invented serial-number REST.
 - Invented device↔client assignment.
 - Warehouse movements for IOT/TOOL/EQUIPMENT.
+- `/api/crm/*` (leads, pipeline, follow-ups).

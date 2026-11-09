@@ -12,7 +12,18 @@ from pathlib import Path
 
 import yaml
 
-WANTED_TAGS = {"accounts", "iot-telemetry", "alerts", "support", "customers"}
+WANTED_TAGS = {
+    "accounts",
+    "iot-telemetry",
+    "alerts",
+    "support",
+    "customers",
+    "crm",
+    "inventory",
+    "equipment",
+    "branches",
+    "surveys",
+}
 ALERT_PATH_PREFIX = "/api/iot-telemetry/alert-"
 
 # Keep login/session surface plus read-mostly telemetry/support/customers.

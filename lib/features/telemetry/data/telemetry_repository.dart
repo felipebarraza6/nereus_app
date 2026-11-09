@@ -49,7 +49,8 @@ class TelemetryRepository {
     int page = 1,
     int pageSize = 50,
   }) async {
-    const key = 'telemetry.devices';
+    final key =
+        'telemetry.devices.${search ?? ''}.${isOnline ?? ''}.$page.$pageSize';
     try {
       final response = await _dio.get<dynamic>(
         '/api/iot-telemetry/devices/',
