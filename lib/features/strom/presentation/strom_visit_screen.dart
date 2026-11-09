@@ -120,6 +120,12 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
     });
   }
 
+  Future<void> _delete(StromActivity item) async {
+    await _run(() async {
+      await ref.read(stromRepositoryProvider).deleteActivity(item.id);
+    });
+  }
+
   Future<void> _addNamed(String text) async {
     final description = text.trim();
     if (description.isEmpty) {
@@ -333,10 +339,20 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
                   onTap: _busy ? null : () => _record(item),
                   child: ListTile(
                     title: Text(item.description),
-                    trailing: IconButton(
-                      tooltip: 'Editar actividad',
-                      onPressed: _busy ? null : () => _rename(item),
-                      icon: const Icon(Icons.edit_outlined),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          tooltip: 'Editar actividad',
+                          onPressed: _busy ? null : () => _rename(item),
+                          icon: const Icon(Icons.edit_outlined),
+                        ),
+                        IconButton(
+                          tooltip: 'Quitar actividad',
+                          onPressed: _busy ? null : () => _delete(item),
+                          icon: const Icon(Icons.close),
+                        ),
+                      ],
                     ),
                     subtitle: Text(
                       item.result == null
@@ -387,6 +403,11 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
                 icon: const Icon(Icons.photo_camera_outlined),
                 label: Text('Foto (${visit.attachmentCount})'),
               ),
+              for (final photo in visit.photos)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(photo, maxLines: 1, overflow: TextOverflow.ellipsis),
+                ),
               const SizedBox(height: 24),
               Text('Check técnico', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),

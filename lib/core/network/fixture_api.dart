@@ -202,6 +202,14 @@ class FixtureApiInterceptor extends Interceptor {
       return item;
     }
     final id = _tailId(path, '/checklist-items/');
+    if (method == 'DELETE' && id != null) {
+      for (final order in _orders) {
+        final items = order['checklist_items'];
+        if (items is! List) continue;
+        items.removeWhere((raw) => raw is Map && raw['id'] == id);
+      }
+      return {'deleted': id};
+    }
     for (final order in _orders) {
       final items = order['checklist_items'];
       if (items is! List) continue;

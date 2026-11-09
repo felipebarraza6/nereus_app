@@ -67,6 +67,7 @@ class StromVisit {
     this.decision,
     this.feedbackId,
     this.attachmentCount = 0,
+    this.photos = const [],
   });
 
   final String id;
@@ -83,6 +84,7 @@ class StromVisit {
   final TechnicalDecision? decision;
   final String? feedbackId;
   final int attachmentCount;
+  final List<String> photos;
 
   VisitSpecialty? get specialty => specialtyFromNotes(notes);
 
@@ -108,6 +110,13 @@ class StromVisit {
       decision: decisionFromDiagnosis(diagnosis),
       feedbackId: asStringOrNull(feedback['id']),
       attachmentCount: asMapList(json['attachments']).length,
+      photos: [
+        for (final row in asMapList(json['attachments']))
+          if (asString(row['file']).isNotEmpty)
+            asString(row['file'])
+          else if (asString(row['url']).isNotEmpty)
+            asString(row['url']),
+      ],
     );
   }
 }

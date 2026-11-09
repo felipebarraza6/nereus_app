@@ -18,10 +18,11 @@ class StromProjectsScreen extends ConsumerStatefulWidget {
 
 class _StromProjectsScreenState extends ConsumerState<StromProjectsScreen> {
   var _filter = 'todos';
+  var _search = '';
 
   @override
   Widget build(BuildContext context) {
-    final projects = ref.watch(stromProjectsProvider(''));
+    final projects = ref.watch(stromProjectsProvider(_search));
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: StromChrome(
@@ -29,6 +30,14 @@ class _StromProjectsScreenState extends ConsumerState<StromProjectsScreen> {
         action: StromCreateButton(onPressed: () => context.go('/strom/nuevo')),
         child: Column(
         children: [
+          TextField(
+            decoration: const InputDecoration(
+              labelText: 'Buscar proyecto o cliente',
+              prefixIcon: Icon(Icons.search),
+            ),
+            onChanged: (value) => setState(() => _search = value.trim()),
+          ),
+          const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerLeft,
             child: SegmentedButton<String>(

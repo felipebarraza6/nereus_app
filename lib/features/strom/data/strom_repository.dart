@@ -185,6 +185,14 @@ class StromRepository {
     }
   }
 
+  Future<void> deleteActivity(String itemId) async {
+    try {
+      await _dio.delete<dynamic>('/api/support/checklist-items/$itemId/');
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
   Future<void> renameActivity({
     required String itemId,
     required String description,
