@@ -86,7 +86,7 @@ class _StromProjectsScreenState extends ConsumerState<StromProjectsScreen> {
                         trailing: StatusChip(
                           label:
                               '${projectKindLabel(project)} · ${projectStatusLabel(project.status)}',
-                          tone: NereusTokens.lagoon,
+                          tone: NereusTokens.hydroOlive,
                         ),
                       ),
                     );

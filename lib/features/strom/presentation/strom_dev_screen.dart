@@ -48,25 +48,43 @@ class StromDevScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final step = steps[index];
             final pending = step.path == null;
+            final tone = pending ? NereusTokens.inkMuted : NereusTokens.hydroOlive;
             return Material(
-              color: scheme.surface,
+              color: NereusTokens.surface,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
-                side: BorderSide(color: scheme.outlineVariant),
+                borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
+                side: BorderSide(
+                  color: pending ? NereusTokens.line : NereusTokens.hydroOlive,
+                ),
               ),
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: pending
-                      ? scheme.surfaceContainerHighest
-                      : scheme.primary,
-                  foregroundColor: pending
-                      ? scheme.onSurface
-                      : scheme.onPrimary,
+                      ? NereusTokens.surface2
+                      : NereusTokens.hydroOlive,
+                  foregroundColor: pending ? tone : Colors.white,
                   child: Text('${index + 1}'),
                 ),
-                title: Text(step.title),
-                subtitle: Text(step.detail),
-                trailing: pending ? const Text('Pendiente') : const Icon(Icons.chevron_right),
+                title: Text(
+                  step.title,
+                  style: TextStyle(
+                    color: pending ? tone : NereusTokens.ink,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  step.detail,
+                  style: const TextStyle(color: NereusTokens.inkMuted),
+                ),
+                trailing: pending
+                    ? const Text(
+                        'Pendiente',
+                        style: TextStyle(
+                          color: NereusTokens.inkMuted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      )
+                    : Icon(Icons.chevron_right, color: scheme.primary),
                 onTap: pending ? null : () => context.go(step.path!),
               ),
             );

@@ -89,6 +89,7 @@ class GlassCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
+          splashFactory: NoSplash.splashFactory,
           borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
           child: card,
         ),

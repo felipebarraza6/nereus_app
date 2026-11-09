@@ -290,9 +290,24 @@ class _StromMenuState extends State<_StromMenu> {
         onTap: () => widget.onSelect(widget.indices.first),
       );
     }
+    final muted = Theme.of(context).brightness == Brightness.dark
+        ? NereusTokens.darkMuted
+        : NereusTokens.inkMuted;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 4),
+          child: Text(
+            'STRØM — OPERACIONES',
+            style: TextStyle(
+              color: muted,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.4,
+            ),
+          ),
+        ),
         _NavTile(
           dest: const ShellDest(
             path: '/strom',

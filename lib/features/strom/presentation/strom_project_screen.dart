@@ -89,8 +89,8 @@ class StromProjectScreen extends ConsumerWidget {
                         trailing: StatusChip(
                           label: visitStatusLabel(visit.status),
                           tone: visit.isCompleted
-                              ? NereusTokens.lagoon
-                              : NereusTokens.inkMuted,
+                              ? NereusTokens.hydroOlive
+                              : NereusTokens.lagoon,
                         ),
                       ),
                     );

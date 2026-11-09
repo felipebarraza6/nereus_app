@@ -212,7 +212,7 @@ class StromVisitsScreen extends ConsumerWidget {
                     ),
                     trailing: StatusChip(
                       label: visitStatusLabel(visit.status),
-                      tone: NereusTokens.lagoon,
+                      tone: NereusTokens.hydroOlive,
                     ),
                   ),
                 );
@@ -492,7 +492,7 @@ class StromTechnicalScreen extends ConsumerWidget {
                   ),
                   trailing: StatusChip(
                     label: visitStatusLabel(visit.status),
-                    tone: NereusTokens.lagoon,
+                    tone: NereusTokens.hydroOlive,
                   ),
                   onTap: () => context.go(
                     '/strom/${visit.ticketId}/visita/${visit.id}',
