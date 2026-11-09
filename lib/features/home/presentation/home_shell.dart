@@ -248,7 +248,6 @@ class HomeShell extends ConsumerStatefulWidget {
 }
 
 class _HomeShellState extends ConsumerState<HomeShell> {
-  bool _railExpanded = false;
   final _search = TextEditingController();
   final _searchFocus = FocusNode();
 
@@ -315,10 +314,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                     searchController: _search,
                     searchFocus: _searchFocus,
                     onSearch: _submitSearch,
-                    railExpanded: _railExpanded,
-                    onRailExpandToggle: () => setState(
-                      () => _railExpanded = !_railExpanded,
-                    ),
                     onDestinationSelect: _go,
                     onLogout: _logout,
                     navigationShell: widget.navigationShell,
@@ -326,10 +321,10 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                 ),
               ],
             ),
-            bottomNavigationBar: breakpoint == NereusBreakpoint.compact
+            bottomNavigationBar: _phoneShell(breakpoint)
                 ? ShellMobileBottomNav(selected: selected, onSelect: _go)
                 : null,
-            drawer: breakpoint == NereusBreakpoint.compact
+            drawer: _phoneShell(breakpoint)
                 ? ShellMobileDrawer(
                     selected: selected,
                     onSelect: (index) {
@@ -345,6 +340,45 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   }
 }
 
+bool _phoneShell(NereusBreakpoint breakpoint) {
+  return breakpoint == NereusBreakpoint.compact ||
+      breakpoint == NereusBreakpoint.medium;
+}
+
+class _BranchFade extends StatefulWidget {
+  const _BranchFade({required this.index, required this.child});
+
+  final int index;
+  final Widget child;
+
+  @override
+  State<_BranchFade> createState() => _BranchFadeState();
+}
+
+class _BranchFadeState extends State<_BranchFade> {
+  var _visible = true;
+
+  @override
+  void didUpdateWidget(_BranchFade oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.index == widget.index) return;
+    setState(() => _visible = false);
+    Future<void>.delayed(const Duration(milliseconds: 90), () {
+      if (mounted) setState(() => _visible = true);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOpacity(
+      opacity: _visible ? 1 : 0.35,
+      duration: const Duration(milliseconds: 140),
+      curve: Curves.easeOut,
+      child: widget.child,
+    );
+  }
+}
+
 class _ShellLayout extends StatelessWidget {
   const _ShellLayout({
     required this.breakpoint,
@@ -354,8 +388,6 @@ class _ShellLayout extends StatelessWidget {
     required this.searchController,
     required this.searchFocus,
     required this.onSearch,
-    required this.railExpanded,
-    required this.onRailExpandToggle,
     required this.onDestinationSelect,
     required this.onLogout,
     required this.navigationShell,
@@ -368,16 +400,19 @@ class _ShellLayout extends StatelessWidget {
   final TextEditingController searchController;
   final FocusNode searchFocus;
   final ValueChanged<String> onSearch;
-  final bool railExpanded;
-  final VoidCallback onRailExpandToggle;
   final ValueChanged<int> onDestinationSelect;
   final VoidCallback onLogout;
   final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
+    final page = _BranchFade(
+      index: navigationShell.currentIndex,
+      child: navigationShell,
+    );
     switch (breakpoint) {
       case NereusBreakpoint.compact:
+      case NereusBreakpoint.medium:
         return SafeArea(
           bottom: false,
           child: Column(
@@ -386,37 +421,11 @@ class _ShellLayout extends StatelessWidget {
                 crumbs: crumbs,
                 onSearch: onSearch,
               ),
-              Expanded(child: navigationShell),
+              Expanded(child: page),
             ],
           ),
         );
-      case NereusBreakpoint.medium:
       case NereusBreakpoint.expanded:
-        return Row(
-          children: [
-            ShellTabletRail(
-              selected: selected,
-              expanded: railExpanded,
-              onToggle: onRailExpandToggle,
-              onSelect: onDestinationSelect,
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  ShellTopBar(
-                    crumbs: crumbs,
-                    searchController: searchController,
-                    searchFocus: searchFocus,
-                    onSearch: onSearch,
-                    session: session,
-                    onLogout: onLogout,
-                  ),
-                  Expanded(child: navigationShell),
-                ],
-              ),
-            ),
-          ],
-        );
       case NereusBreakpoint.large:
       case NereusBreakpoint.extraLarge:
         return Row(
@@ -438,7 +447,7 @@ class _ShellLayout extends StatelessWidget {
                     session: session,
                     onLogout: onLogout,
                   ),
-                  Expanded(child: navigationShell),
+                  Expanded(child: page),
                 ],
               ),
             ),

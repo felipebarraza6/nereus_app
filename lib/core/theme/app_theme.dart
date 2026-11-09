@@ -213,7 +213,7 @@ abstract final class AppTheme {
           elevation: 0,
           backgroundColor: scheme.primary,
           foregroundColor: scheme.onPrimary,
-          minimumSize: const Size(0, 38),
+          minimumSize: const Size(44, 40),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           textStyle: const TextStyle(
             fontSize: 13,
