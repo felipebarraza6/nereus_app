@@ -53,23 +53,19 @@ class StromProjectScreen extends ConsumerWidget {
                 child: const SizedBox.shrink(),
               ),
               data: (items) {
-                if (items.isEmpty) {
-                  return const AsyncBody(
-                    isLoading: false,
-                    hasError: false,
-                    isEmpty: true,
-                    onRetry: _noop,
-                    emptyMessage: 'Todavía no hay visitas. Planifica la primera.',
-                    child: SizedBox.shrink(),
-                  );
-                }
                 final format = DateFormat.yMMMd().add_Hm();
-                return ListView.separated(
+                return ListView(
                   padding: const EdgeInsets.all(NereusTokens.spaceMd),
-                  itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
-                  itemBuilder: (context, index) {
-                    final visit = items[index];
+                  children: [
+                    if (project != null) _ProjectFacts(project: project),
+                    if (items.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16),
+                        child: Text('Todavía no hay visitas. Planifica la primera.'),
+                      ),
+                    for (final visit in items) ...[
+                      const SizedBox(height: 8),
+                      Builder(builder: (context) {
                     final specialty = visit.specialty;
                     final when = visit.scheduledDate == null
                         ? 'Sin fecha'
@@ -93,7 +89,9 @@ class StromProjectScreen extends ConsumerWidget {
                         ),
                       ),
                     );
-                  },
+                      }),
+                    ],
+                  ],
                 );
               },
             ),
@@ -104,4 +102,54 @@ class StromProjectScreen extends ConsumerWidget {
   }
 }
 
-void _noop() {}
+class _ProjectFacts extends StatelessWidget {
+  const _ProjectFacts({required this.project});
+
+  final StromProject project;
+
+  @override
+  Widget build(BuildContext context) {
+    final client = lineValue(project.description, 'CLIENTE');
+    final po = lineValue(project.description, 'OC');
+    final committed = lineValue(project.description, 'COMPROMISO');
+    final responsible = lineValue(project.description, 'RESPONSABLE');
+    return GlassCard(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            _Fact('Tipo', projectKindLabel(project)),
+            _Fact('Estado', projectStatusLabel(project.status)),
+            _Fact('Cliente', client.isEmpty ? (project.clientName ?? 'Sin cliente') : client),
+            _Fact('OC del cliente', po.isEmpty ? 'Sin OC' : po),
+            _Fact('Fecha comprometida', committed.isEmpty ? 'Sin fecha' : committed),
+            _Fact('Responsable', responsible.isEmpty ? 'Sin responsable' : responsible),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Fact extends StatelessWidget {
+  const _Fact(this.label, this.value);
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 160,
+            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
+          ),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
+  }
+}

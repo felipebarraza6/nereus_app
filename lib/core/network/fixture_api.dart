@@ -13,7 +13,8 @@ class FixtureApiInterceptor extends Interceptor {
       'ticket_number': 'T-1042',
       'status': 'OPEN',
       'priority': 'MEDIUM',
-      'description': 'Puesta en marcha de dos pozos.',
+      'description':
+          'TIPO=PROYECTO\nCLIENTE=Agrícola Santa Rosa SpA\nOC=OC-1042\nCOMPROMISO=2026-12-01\nRESPONSABLE=Carlos\nPuesta en marcha de dos pozos.',
       'client_name': 'Agrícola Santa Rosa SpA',
       'ticket_type_name': 'Proyecto',
       'category_name': 'Hidráulica',
@@ -24,7 +25,8 @@ class FixtureApiInterceptor extends Interceptor {
       'ticket_number': 'T-1108',
       'status': 'OPEN',
       'priority': 'HIGH',
-      'description': 'El equipo dejó de reportar.',
+      'description':
+          'TIPO=SOPORTE\nCLIENTE=Comunidad de Aguas El Huape\nRESPONSABLE=Soporte\nEl equipo dejó de reportar.',
       'client_name': 'Comunidad de Aguas El Huape',
       'ticket_type_name': 'Soporte',
       'category_name': 'Soporte',
