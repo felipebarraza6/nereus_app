@@ -377,7 +377,7 @@ class _NavTile extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             splashFactory: NoSplash.splashFactory,
-            hoverColor: selected ? scheme.primary.withValues(alpha: 0.08) : hoverBg,
+            hoverColor: Colors.transparent,
             borderRadius: BorderRadius.circular(NereusTokens.radiusMd),
             child: ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 44),

@@ -36,7 +36,11 @@ class StromDevScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final panel = dark ? NereusTokens.darkRaised : NereusTokens.surface;
+    final line = dark ? NereusTokens.darkLine : NereusTokens.line;
+    final ink = dark ? NereusTokens.darkInk : NereusTokens.ink;
+    final muted = dark ? NereusTokens.darkMuted : NereusTokens.inkMuted;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: StromChrome(
@@ -48,44 +52,59 @@ class StromDevScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final step = steps[index];
             final pending = step.path == null;
-            final tone = pending ? NereusTokens.inkMuted : NereusTokens.hydroOlive;
             return Material(
-              color: NereusTokens.surface,
+              color: panel,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
-                side: BorderSide(
-                  color: pending ? NereusTokens.line : NereusTokens.hydroOlive,
-                ),
+                side: BorderSide(color: line),
               ),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: pending
-                      ? NereusTokens.surface2
-                      : NereusTokens.hydroOlive,
-                  foregroundColor: pending ? tone : Colors.white,
-                  child: Text('${index + 1}'),
-                ),
-                title: Text(
-                  step.title,
-                  style: TextStyle(
-                    color: pending ? tone : NereusTokens.ink,
-                    fontWeight: FontWeight.w600,
+              child: InkWell(
+                onTap: pending ? null : () => context.go(step.path!),
+                splashFactory: NoSplash.splashFactory,
+                hoverColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                borderRadius: BorderRadius.circular(NereusTokens.radiusLg),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: pending ? line : NereusTokens.hydroOlive,
+                        foregroundColor: pending ? muted : Colors.white,
+                        child: Text('${index + 1}'),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              step.title,
+                              style: TextStyle(
+                                color: ink,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              step.detail,
+                              style: TextStyle(color: muted),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (pending)
+                        Text(
+                          'Pendiente',
+                          style: TextStyle(
+                            color: muted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )
+                      else
+                        Icon(Icons.chevron_right, color: muted),
+                    ],
                   ),
                 ),
-                subtitle: Text(
-                  step.detail,
-                  style: const TextStyle(color: NereusTokens.inkMuted),
-                ),
-                trailing: pending
-                    ? const Text(
-                        'Pendiente',
-                        style: TextStyle(
-                          color: NereusTokens.inkMuted,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )
-                    : Icon(Icons.chevron_right, color: scheme.primary),
-                onTap: pending ? null : () => context.go(step.path!),
               ),
             );
           },
