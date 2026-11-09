@@ -264,9 +264,22 @@ GoRouter appRouter(Ref ref) {
                     ),
                     routes: [
                       GoRoute(
+                        path: 'editar',
+                        builder: (context, state) => StromProjectCreateScreen(
+                          ticketId: state.pathParameters['ticketId'],
+                        ),
+                      ),
+                      GoRoute(
                         path: 'visita/nueva',
                         builder: (context, state) => StromPlanScreen(
                           ticketId: state.pathParameters['ticketId']!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'visita/:visitId/editar',
+                        builder: (context, state) => StromPlanScreen(
+                          ticketId: state.pathParameters['ticketId']!,
+                          visitId: state.pathParameters['visitId'],
                         ),
                       ),
                       GoRoute(

@@ -117,6 +117,15 @@ class FixtureApiInterceptor extends Interceptor {
       return _page(const []);
     }
     if (path.contains('/support/tickets')) {
+      final id = _tailId(path, '/tickets/');
+      if (id != null) {
+        final ticket = _find(_tickets, id);
+        if (ticket == null) return _page(const []);
+        if (method == 'PATCH' || method == 'PUT') {
+          ticket.addAll(_asMap(options.data));
+        }
+        return ticket;
+      }
       return _page(_tickets);
     }
     if (path.contains('/support/work-orders')) {

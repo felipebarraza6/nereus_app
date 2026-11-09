@@ -32,6 +32,18 @@ class StromSetupController extends Notifier<StromSetup> {
     state = state.copyWith(crews: [...state.crews, text]);
   }
 
+  void removeCrew(String name) {
+    state = state.copyWith(
+      crews: [for (final crew in state.crews) if (crew != name) crew],
+    );
+  }
+
+  void removeTemplate(String name) {
+    state = state.copyWith(
+      templates: [for (final item in state.templates) if (item != name) item],
+    );
+  }
+
   void addTemplate(String name) {
     final text = name.trim();
     if (text.isEmpty || state.templates.contains(text)) return;

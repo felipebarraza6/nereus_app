@@ -10,9 +10,10 @@ import 'package:nereus_app/features/strom/providers/strom_setup.dart';
 import 'package:nereus_app/features/strom/providers/strom_providers.dart';
 
 class StromPlanScreen extends ConsumerStatefulWidget {
-  const StromPlanScreen({super.key, required this.ticketId});
+  const StromPlanScreen({super.key, required this.ticketId, this.visitId});
 
   final String ticketId;
+  final String? visitId;
 
   @override
   ConsumerState<StromPlanScreen> createState() => _StromPlanScreenState();
@@ -25,6 +26,22 @@ class _StromPlanScreenState extends ConsumerState<StromPlanScreen> {
   var _specialty = VisitSpecialty.hidraulica;
   DateTime _when = DateTime.now().add(const Duration(days: 1));
   var _saving = false;
+  StromVisit? _current;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final id = widget.visitId;
+    if (_current != null || id == null) return;
+    final visit = ref.read(stromVisitProvider(id)).asData?.value;
+    if (visit == null) return;
+    _current = visit;
+    _address.text = visit.address;
+    _crew.text = visit.crew;
+    _notes.text = visitBody(visit.notes);
+    _specialty = visit.specialty ?? VisitSpecialty.hidraulica;
+    if (visit.scheduledDate != null) _when = visit.scheduledDate!.toLocal();
+  }
 
   @override
   void dispose() {
@@ -55,15 +72,28 @@ class _StromPlanScreenState extends ConsumerState<StromPlanScreen> {
   Future<void> _save() async {
     setState(() => _saving = true);
     try {
-      final created = await ref.read(stromRepositoryProvider).createVisit(
-            ticketId: widget.ticketId,
-            scheduledDate: _when,
-            specialty: _specialty,
-            crew: _crew.text,
-            address: _address.text,
-            notes: _notes.text,
-          );
+      final repo = ref.read(stromRepositoryProvider);
+      final current = _current;
+      final created = current == null
+          ? await repo.createVisit(
+              ticketId: widget.ticketId,
+              scheduledDate: _when,
+              specialty: _specialty,
+              crew: _crew.text,
+              address: _address.text,
+              notes: _notes.text,
+            )
+          : await repo.updateVisit(
+              current: current,
+              scheduledDate: _when,
+              specialty: _specialty,
+              crew: _crew.text,
+              address: _address.text,
+              notes: _notes.text,
+            );
       ref.invalidate(stromVisitsProvider(widget.ticketId));
+      ref.invalidate(stromVisitProvider(created.id));
+      ref.invalidate(stromVisitsAllProvider);
       if (mounted) {
         context.go('/strom/${widget.ticketId}/visita/${created.id}');
       }
@@ -80,13 +110,25 @@ class _StromPlanScreenState extends ConsumerState<StromPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final visitId = widget.visitId;
+    if (visitId != null && _current == null) {
+      ref.watch(stromVisitProvider(visitId)).whenData((visit) {
+        if (_current != null) return;
+        _current = visit;
+        _address.text = visit.address;
+        _crew.text = visit.crew;
+        _notes.text = visitBody(visit.notes);
+        _specialty = visit.specialty ?? VisitSpecialty.hidraulica;
+        if (visit.scheduledDate != null) _when = visit.scheduledDate!.toLocal();
+      });
+    }
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: ListView(
         padding: const EdgeInsets.only(bottom: 24),
         children: [
-          const PageHeader(
-            title: 'Planificar visita',
+          PageHeader(
+            title: widget.visitId == null ? 'Planificar visita' : 'Editar visita',
             subtitle: 'Hidráulica y eléctrica van en visitas distintas',
           ),
           StromReadingColumn(

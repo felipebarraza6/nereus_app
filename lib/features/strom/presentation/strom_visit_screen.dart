@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:nereus_app/core/network/api_error.dart';
@@ -83,6 +84,39 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Future<void> _rename(StromActivity item) async {
+    final text = TextEditingController(text: item.description);
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Editar actividad'),
+        content: TextField(
+          controller: text,
+          decoration: const InputDecoration(labelText: 'Descripción'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, text.text.trim().isNotEmpty),
+            child: const Text('Guardar'),
+          ),
+        ],
+      ),
+    );
+    final next = text.text.trim();
+    text.dispose();
+    if (saved != true) return;
+    await _run(() async {
+      await ref.read(stromRepositoryProvider).renameActivity(
+            itemId: item.id,
+            description: next,
+          );
+    });
   }
 
   Future<void> _addActivity() async {
@@ -271,6 +305,15 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
               ),
               const SizedBox(height: 8),
               OutlinedButton(
+                onPressed: _busy
+                    ? null
+                    : () => context.go(
+                          '/strom/${widget.ticketId}/visita/${visit.id}/editar',
+                        ),
+                child: const Text('Editar visita'),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton(
                 onPressed: _busy ? null : _reschedule,
                 child: const Text('Reagendar con motivo'),
               ),
@@ -282,6 +325,11 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
                   onTap: _busy ? null : () => _record(item),
                   child: ListTile(
                     title: Text(item.description),
+                    trailing: IconButton(
+                      tooltip: 'Editar actividad',
+                      onPressed: _busy ? null : () => _rename(item),
+                      icon: const Icon(Icons.edit_outlined),
+                    ),
                     subtitle: Text(
                       item.result == null
                           ? 'Sin resultado'

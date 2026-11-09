@@ -34,6 +34,11 @@ class StromProjectScreen extends ConsumerWidget {
                 : '${project.ticketNumber} · ${project.clientName ?? 'Sin cliente'}',
             actions: [
               IconButton(
+                tooltip: 'Editar',
+                onPressed: () => context.go('/strom/$ticketId/editar'),
+                icon: const Icon(Icons.edit_outlined),
+              ),
+              IconButton(
                 tooltip: 'Planificar visita',
                 onPressed: () => context.go('/strom/$ticketId/visita/nueva'),
                 icon: const Icon(Icons.add_circle_outline),

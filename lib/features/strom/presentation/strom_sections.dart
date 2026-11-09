@@ -11,7 +11,9 @@ import 'package:nereus_app/features/strom/providers/strom_providers.dart';
 import 'package:nereus_app/features/strom/providers/strom_setup.dart';
 
 class StromProjectCreateScreen extends ConsumerStatefulWidget {
-  const StromProjectCreateScreen({super.key});
+  const StromProjectCreateScreen({super.key, this.ticketId});
+
+  final String? ticketId;
 
   @override
   ConsumerState<StromProjectCreateScreen> createState() =>
@@ -26,6 +28,31 @@ class _StromProjectCreateScreenState extends ConsumerState<StromProjectCreateScr
   final _responsible = TextEditingController();
   var _kind = 'PROYECTO';
   var _saving = false;
+  var _loaded = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final id = widget.ticketId;
+    if (_loaded || id == null) return;
+    final projects = ref.read(stromProjectsProvider('')).asData?.value;
+    final project = projects?.where((item) => item.id == id).firstOrNull;
+    if (project == null) return;
+    _loaded = true;
+    _subject.text = project.subject;
+    _client.text = lineValue(project.description, 'CLIENTE').isEmpty
+        ? (project.clientName ?? '')
+        : lineValue(project.description, 'CLIENTE');
+    _po.text = lineValue(project.description, 'OC');
+    _committed.text = lineValue(project.description, 'COMPROMISO');
+    _responsible.text = lineValue(project.description, 'RESPONSABLE');
+    final kind = projectKind(project);
+    if (kind == 'SOPORTE' || kind == 'MANTENCION' || kind == 'PROYECTO') {
+      _kind = kind;
+    } else if (project.looksLikeSupport) {
+      _kind = 'SOPORTE';
+    }
+  }
 
   @override
   void dispose() {
@@ -41,16 +68,38 @@ class _StromProjectCreateScreenState extends ConsumerState<StromProjectCreateScr
     if (_subject.text.trim().isEmpty) return;
     setState(() => _saving = true);
     try {
-      await ref.read(stromRepositoryProvider).createProject(
-            subject: _subject.text.trim(),
-            kind: _kind,
-            client: _client.text,
-            po: _po.text,
-            committed: _committed.text,
-            responsible: _responsible.text,
-          );
+      final fields = (
+        subject: _subject.text.trim(),
+        kind: _kind,
+        client: _client.text,
+        po: _po.text,
+        committed: _committed.text,
+        responsible: _responsible.text,
+      );
+      final repo = ref.read(stromRepositoryProvider);
+      final id = widget.ticketId;
+      if (id == null) {
+        await repo.createProject(
+          subject: fields.subject,
+          kind: fields.kind,
+          client: fields.client,
+          po: fields.po,
+          committed: fields.committed,
+          responsible: fields.responsible,
+        );
+      } else {
+        await repo.updateProject(
+          id: id,
+          subject: fields.subject,
+          kind: fields.kind,
+          client: fields.client,
+          po: fields.po,
+          committed: fields.committed,
+          responsible: fields.responsible,
+        );
+      }
       ref.invalidate(stromProjectsProvider);
-      if (mounted) context.go('/strom');
+      if (mounted) context.go(id == null ? '/strom' : '/strom/$id');
     } on Object catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -67,7 +116,7 @@ class _StromProjectCreateScreenState extends ConsumerState<StromProjectCreateScr
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: StromChrome(
-        title: 'Crear proyecto',
+        title: widget.ticketId == null ? 'Crear proyecto' : 'Editar proyecto',
         child: StromForm(
           saving: _saving,
           onSubmit: _save,
@@ -638,14 +687,33 @@ class _StromConfigScreenState extends ConsumerState<StromConfigScreen> {
           },
           children: [
             Text('Cuadrillas', style: Theme.of(context).textTheme.titleMedium),
-            for (final name in setup.crews) ListTile(title: Text(name)),
+            for (final name in setup.crews)
+              ListTile(
+                title: Text(name),
+                trailing: IconButton(
+                  tooltip: 'Quitar',
+                  onPressed: () =>
+                      ref.read(stromSetupProvider.notifier).removeCrew(name),
+                  icon: const Icon(Icons.close),
+                ),
+              ),
             TextField(
               controller: _crew,
               decoration: const InputDecoration(labelText: 'Nueva cuadrilla'),
             ),
             const SizedBox(height: 16),
             Text('Plantillas de actividad', style: Theme.of(context).textTheme.titleMedium),
-            for (final name in setup.templates) ListTile(title: Text(name)),
+            for (final name in setup.templates)
+              ListTile(
+                title: Text(name),
+                trailing: IconButton(
+                  tooltip: 'Quitar',
+                  onPressed: () => ref
+                      .read(stromSetupProvider.notifier)
+                      .removeTemplate(name),
+                  icon: const Icon(Icons.close),
+                ),
+              ),
             TextField(
               controller: _template,
               decoration: const InputDecoration(labelText: 'Nueva plantilla'),

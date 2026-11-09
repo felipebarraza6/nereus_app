@@ -58,6 +58,35 @@ class StromRepository {
     }
   }
 
+  Future<StromProject> updateProject({
+    required String id,
+    required String subject,
+    required String kind,
+    required String client,
+    required String po,
+    required String committed,
+    required String responsible,
+  }) async {
+    try {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        '/api/support/tickets/$id/',
+        data: {
+          'subject': subject,
+          'description': composeProjectDescription(
+            kind: kind,
+            client: client,
+            po: po,
+            committed: committed,
+            responsible: responsible,
+          ),
+        },
+      );
+      return StromProject.fromJson(response.data ?? {});
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
   Future<List<StromVisit>> visits() async {
     try {
       final response = await _dio.get<dynamic>(
@@ -124,6 +153,47 @@ class StromRepository {
       );
       final created = StromVisit.fromJson(response.data ?? {});
       return await visit(created.id);
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
+  Future<StromVisit> updateVisit({
+    required StromVisit current,
+    required DateTime scheduledDate,
+    required VisitSpecialty specialty,
+    required String crew,
+    required String address,
+    required String notes,
+  }) async {
+    try {
+      await _dio.patch<dynamic>(
+        '/api/support/work-orders/${current.id}/',
+        data: {
+          'scheduled_date': scheduledDate.toUtc().toIso8601String(),
+          'location_address': address,
+          'notes': composeVisitNotes(
+            specialty: specialty,
+            crew: crew,
+            body: notes,
+          ),
+        },
+      );
+      return await visit(current.id);
+    } on Object catch (error, stack) {
+      _rethrow(error, stack);
+    }
+  }
+
+  Future<void> renameActivity({
+    required String itemId,
+    required String description,
+  }) async {
+    try {
+      await _dio.patch<dynamic>(
+        '/api/support/checklist-items/$itemId/',
+        data: {'description': description.trim()},
+      );
     } on Object catch (error, stack) {
       _rethrow(error, stack);
     }
