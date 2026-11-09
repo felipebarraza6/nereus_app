@@ -739,8 +739,23 @@ class _StromTechnicalScreenState extends ConsumerState<StromTechnicalScreen> {
                 ),
                 const SizedBox(height: 12),
                 FilledButton(
-                  onPressed: _saving || !ready ? null : () => _save(visit, markExecuted: true),
-                  child: const Text('Dejar la visita ejecutada'),
+                  onPressed: _saving
+                      ? null
+                      : () {
+                          if (!ready) {
+                            _aviso(
+                              context,
+                              'Toca cada actividad en Check de terreno y guarda su resultado.',
+                            );
+                            return;
+                          }
+                          _save(visit, markExecuted: true);
+                        },
+                  child: Text(
+                    ready
+                        ? 'Dejar la visita ejecutada'
+                        : 'Falta el resultado de las actividades',
+                  ),
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(

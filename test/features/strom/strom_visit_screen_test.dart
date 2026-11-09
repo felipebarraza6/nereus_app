@@ -35,9 +35,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Registrar el check de terreno no cierra el proyecto.'), findsOneWidget);
     expect(find.text('Medir caudal'), findsOneWidget);
+    expect(find.text('Plantillas'), findsOneWidget);
+    expect(find.text('Medir caudal del pozo'), findsOneWidget);
     final button = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, 'Dejar la visita ejecutada'),
+      find.widgetWithText(FilledButton, 'Falta el resultado de las actividades'),
     );
-    expect(button.onPressed, isNull);
+    expect(button.onPressed, isNotNull);
   });
 }

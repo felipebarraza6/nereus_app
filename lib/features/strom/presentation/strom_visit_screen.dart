@@ -11,6 +11,7 @@ import 'package:nereus_app/core/widgets/page_header.dart';
 import 'package:nereus_app/features/strom/domain/strom_models.dart';
 import 'package:nereus_app/features/strom/presentation/strom_desk.dart';
 import 'package:nereus_app/features/strom/providers/strom_providers.dart';
+import 'package:nereus_app/features/strom/providers/strom_setup.dart';
 
 class StromVisitScreen extends ConsumerWidget {
   const StromVisitScreen({
@@ -119,17 +120,24 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
     });
   }
 
-  Future<void> _addActivity() async {
-    final text = _activity.text.trim();
-    if (text.isEmpty) return;
+  Future<void> _addNamed(String text) async {
+    final description = text.trim();
+    if (description.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Escribe la actividad o elige una plantilla.')),
+      );
+      return;
+    }
     await _run(() async {
       await ref.read(stromRepositoryProvider).addActivity(
             workOrderId: visit.id,
-            description: text,
+            description: description,
           );
       _activity.clear();
     });
   }
+
+  Future<void> _addActivity() => _addNamed(_activity.text);
 
   Future<void> _record(StromActivity item) async {
     final measurement = TextEditingController(text: item.measurement);
@@ -341,10 +349,31 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
                   ),
                 ),
               const SizedBox(height: 8),
+              Text('Plantillas', style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 8),
+              if (ref.watch(stromSetupProvider).templates.isEmpty)
+                const Text('No hay plantillas. Créalas en Configuración.')
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final name in ref.watch(stromSetupProvider).templates)
+                      ActionChip(
+                        label: Text(name),
+                        onPressed: _busy ? null : () => _addNamed(name),
+                      ),
+                  ],
+                ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => context.go('/strom/configuracion'),
+                child: const Text('Administrar plantillas y cuadrillas'),
+              ),
               TextField(
                 controller: _activity,
                 decoration: const InputDecoration(
-                  labelText: 'Actividad por pozo',
+                  labelText: 'Otra actividad',
                 ),
               ),
               const SizedBox(height: 8),
@@ -388,8 +417,24 @@ class _VisitBodyState extends ConsumerState<_VisitBody> {
               ),
               const SizedBox(height: 8),
               FilledButton(
-                onPressed: _busy || !ready ? null : () => _check(markExecuted: true),
-                child: const Text('Dejar la visita ejecutada'),
+                onPressed: _busy
+                    ? null
+                    : () {
+                        if (!ready) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Toca cada actividad y guarda su resultado. La visita no está bloqueada.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+                        _check(markExecuted: true);
+                      },
+                child: Text(
+                  ready ? 'Dejar la visita ejecutada' : 'Falta el resultado de las actividades',
+                ),
               ),
               if (!ready)
                 const Padding(
