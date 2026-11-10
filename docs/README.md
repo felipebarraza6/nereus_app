@@ -23,7 +23,6 @@
 
 ## Notas de trabajo
 
-- [tasks/2026-10-22-uiux-crm-core.md](tasks/2026-10-22-uiux-crm-core.md) — nota de UI/UX del núcleo CRM.
 
 ## Ramas y publicación
 
