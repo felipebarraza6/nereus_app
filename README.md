@@ -103,7 +103,6 @@ El seguimiento de issues y pull requests de Strøm está en el tablero [Strøm O
 | [DESIGN.md](docs/DESIGN.md) | Sistema de diseño (paleta, layout, estados, accesibilidad). |
 | [JOURNEY.md](docs/JOURNEY.md) | Recorrido funcional y endpoints que existen en el API. |
 | [API_CONTRACT.md](docs/API_CONTRACT.md) | Contrato de runtime del API que usa la app. |
-| [tasks/](docs/tasks/) | Notas de trabajo puntuales. |
 
 ---
 
