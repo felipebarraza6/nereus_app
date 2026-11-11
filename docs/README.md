@@ -10,6 +10,7 @@
 | [Esquema general](images/esquema_nereus.png) | Módulos de hoy y los que vienen después. |
 | [Plan de trabajo Strøm](images/plan_strom.png) | Semanas propuestas, desde la reunión del 16-nov-2026. |
 | [Tablero Strøm Operaciones](https://github.com/users/felipebarraza6/projects/12) | Kanban de issues y PRs. Es un proyecto privado del usuario `felipebarraza6`; los issues están en `nereus_api` (privado). Hace falta acceso. |
+| [Alcance MVP Kilde](kilde/alcance_mvp.md) | Flujo comercial de la prospección a la capacitación Ikolu, con avisos de avance desde Strøm: entidades, indicadores, integración con Nereus y criterios de aceptación (propuesta). |
 
 ## Técnica
 
