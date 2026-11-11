@@ -24,13 +24,15 @@ Hoy el escritorio reúne estos módulos (nombres tal como aparecen en la barra l
 
 | Módulo | Qué incluye hoy |
 | --- | --- |
-| **Kilde** | Clientes, fichas, levantamientos, prospectos y pipeline (flujo comercial). |
+| **Kilde** | Ventas y clientes: flujo comercial de la prospección a la capacitación Ikolu, con avisos de avance desde Strøm. El alcance del MVP está en [docs/kilde/alcance_mvp.md](docs/kilde/alcance_mvp.md) (propuesta). |
 | **Strøm — Operaciones** | Proyectos, visitas, actividades, check de terreno, check técnico, aclaraciones, auditoría, indicadores y configuración. Hay una pantalla Dev con el flujo. |
 | **Monitoreo** | Inicio, operación de dispositivos y tickets. |
 | **Activos** | Catálogo, inventario y equipos. |
 | **Red** | Puntos de captación. |
 
 De forma progresiva, el esquema apunta también a **Hardware**, **Hidráulica**, **Finanzas** y **RRHH**. Esos cuatro módulos todavía no están en la app (propuesta).
+
+El flujo de Kilde, de punta a punta, es: Prospección, Captación, Levantamiento, Cotización, Negociación/Cierre, reunión técnico-comercial y reunión de programación de la instalación. Lo que sigue ocurre en Strøm (instalación, puesta en marcha, entrega y capacitación Ikolu) y Kilde recibe avisos de cada hito. El detalle, los indicadores y lo que ya existe en Nereus están en el [alcance del MVP](docs/kilde/alcance_mvp.md) (propuesta).
 
 ![Esquema general de Nereus](docs/images/esquema_nereus.png)
 
