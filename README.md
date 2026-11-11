@@ -2,6 +2,12 @@
 
 App Flutter de telemetría hídrica para SmartHydro / Nereus.
 
+## Kilde
+
+Ventas y clientes: flujo comercial de la prospección a la capacitación Ikolu, con avisos de avance desde Strøm. El flujo, de punta a punta, es: Prospección, Captación, Levantamiento, Cotización, Negociación/Cierre, reunión técnico-comercial y reunión de programación de la instalación. Lo que sigue ocurre en Strøm (instalación, puesta en marcha, entrega y capacitación Ikolu) y Kilde recibe avisos de cada hito.
+
+El alcance del MVP está en [docs/kilde/alcance_mvp.md](docs/kilde/alcance_mvp.md) (propuesta).
+
 ## Requisitos
 
 - Flutter 3.47 (ver `.fvmrc`)
